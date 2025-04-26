@@ -1,6 +1,9 @@
 package com.example;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.FormParam;
 
 public class UserRegistration {
@@ -20,7 +23,5 @@ public class UserRegistration {
         regexp = "^\\(\\d{3}\\) \\d{3}-\\d{4}$", 
         message = "Phone must match (123) 456-7890 format"
     )
-    private String phone;
-
-    // Getters and setters
+    private String phone; // Getters and setters
 }

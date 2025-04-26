@@ -1,16 +1,21 @@
 package com.example;
 
-import io.quarkus.qute.Template;
-import io.quarkus.qute.TemplateInstance;
-
-import jakarta.inject.Inject;
-import jakarta.validation.*;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.MediaType;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
+
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/")
 public class RegistrationResource {
@@ -26,11 +31,10 @@ public class RegistrationResource {
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance showForm() {
         return registration.data("registration", new UserRegistration())
-                           .data("validation", Map.of(
-                               "username", "",
-                               "email", "",
-                               "phone", ""
-                           ));
+                .data("validation", Map.of(
+                        "username", "",
+                        "email", "",
+                        "phone", ""));
     }
 
     @Path("/register")
@@ -48,12 +52,9 @@ public class RegistrationResource {
 
         if (!violations.isEmpty()) {
             // Override with actual validation messages where there are violations
-            violations.forEach(violation -> 
-                validationMessages.put(
+            violations.forEach(violation -> validationMessages.put(
                     violation.getPropertyPath().toString(),
-                    violation.getMessage()
-                )
-            );
+                    violation.getMessage()));
 
             return registration
                     .data("registration", registrationDto)

@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>User Registration</title>
 </head>
+
 <body>
-<h1>User Registration</h1>
+    <h1>User Registration</h1>
 
-<form method="post" action="/register">
-    <label>Username:</label><br>
-    <input type="text" name="username" value="{registration.username ?: ''}"><br>
-    <span style="color:red">{validation['username']}</span><br>
+    <form method="post" action="/register">
+        <label>Username:</label><br>
+        <input type="text" name="username" value="{registration.username ?: ''}"><br>
+        <span style="color:red">{validation['username']}</span><br>
 
-    <label>Email:</label><br>
-    <input type="text" name="email" value="{registration.email ?: ''}"><br>
-    <span style="color:red">{validation['email']}</span><br>
+        <label>Email:</label><br>
+        <input type="text" name="email" value="{registration.email ?: ''}"><br>
+        <span style="color:red">{validation['email']}</span><br>
 
-    <label>Phone:</label><br>
-    <input type="text" name="phone" value="{registration.phone ?: ''}"><br>
-    <span style="color:red">{validation['phone']}</span><br>
+        <label>Phone:</label><br>
+        <input type="text" name="phone" value="{registration.phone ?: ''}"><br>
+        <span style="color:red">{validation['phone']}</span><br>
 
-    <button type="submit">Register</button>
-</form>
+        <button type="submit">Register</button>
+    </form>
 
 </body>
+
 </html>
