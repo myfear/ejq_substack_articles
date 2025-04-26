@@ -1,27 +1,48 @@
 package com.example;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import jakarta.ws.rs.FormParam;
 
 public class UserRegistration {
 
     @FormParam("username")
-    @NotBlank(message = "Username is required")
-    @Size(min = 4, max = 20, message = "Username must be 4 to 20 characters")
+    @NotBlank
+    @Size(min = 4, max = 20)
     private String username;
 
     @FormParam("email")
-    @NotBlank(message = "Email is required")
-    @Email(message = "Must be a valid email")
+    @NotBlank
+    @Email
     private String email;
 
     @FormParam("phone")
     @Pattern(
-        regexp = "^\\(\\d{3}\\) \\d{3}-\\d{4}$", 
-        message = "Phone must match (123) 456-7890 format"
+        regexp = "^\\(\\d{3}\\) \\d{3}-\\d{4}$"
     )
-    private String phone; // Getters and setters
+    private String phone;
+
+    // Getters and setters
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }
