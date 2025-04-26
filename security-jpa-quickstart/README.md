@@ -1,61 +1,70 @@
-# security-jpa-quickstart
+# Security JPA Quickstart
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+A Quarkus-based Java application demonstrating security features with JPA-based authentication and PostgreSQL database integration.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Project Structure
 
-## Running the application in dev mode
+- `src/main/java/` - Contains Java source code
+- `src/main/resources/` - Contains configuration files and database migrations
+- `pom.xml` - Maven project configuration
+- `mvnw` and `mvnw.cmd` - Maven wrapper scripts for Unix and Windows respectively
 
-You can run your application in dev mode that enables live coding using:
+## Dependencies
 
-```shell script
-./mvnw quarkus:dev
+The project uses:
+- Quarkus 3.21.3
+- Hibernate ORM with Panache for database operations
+- Security JPA for authentication
+- PostgreSQL JDBC driver
+- REST for API endpoints
+
+## Prerequisites
+
+- Java 17 or later
+- Maven (or use the provided Maven wrapper)
+- PostgreSQL database
+
+## Getting Started
+
+1. **Development Mode**
+   ```bash
+   ./mvnw quarkus:dev
+   ```
+   This starts the application in development mode with live reloading.
+
+2. **Build and Run**
+   ```bash
+   ./mvnw package
+   java -jar target/quarkus-app/quarkus-run.jar
+   ```
+
+3. **Build Native Executable**
+   ```bash
+   ./mvnw package -Dnative
+   ```
+   Or using container build:
+   ```bash
+   ./mvnw package -Dnative -Dquarkus.native.container-build=true
+   ```
+
+## Features
+
+- JPA-based user authentication
+- PostgreSQL database integration
+- REST API endpoints
+- Hibernate ORM with Panache for simplified database operations
+- Development mode with hot reload
+- Native executable support
+
+## Development
+
+- The application runs on `http://localhost:8080`
+- Development UI is available at `http://localhost:8080/q/dev/`
+- Database configuration is in `src/main/resources/application.properties`
+
+## Testing
+
+Run tests using:
+```bash
+./mvnw test
 ```
-
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
-```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/security-jpa-quickstart-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code for Hibernate ORM via the active record or the repository pattern
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Security JPA ([guide](https://quarkus.io/guides/security-getting-started)): Secure your applications with username/password stored in a database via Jakarta Persistence
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC

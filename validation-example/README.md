@@ -56,9 +56,9 @@ The project uses:
 
 ## Development
 
-- The application runs on `http://localhost:8080`
+- The application runs on `http://localhost:8080/registration`
 - Development UI is available at `http://localhost:8080/q/dev/`
-- Qute templates are served from `src/main/resources/templates/pub/`
+- Qute templates are served from `src/main/resources/templates/`
 
 ## Testing
 
