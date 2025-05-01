@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live JVM Heap Monitor</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        h1 { color: #333; }
+        #heapDisplay {
+            font-size: 1.5em; font-weight: bold; color: #007bff;
+            background: #fff; padding: 10px 15px; border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block;
+        }
+        #status { margin-top: 10px; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Live JVM Heap Monitor</h1>
+    <p>Used Heap: <span id="heapDisplay">Initializing...</span></p>
+    <p id="status">Status: Disconnected</p>
+
+    <script>
+        const display = document.getElementById('heapDisplay');
+        const status = document.getElementById('status');
+
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const url = `${protocol}//${window.location.host}/monitor/heap`;
+
+            status.textContent = `Status: Connecting to ${url}...`;
+
+            const ws = new WebSocket(url);
+
+            ws.onopen = () => {
+                status.textContent = 'Status: Connected';
+                display.textContent = 'Waiting...';
+            };
+
+            ws.onmessage = (event) => {
+                display.textContent = event.data;
+            };
+
+            ws.onclose = (event) => {
+                status.textContent = `Status: Disconnected (${event.code}). Reconnecting...`;
+                display.textContent = 'Offline';
+                setTimeout(connect, 5000);
+            };
+
+            ws.onerror = () => {
+                status.textContent = 'Status: Error';
+                display.textContent = 'Error';
+            };
+        }
+
+        connect();
+    </script>
+</body>
+</html>
