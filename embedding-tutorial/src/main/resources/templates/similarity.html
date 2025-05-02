@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Embedding Similarity</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Smaller font for vectors */
+        .similarity-bar-container {
+            width: 200px;
+            height: 24px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .similarity-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            text-align: center;
+            color: white;
+            line-height: 24px;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        h3,
+        h4 {
+            margin-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-top: 5px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #ccc;
+            margin: 25px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Embedding Similarity Analysis</h2>
+
+    {#if error} 
+    <p class="error">{error}</p>
+    {#else} 
+    <h3>Input Text 1:</h3>
+    <pre>{text1}</pre> 
+
+    <h3>Input Text 2:</h3>
+    <pre>{text2}</pre>
+
+    <hr>
+
+    <h3>Results:</h3>
+    <p><strong>Vector Dimensions:</strong> {dimensions}</p>
+    <div>
+        <p style="display: inline-block; margin-bottom: 15px;">
+            <strong>Cosine Similarity:</strong> {cosSimilarity} (Range: [-1, 1], closer to 1 is more
+            similar)
+        </p>
+        <div class="similarity-bar-container" title="Cosine Similarity: {cosSimilarity}">
+            <div class="similarity-bar" style="width: {similarityPercentage}%;">
+                {similarityPercentage}%
+            </div>
+        </div>
+    </div>
+
+    <p><strong>Euclidean Distance (Normalized):</strong> {eucDistance} (Range: [0, 2], closer to 0 is more
+        similar)</p>
+
+    
+    {#if vector1Start}
+    <hr>
+    <h4>Embedding Vectors (First 10 Dimensions):</h4>
+    <p>This is the actual start of the numerical vector (embedding) generated for each text. The full vector has
+        {dimensions} dimensions.</p>
+    <p>Vector for Text 1:</p>
+    <pre>{vector1Start}</pre> 
+    <p>Vector for Text 2:</p>
+    <pre>{vector2Start}</pre> 
+    {/if}
+
+    {/if}
+</body>
+
+</html>
