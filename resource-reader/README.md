@@ -1,57 +1,57 @@
-# resource-reader
+# Resource Reader Application
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+A simple REST service built with Quarkus that reads and serves text content from classpath resources.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Overview
 
-## Running the application in dev mode
+This application provides a REST endpoint that reads and returns the contents of a text file (`my-data.txt`) from the classpath. It's designed as a simple demonstration of resource handling in a Quarkus application.
 
-You can run your application in dev mode that enables live coding using:
+### Key Features
+- REST endpoint at `/resource` that returns text content
+- Handles resource loading from the classpath
+- Provides proper error handling for missing resources
+- Built with Quarkus for cloud-native deployment
 
+## Running the Application
+
+### Development Mode
+Run the application in development mode with live coding enabled:
 ```shell script
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+The application will be available at `http://localhost:8080/resource`.
 
-## Packaging and running the application
-
-The application can be packaged using:
-
+### Building and Running
+To build the application:
 ```shell script
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
+Run the packaged application:
 ```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
+### Native Build
+Create a native executable:
 ```shell script
 ./mvnw package -Dnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
+Or build in a container:
 ```shell script
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/resource-reader-1.0.0-SNAPSHOT-runner`
+## Technical Details
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+- Built with Quarkus, the Supersonic Subatomic Java Framework
+- Uses REST Jackson for JSON serialization
+- Implements proper resource handling with error management
+- Supports both development and production deployment modes
+
+For more information about Quarkus, visit: <https://quarkus.io/>
 
 ## Related Guides
 
