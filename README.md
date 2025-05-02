@@ -2,7 +2,7 @@
 
 This repository contains the source code and hands-on examples for the [Enterprise Java and Quarkus](https://myfear.substack.com/) Substack publication by [Markus Eisele](https://twitter.com/myfear).
 
-If you’re working in enterprise software with Java, Quarkus, Jakarta EE, and cloud-native platforms, this is your launchpad for modern development.
+If you're working in enterprise software with Java, Quarkus, Jakarta EE, and cloud-native platforms, this is your launchpad for modern development.
 
 ## 📰 About the Publication
 
@@ -24,6 +24,57 @@ Each folder in this repository matches an article from the Substack and includes
 - 💡 Example code with comments
 - ⚙️ Quarkus configurations and Dev Services integration
 - 📦 Maven projects you can run locally with Podman, Ollama, PostgreSQL, etc.
+
+## 📚 Project Overview
+
+### 1. Validation Example (`validation-example/`)
+A Quarkus application demonstrating form validation with:
+- Jakarta Validation annotations
+- Localized error messages (English and French)
+- REST endpoints with form handling
+- Qute templates for HTML rendering
+
+### 2. Security JPA Quickstart (`security-jpa-quickstart/`)
+A secure Quarkus application featuring:
+- JPA-based user authentication
+- PostgreSQL database integration
+- REST API endpoints
+- Hibernate ORM with Panache
+
+### 3. QR Code Demo (`qr-code-demo/`)
+A practical example showing:
+- QR code generation
+- Image processing
+- REST API endpoints
+- File handling
+
+### 4. CSV Uploader (`csv-uploader/`)
+A file processing application with:
+- CSV file upload and parsing
+- Data validation
+- Batch processing
+- REST API endpoints
+
+### 5. Realtime Monitor (`realtime-monitor/`)
+A monitoring application featuring:
+- Real-time data streaming
+- WebSocket integration
+- Dashboard UI
+- Data visualization
+
+### 6. Embedding Tutorial (`embedding-tutorial/`)
+An AI-focused project demonstrating:
+- Text embedding generation
+- Vector similarity search
+- AI model integration
+- Data processing pipelines
+
+### 7. Resource Reader (`resource-reader/`)
+A utility application showing:
+- File resource handling
+- Stream processing
+- Configuration management
+- Error handling
 
 ## 🚧 Work in Progress
 
