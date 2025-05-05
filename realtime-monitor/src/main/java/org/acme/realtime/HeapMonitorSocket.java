@@ -42,12 +42,24 @@ public class HeapMonitorSocket {
 
     @Scheduled(every = "3s", delay = 1)
     void sendHeapUsage() {
+        // Get heap memory usage once
         MemoryUsage usage = memoryBean.getHeapMemoryUsage();
         double usedMB = usage.getUsed() / MEGABYTE;
-        String formatted = df.format(usedMB) + " MB";
-        LOG.debugf("Broadcasting heap usage: %s", formatted);
-        // distribute to all open connections
-        openConnections.forEach(c -> c.sendTextAndAwait(formatted));
+        String formattedUsage = df.format(usedMB) + " MB";
 
+        LOG.infof("Heap usage: %s", formattedUsage);
+
+        // Filter and send to only open connections
+        openConnections.stream()
+            .filter(WebSocketConnection::isOpen) // Only process open connections
+            .forEach(c -> {
+                c.sendTextAndAwait(formattedUsage);
+                LOG.infof("Heap usage sent to connection: %s", c.id());
+            });
+
+        // Log skipped connections
+        openConnections.stream()
+            .filter(c -> !c.isOpen())
+            .forEach(c -> LOG.warnf("Skipping closed connection: %s", c.id()));
     }
 }
