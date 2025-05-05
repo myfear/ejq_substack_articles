@@ -6,7 +6,6 @@ import io.quarkus.websockets.next.OnOpen;
 import io.quarkus.websockets.next.OpenConnections;
 import io.quarkus.websockets.next.WebSocket;
 import io.quarkus.websockets.next.WebSocketConnection;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 
 import org.jboss.logging.Logger;
