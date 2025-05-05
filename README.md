@@ -51,13 +51,13 @@ A practical example showing:
 ### 4. CSV Uploader (`csv-uploader/`)
 A file processing application with:
 - CSV file upload and parsing
-- Data validation
-- Batch processing
-- REST API endpoints
+- Automatic table creation with inferred column types
+- Metadata tracking of uploads
+- REST API endpoints for data access
 
 ### 5. Realtime Monitor (`realtime-monitor/`)
 A monitoring application featuring:
-- Real-time data streaming
+- Real-time JVM heap memory monitoring
 - WebSocket integration
 - Dashboard UI
 - Data visualization
@@ -75,6 +75,30 @@ A utility application showing:
 - Stream processing
 - Configuration management
 - Error handling
+
+### 8. AI Email Simulator (`ai-email-simulator/`)
+A Quarkus-based application that:
+- Simulates email generation and processing using AI models
+- Integrates LangChain4j for advanced AI capabilities
+- Manages tasks via a to-do list
+
+### 9. Sentiment Analysis API (`sentiment-analysis/`)
+A REST API for sentiment analysis featuring:
+- Integration with LangChain4j and Ollama
+- REST endpoints for text sentiment analysis
+- Native executable support for optimal performance
+
+### 10. Quarkus GraphQL (`quarkus-graphql/`)
+A project demonstrating:
+- Building GraphQL APIs using SmallRye GraphQL
+- REST API integration
+- Native executable support for high performance
+
+### 11. Quarkus Interceptor Tutorial (`quarkus-interceptor-tutorial/`)
+A tutorial project showcasing:
+- Custom request interceptors
+- Logging and auditing with Quarkus filters
+- REST API integration
 
 ## 🚧 Work in Progress
 
