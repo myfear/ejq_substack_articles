@@ -3,6 +3,7 @@ package org.acme.realtime;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
+import io.quarkus.websockets.next.OpenConnections;
 import io.quarkus.websockets.next.WebSocket;
 import io.quarkus.websockets.next.WebSocketConnection;
 import jakarta.enterprise.context.SessionScoped;
@@ -27,6 +28,9 @@ public class HeapMonitorSocket {
     @Inject
     WebSocketConnection connection;
 
+    @Inject
+    OpenConnections openConnections;
+
     @OnOpen
     void onOpen() {
         LOG.infof("Client connected: %s", connection.id());
@@ -40,12 +44,12 @@ public class HeapMonitorSocket {
 
     @Scheduled(every = "3s", delay = 1)
     void sendHeapUsage() {
-        if (connection.isOpen()) {
-            MemoryUsage usage = memoryBean.getHeapMemoryUsage();
-            double usedMB = usage.getUsed() / MEGABYTE;
-            String formatted = df.format(usedMB) + " MB";
-            LOG.debugf("Broadcasting heap usage: %s", formatted);
-            connection.broadcast().sendText(formatted);
-        }
+        MemoryUsage usage = memoryBean.getHeapMemoryUsage();
+        double usedMB = usage.getUsed() / MEGABYTE;
+        String formatted = df.format(usedMB) + " MB";
+        LOG.debugf("Broadcasting heap usage: %s", formatted);
+        // distribute to all open connections
+        openConnections.forEach(c -> c.sendTextAndAwait(formatted));
+
     }
 }
