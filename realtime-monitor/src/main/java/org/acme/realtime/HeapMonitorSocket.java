@@ -16,7 +16,6 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.text.DecimalFormat;
 
-@SessionScoped
 @WebSocket(path = "/monitor/heap")
 public class HeapMonitorSocket {
 
