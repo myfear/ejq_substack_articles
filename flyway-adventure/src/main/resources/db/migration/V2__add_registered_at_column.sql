@@ -1,0 +1,1 @@
+ALTER TABLE person ADD COLUMN registeredAt TIMESTAMP DEFAULT now();
