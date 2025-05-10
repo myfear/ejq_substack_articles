@@ -15,9 +15,6 @@ public class PageResource {
     Template chat;
 
     @Inject
-    SessionScopeChatAgent agent;
-
-@Inject
     ChatAgent agent2;
 
     @GET
