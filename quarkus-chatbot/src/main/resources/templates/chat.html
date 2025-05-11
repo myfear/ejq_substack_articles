@@ -8,19 +8,46 @@
     let buffer = "";
 
     function connect() {
-      socket = new WebSocket("ws://" + location.host + "/ws/chat");
+      const protocol = (window.location.protocol === 'https:') ? 'wss' : 'ws';
+      socket = new WebSocket(protocol + '://' + window.location.host + '/ws/chat');
 
       socket.onmessage = function(event) {
-        if (event.data === "[DONE]") {
-          const responseDiv = document.createElement("div");
-          responseDiv.className = "bot";
-          responseDiv.innerText = buffer;
-          document.getElementById("chat").appendChild(responseDiv);
-          buffer = "";
-          scrollToBottom();
-        } else {
+        try {
+          if (event.data === "Connection opened") {
+            //console.log("WebSocket connection established.");
+            return;
+          }
+
           buffer += event.data;
+          buffer = buffer.replace(/\s+/g, " ").trim();
+          const formattedBuffer = buffer.replace(/\n/g, "<br>");
+
+          //console.log("Formatted response so far:", formattedBuffer);
+
+          const chatDiv = document.getElementById("chat");
+          let lastMessage = chatDiv.lastElementChild;
+
+          if (lastMessage && lastMessage.className === "bot") {
+            lastMessage.innerHTML = formattedBuffer;
+          } else {
+            const botDiv = document.createElement("div");
+            botDiv.className = "bot";
+            botDiv.innerHTML = formattedBuffer;
+            chatDiv.appendChild(botDiv);
+          }
+
+          scrollToBottom();
+        } catch (e) {
+          console.error("Error while handling WebSocket message:", e);
         }
+      };
+
+      socket.onerror = function(error) {
+        console.error("WebSocket Error:", error);
+      };
+
+      socket.onopen = function() {
+        console.log("WebSocket connection established.");
       };
     }
 
@@ -30,6 +57,7 @@
       if (message === "") return;
 
       input.value = "";
+      buffer = "";
 
       const userDiv = document.createElement("div");
       userDiv.className = "user";
