@@ -14,19 +14,9 @@ public class PageResource {
     @Inject
     Template chat;
 
-    @Inject
-    ChatAgent agent2;
-
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance index() {
         return chat.instance();
-    }
-
-    @GET
-    @Path("test")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String test() {
-        return agent2.chat("Who are you?");
     }
 }
