@@ -16,7 +16,7 @@ public class ChatSocket {
         this.agent = agent;
     }
 
-private static final Logger log = Logger.getLogger(SessionScopeChatAgent.class);
+private static final Logger log = Logger.getLogger(ChatSocket.class);
 
     @OnOpen
     public String onOpen() {
