@@ -31,6 +31,6 @@ private static final Logger LOG = Logger.getLogger(IndexResource.class);
     public String get() {
         Locale locale = new Locale (currentRequestLocale.get().getLanguage());
         LOG.info("Locale from IndexResource: " + locale);
-        return index.instance().setLocale(locale.getLanguage()).data("locale", locale).render();
+        return index.instance().setLocale(locale).data("locale", locale).render();
     }
 }
