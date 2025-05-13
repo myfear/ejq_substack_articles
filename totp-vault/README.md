@@ -1,60 +1,140 @@
-# totp-vault
+# TOTP Vault
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+TOTP Vault is a Quarkus-based application that integrates with HashiCorp Vault to provide Time-based One-Time Password (TOTP) functionality. It allows users to register and validate TOTP codes securely.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Features
 
-## Running the application in dev mode
+- **TOTP Key Registration**: Generate and register TOTP keys for users.
+- **TOTP Code Validation**: Validate TOTP codes for secure access.
+- **HashiCorp Vault Integration**: Securely store and manage TOTP secrets using Vault.
 
-You can run your application in dev mode that enables live coding using:
+## Prerequisites
 
-```shell script
+- Java 17 or higher
+- Maven 3.9.9 or higher
+- Docker (optional, for containerized builds)
+
+## Running the Application in Development Mode
+
+You can run the application in development mode with live coding enabled:
+
+```shell
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Access the Quarkus Dev UI at [http://localhost:8080/q/dev/](http://localhost:8080/q/dev/).
 
-## Packaging and running the application
+## Packaging and Running the Application
 
-The application can be packaged using:
+To package the application:
 
-```shell script
+```shell
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+This will produce the `quarkus-run.jar` in the `target/quarkus-app/` directory. Run the application using:
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+```shell
+java -jar target/quarkus-app/quarkus-run.jar
+```
 
-If you want to build an _über-jar_, execute the following command:
+### Building an Über-Jar
 
-```shell script
+To build an _über-jar_:
+
+```shell
 ./mvnw package -Dquarkus.package.jar.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Run the _über-jar_ using:
 
-## Creating a native executable
+```shell
+java -jar target/*-runner.jar
+```
+
+## Creating a Native Executable
 
 You can create a native executable using:
 
-```shell script
+```shell
 ./mvnw package -Dnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+If GraalVM is not installed, use a containerized build:
 
-```shell script
+```shell
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/totp-vault-1.0.0-SNAPSHOT-runner`
+Run the native executable:
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+```shell
+./target/totp-vault-1.0.0-SNAPSHOT-runner
+```
+
+## Running in a Docker Container
+
+### JVM Mode
+
+Build the Docker image:
+
+```shell
+docker build -f src/main/docker/Dockerfile.jvm -t totp-vault-jvm .
+```
+
+Run the container:
+
+```shell
+docker run -i --rm -p 8080:8080 totp-vault-jvm
+```
+
+### Native Mode
+
+Build the Docker image:
+
+```shell
+docker build -f src/main/docker/Dockerfile.native -t totp-vault-native .
+```
+
+Run the container:
+
+```shell
+docker run -i --rm -p 8080:8080 totp-vault-native
+```
+
+## Endpoints
+
+### TOTP Registration
+
+- **Endpoint**: `/totp/register/{username}`
+- **Method**: `GET`
+- **Description**: Generates a TOTP key for the given username and returns a QR code for scanning.
+
+### Protected Resource
+
+- **Endpoint**: `/protected`
+- **Method**: `GET`
+- **Headers**:
+  - `X-User`: Username
+  - `X-TOTP-Code`: TOTP code
+- **Description**: Validates the TOTP code and grants or denies access.
+
+## Configuration
+
+The application uses the following configuration properties in `application.properties`:
+
+```properties
+quarkus.vault.devservices.enabled=true
+quarkus.vault.authentication.userpass.username=<vault-username>
+quarkus.vault.authentication.userpass.password=<vault-password>
+```
 
 ## Related Guides
 
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- QR Code Generator ([guide](https://docs.quarkiverse.io/quarkus-barcode/dev/index.html)): QR Code Generator has flexible options and absolute correctness.
-- Vault ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-vault/dev/index.html)): Store your credentials securely in HashiCorp Vault
+- [Quarkus REST Guide](https://quarkus.io/guides/rest)
+- [Quarkus Vault Guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-vault/dev/index.html)
+- [Quarkus Barcode Guide](https://docs.quarkiverse.io/quarkus-barcode/dev/index.html)
+
+## License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
