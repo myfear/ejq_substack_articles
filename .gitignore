@@ -1,6 +1,8 @@
 # Compiled class file
 *.class
 .quarkus/
+.mvn
+.vscode
 
 # Log file
 *.log
@@ -12,6 +14,7 @@
 .mtj.tmp/
 
 .DS_Store
+.dockerignore
 
 # Package Files #
 *.jar
