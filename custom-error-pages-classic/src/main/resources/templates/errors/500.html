@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Server Error</title>
+     <style>
+        body { font-family: sans-serif; text-align: center; padding: 40px; }
+        h1 { color: #3498db; }
+    </style>
+</head>
+<body>
+  <h1>Oops! Something went wrong on our end.</h1>
+  <p>Error Reference: {reference}</p>
+  {#if devMode}
+    <p><b>Exception:</b> {exceptionType}</p>
+    <p><b>Message:</b> {exceptionMessage}</p>
+  {/if}
+</body>
+</html>
