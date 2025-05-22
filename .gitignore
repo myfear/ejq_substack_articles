@@ -3,6 +3,7 @@
 .quarkus/
 .mvn
 .vscode
+target/
 
 # Log file
 *.log
