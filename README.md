@@ -27,78 +27,125 @@ Each folder in this repository matches an article from the Substack and includes
 
 ## 📚 Project Overview
 
-### 1. Validation Example (`validation-example/`)
-A Quarkus application demonstrating form validation with:
-- Jakarta Validation annotations
-- Localized error messages (English and French)
-- REST endpoints with form handling
-- Qute templates for HTML rendering
+Below are the example projects included in this repository, listed alphabetically. Each project folder is linked for easy access:
 
-### 2. Security JPA Quickstart (`security-jpa-quickstart/`)
-A secure Quarkus application featuring:
-- JPA-based user authentication
-- PostgreSQL database integration
-- REST API endpoints
-- Hibernate ORM with Panache
+### 1. [ai-email-simulator/](ai-email-simulator/)
+A Quarkus-based application that:
+- Simulates email generation and processing using AI models
+- Integrates LangChain4j for advanced AI capabilities
+- Manages tasks via a to-do list
 
-### 3. QR Code Demo (`qr-code-demo/`)
-A practical example showing:
-- QR code generation
-- Image processing
-- REST API endpoints
-- File handling
+**Description:**  
+Uses AI to generate and process emails, demonstrating LangChain4j integration and task management in a Quarkus app.
 
-### 4. CSV Uploader (`csv-uploader/`)
+### 2. [csv-uploader/](csv-uploader/)
 A file processing application with:
 - CSV file upload and parsing
 - Automatic table creation with inferred column types
 - Metadata tracking of uploads
 - REST API endpoints for data access
 
-### 5. Realtime Monitor (`realtime-monitor/`)
-A monitoring application featuring:
-- Real-time JVM heap memory monitoring
-- WebSocket integration
-- Dashboard UI
-- Data visualization
+**Description:**  
+Enables uploading and parsing of CSV files, storing data in a database with automatic schema inference and metadata management.
 
-### 6. Embedding Tutorial (`embedding-tutorial/`)
+### 3. [custom-error-pages-classic/](custom-error-pages-classic/)
+A project demonstrating how to handle exceptions and serve error pages.
+
+### 4. [embedding-tutorial/](embedding-tutorial/)
 An AI-focused project demonstrating:
 - Text embedding generation
 - Vector similarity search
 - AI model integration
 - Data processing pipelines
 
-### 7. Resource Reader (`resource-reader/`)
+**Description:**  
+Explains how to generate and use text embeddings in Java, including similarity search and integration with AI models.
+
+### 5. [flyway-adventure/](flyway-adventure/)
+A project demonstrating how to integrate Flyway into your Quarkus applications and manage database schema evolutions.
+
+### 6. [i18n-demo/](i18n-demo/)
+A project demonstrating database backed internationalization in Quarkus.
+
+### 7. [qr-code-demo/](qr-code-demo/)
+A practical example showing:
+- QR code generation
+- Image processing
+- REST API endpoints
+- File handling
+
+**Description:**  
+Generates QR codes dynamically via REST endpoints and handles image file processing in a Quarkus service.
+
+### 8. [quarkus-chatbot/](quarkus-chatbot/)
+A Langchain4j based chat-bot system using a local model and websocket next extension.
+
+### 9. [quarkus-graphql/](quarkus-graphql/)
+A project demonstrating:
+- Building GraphQL APIs using SmallRye GraphQL
+- REST API integration
+- Native executable support for high performance
+
+**Description:**  
+Shows how to build GraphQL APIs in Quarkus, including REST integration and native build support for performance.
+
+### 10. [quarkus-interceptor-tutorial/](quarkus-interceptor-tutorial/)
+A tutorial project showcasing:
+- Custom request interceptors
+- Logging and auditing with Quarkus filters
+- REST API integration
+
+**Description:**  
+Teaches how to implement custom interceptors and filters in Quarkus for logging, auditing, and request processing.
+
+### 11. [realtime-monitor/](realtime-monitor/)
+A monitoring application featuring:
+- Real-time JVM heap memory monitoring
+- WebSocket integration
+- Dashboard UI
+- Data visualization
+
+**Description:**  
+Monitors JVM memory usage in real time, pushing updates to a web dashboard using WebSockets for live visualization.
+
+### 12. [resource-reader/](resource-reader/)
 A utility application showing:
 - File resource handling
 - Stream processing
 - Configuration management
 - Error handling
 
-### 8. AI Email Simulator (`ai-email-simulator/`)
-A Quarkus-based application that:
-- Simulates email generation and processing using AI models
-- Integrates LangChain4j for advanced AI capabilities
-- Manages tasks via a to-do list
+**Description:**  
+Provides examples for reading and processing file resources in Quarkus, with robust error and configuration management.
 
-### 9. Sentiment Analysis API (`sentiment-analysis/`)
+### 13. [security-jpa-quickstart/](security-jpa-quickstart/)
+A secure Quarkus application featuring:
+- JPA-based user authentication
+- PostgreSQL database integration
+- REST API endpoints
+- Hibernate ORM with Panache
+
+**Description:**  
+Demonstrates secure authentication and authorization using JPA entities, with a PostgreSQL backend and RESTful APIs.
+
+### 14. [sentiment-analysis/](sentiment-analysis/)
 A REST API for sentiment analysis featuring:
 - Integration with LangChain4j and Ollama
 - REST endpoints for text sentiment analysis
 - Native executable support for optimal performance
 
-### 10. Quarkus GraphQL (`quarkus-graphql/`)
-A project demonstrating:
-- Building GraphQL APIs using SmallRye GraphQL
-- REST API integration
-- Native executable support for high performance
+**Description:**  
+Implements a sentiment analysis API using AI models, with endpoints for analyzing text and support for native compilation.
 
-### 11. Quarkus Interceptor Tutorial (`quarkus-interceptor-tutorial/`)
-A tutorial project showcasing:
-- Custom request interceptors
-- Logging and auditing with Quarkus filters
-- REST API integration
+### 15. [validation-example/](validation-example/)
+A Quarkus application demonstrating form validation with:
+- Jakarta Validation annotations
+- Localized error messages (English and French)
+- REST endpoints with form handling
+- Qute templates for HTML rendering
+
+**Description:**  
+Shows how to implement robust input validation in Quarkus REST endpoints and web forms, including internationalization of error messages.
 
 ## 🚧 Work in Progress
 
