@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSV Chat Agent</title>
+</head>
+<body>
+    <h1>Talk to your CSV</h1>
+
+    <form action="/" method="post">
+        <label for="userInput">Ask a question:</label><br/>
+        <input type="text" id="userInput" name="userInput" value="{userInput ?: ' '}" size="50"/><br/><br/>
+        <button type="submit">Send</button>
+    </form>
+
+    {#if response.orEmpty}
+        <h3>Agent says:</h3>
+        <p>{response}</p>
+    {/if}
+</body>
+</html>
