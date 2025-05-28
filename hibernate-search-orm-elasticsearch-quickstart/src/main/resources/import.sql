@@ -1,5 +1,6 @@
 INSERT INTO author(id, firstname, lastname) VALUES (1, 'John', 'Irving');
 INSERT INTO author(id, firstname, lastname) VALUES (2, 'Paul', 'Auster');
+INSERT INTO author(id, firstname, lastname) VALUES (3, 'Jo', 'Nesbø');
 ALTER SEQUENCE author_seq RESTART WITH 3;
 
 INSERT INTO book(id, title, author_id) VALUES (1, 'The World According to Garp', 1);
@@ -14,5 +15,8 @@ INSERT INTO book(id, title, author_id) VALUES (9, 'Mr. Vertigo', 2);
 INSERT INTO book(id, title, author_id) VALUES (10, 'The Brooklyn Follies', 2);
 INSERT INTO book(id, title, author_id) VALUES (11, 'Invisible', 2);
 INSERT INTO book(id, title, author_id) VALUES (12, 'Sunset Park', 2);
-INSERT INTO book(id, title, author_id) VALUES (13, '4 3 2 1', 2);
+INSERT INTO book(id, title, author_id) VALUES (101, 'The Snowman', 3);
+INSERT INTO book(id, title, author_id) VALUES (102, 'The Leopard', 3);
+INSERT INTO book(id, title, author_id) VALUES (103, 'The Redeemer', 3);
+INSERT INTO book(id, title, author_id) VALUES (104, 'The Bat', 3);
 ALTER SEQUENCE book_seq RESTART WITH 14;

@@ -20,12 +20,15 @@ import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.RestQuery; // For query parameters
 
+import org.jboss.logging.Logger;
 import io.quarkus.runtime.StartupEvent;
 
 @Path("/library")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON) // Default for body if not form params
 public class LibraryResource {
+
+    private static final Logger log = Logger.getLogger(LibraryResource.class);
 
     @Inject
     SearchSession searchSession;
@@ -116,12 +119,15 @@ public class LibraryResource {
     @Path("author/search")
     @Transactional
     public List<Author> searchAuthors(@RestQuery String pattern, @RestQuery Integer size) {
+        log.infof("Pattern: " + pattern);
+        log.infof("Size: " + size);
         if (size == null)
             size = 10; // Default page size
         return searchSession.search(Author.class)
-                .where(f -> pattern == null || pattern.isBlank() ? f.matchAll()
+                .where(f -> (pattern == null || pattern.isBlank()) ? f.matchAll()
                         : f.simpleQueryString()
                                 .fields("firstName", "lastName", "books.title") // Search across author names and book
+                                                                                // titles
                                                                                 // titles
                                 .matching(pattern))
                 .fetchHits(size);
@@ -132,6 +138,8 @@ public class LibraryResource {
     @Transactional
     public List<Book> searchBooks(@RestQuery String pattern, @RestQuery String authorLastName,
             @RestQuery Integer size) {
+        log.infof("Pattern: " + pattern);
+        log.infof("Author: " + authorLastName);
         if (size == null)
             size = 10;
         return searchSession.search(Book.class)
@@ -143,8 +151,9 @@ public class LibraryResource {
                                     .matching(pattern));
                     if (authorLastName != null && !authorLastName.isBlank()) {
                         bool.must(f.match().field("author.lastName_sort").matching(authorLastName)); // Match on keyword
-                                                                                                    // field for author's
-                                                                                                    // last name
+                                                                                                     // field for
+                                                                                                     // author's
+                                                                                                     // last name
                     }
                     return bool;
                 })

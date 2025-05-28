@@ -15,11 +15,9 @@ public class AnalysisConfig implements ElasticsearchAnalysisConfigurer {
 
         context.analyzer("english").custom() // Define (or override) the "english" analyzer
                 .tokenizer("standard")
-                .tokenFilters("lowercase", "snowball_english", "asciifolding");
-                // snowball_english is a stemmer
+                .tokenFilters("lowercase", "asciifolding", "snowball");
 
         context.normalizer("sort").custom() // Define the "sort" normalizer
                 .tokenFilters("lowercase", "asciifolding");
     }
 }
-
