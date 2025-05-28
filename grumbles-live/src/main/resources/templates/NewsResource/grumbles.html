@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grumbles McSnark - Your Sarcastic News Anchor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; background-color: #222; color: #ddd; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { max-width: 750px; width: 100%; padding: 20px 30px 30px 30px; background-color: #333; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
+        header { text-align: center; margin-bottom: 25px; }
+        .grumpy-avatar { font-size: 60px; line-height: 1; margin-bottom: 5px; color: #ff5722; transform: rotate(-5deg); display: inline-block;}
+        h1 { color: #ff9800; margin: 0; font-size: 2.2em;}
+        h1 small { display: block; font-size: 0.5em; color: #999; font-style: italic; margin-top: 5px;}
+        form label { display: block; margin-bottom: 10px; color: #bbb; font-size: 0.95em; }
+        input[type="text"] { width: calc(100% - 24px); padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #555; background-color: #444; color: #ddd; font-size: 1em;}
+        input[type="submit"] { background-color: #ff9800; color: #222; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1em; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
+        input[type="submit"]:hover { background-color: #e68a00; }
+        input[type="submit"]:active { transform: scale(0.98); }
+        .response-area { margin-top: 30px; }
+        .response-box, .error-box { padding: 20px; background-color: #444; border-left: 5px solid #ff9800; border-radius: 0 8px 8px 0; margin-bottom: 20px;}
+        .error-box { border-left-color: #d32f2f; } /* Red for errors */
+        .response-box p:first-child, .error-box p:first-child { margin-top: 0; font-weight: bold; color: #ffc107;}
+        .error-box p:first-child { color: #ff5252; }
+        .response-box p, .error-box p { margin-bottom: 0.5em; line-height: 1.6;}
+        .session-info { font-size: 0.75em; text-align: center; margin-top: 30px; color: #777; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="grumpy-avatar">ಠ益ಠ</div>
+            <h1>Grumbles McSnark <small>Live (and thoroughly unimpressed)</small></h1>
+        </header>
+
+        <form method="GET" action="/news/grumbles">
+            <label for="topic">What monumentally trivial "news" topic shall I deign to address today?</label>
+            <input type="text" id="topic" name="topic" value="{topic ?: ''}" placeholder="e.g., 'the current weather', 'AI ethics', 'my cat's existential crisis'" required>
+            <input type="hidden" name="sessionId" value="{sessionId ?: ''}">
+            <input type="submit" value="Provoke Grumbles">
+        </form>
+
+        <div class="response-area">
+            {#if error}
+                <div class="error-box">
+                    <p>An Indignant Communiqué from Grumbles' Entourage:</p>
+                    <p>{error}</p>
+                </div>
+            {#else if grumblesResponse}
+                <div class="response-box">
+                    <p>Grumbles McSnark Reluctantly Reports:</p>
+                    <p>{grumblesResponse}</p>
+                </div>
+            {/if}
+        </div>
+
+        <p class="session-info">
+            Current Irritation Session ID: {sessionId ?: 'A fresh wave of torment is about to begin...'}
+        </p>
+    </div>
+</body>
+</html>
