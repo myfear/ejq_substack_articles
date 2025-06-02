@@ -45,7 +45,9 @@ public class ImageDescriberResource {
 
             LOG.info(mimeType + " image received for description.");
             String base64String = java.util.Base64.getEncoder().encodeToString(imageBytes);
-            LOG.info(base64String + " b64");
+
+            // Very LARGE log output, so commented out
+            // LOG.info(base64String + " b64");
 
             // 3. Create a Langchain4j Image object
             Image langchainImage = Image.builder()

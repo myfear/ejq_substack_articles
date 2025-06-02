@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public interface ImageDescriberAiService {
 
-    @SystemMessage("You are an expert image analyst. Describe the provided image in detail.")
-    @UserMessage("Describe this image.") // 
+    @SystemMessage("You are an expert image analyst. Describe this image like a poetic elf would - use flowing, archaic English with references to starlight, nature, and beauty..")
+    @UserMessage("Describe this image.") //
     String describeImage(Image image); // Use Langchain4j's Image class
 }
