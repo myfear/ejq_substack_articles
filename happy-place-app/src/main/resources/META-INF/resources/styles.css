@@ -1,0 +1,69 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+}
+
+header {
+    background-color: #4267B2; /* Facebook Blue */
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+main {
+    max-width: 680px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+.whats-on-your-mind {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.whats-on-your-mind textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 1.1em;
+    padding: 10px;
+    box-sizing: border-box;
+    min-height: 60px;
+}
+
+.post {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+}
+
+.post-content {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    white-space: pre-wrap; /* Preserve line breaks from LLM */
+}
+
+.post-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+.post-actions button:hover {
+    opacity: 0.7;
+}
+
+.post-error {
+    color: red;
+    font-style: italic;
+}
