@@ -1,5 +1,7 @@
 # ai-error-handler-pii
 
+The AI error handler pii is a Quarkus app that demonstrates AI-powered exception handling with LangChain4j, including PII redaction and user-friendly error messages.
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
