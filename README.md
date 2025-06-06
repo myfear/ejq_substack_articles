@@ -178,26 +178,22 @@ A secure Quarkus application featuring JPA-based user authentication, PostgreSQL
 - [Source code](./security-jpa-quickstart/)
 - [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
 
-### 33. [security-jpa-quickstart2/](security-jpa-quickstart2/)
-A second quickstart for JPA-based security in Quarkus. (Description coming soon)
-- [Source code](./security-jpa-quickstart2/)
-
-### 34. [sentiment-analysis/](sentiment-analysis/)
+### 33. [sentiment-analysis/](sentiment-analysis/)
 A REST API for sentiment analysis featuring integration with LangChain4j and Ollama, REST endpoints for text sentiment analysis, and native executable support for optimal performance.
 - [Source code](./sentiment-analysis/)
 - [Substack article](https://myfear.substack.com/p/quarkus-dto-mapstruct-guide)
 
-### 35. [structured-ollama-tutorial/](structured-ollama-tutorial/)
+### 34. [structured-ollama-tutorial/](structured-ollama-tutorial/)
 A Quarkus tutorial for structured data extraction with Ollama and LangChain4j. 
 - [Source code](./structured-ollama-tutorial/)
 - [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
 
-### 36. [totp-vault/](totp-vault/)
+### 35. [totp-vault/](totp-vault/)
 A Quarkus project for TOTP and Vault-based secrets management. 
 - [Source code](./totp-vault/)
 - [Substack article](https://myfear.substack.com/p/secure-java-api-totp-quarkus-vault)
 
-### 37. [validation-example/](validation-example/)
+### 36. [validation-example/](validation-example/)
 A Quarkus application demonstrating form validation with Jakarta Validation annotations, localized error messages, REST endpoints, and Qute templates for HTML rendering.
 - [Source code](./validation-example/)
 - [Substack article](https://myfear.substack.com/p/validation-java-quarkus)
