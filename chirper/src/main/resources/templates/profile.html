@@ -1,0 +1,38 @@
+{#include layout.html}
+{#content}
+    <div class="chirp">
+        <h2>@{user.username}</h2>
+        <h3>{user.displayName}</h3>
+        <p>{user.bio}</p>
+        <p><small>Joined: {user.createdAt.format('MMMM yyyy')}</small></p>
+        <p><strong>{chirps.size()}</strong> chirps</p>
+    </div>
+
+    <div class="timeline">
+        <h3>Chirps by @{user.username}</h3>
+        {#if chirps.isEmpty()}
+            <div class="chirp">
+                <p>No chirps yet!</p>
+            </div>
+        {/if}
+        {#for chirp in chirps}
+            <div class="chirp">
+                <div class="chirp-meta">
+                    {chirp.createdAt.format("MMM dd, yyyy 'at' HH:mm")}
+                </div>
+                <div class="chirp-content">{chirp.content}</div>
+                <div class="chirp-actions">
+                    <form method="POST" action="/like/{chirp.id}" style="display: inline;">
+                        <button type="submit">❤️ {chirp.likes}</button>
+                    </form>
+                    <button>🔄 {chirp.rechirps}</button>
+                </div>
+            </div>
+        {/for}
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <a href="/" class="btn">← Back to Timeline</a>
+    </div>
+{/content}
+{/include}
