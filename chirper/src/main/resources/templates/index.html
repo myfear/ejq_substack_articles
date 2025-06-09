@@ -1,0 +1,36 @@
+{#include layout.html}
+{#content}
+    <div class="chirp-form">
+        <h3>What's happening?</h3>
+        <form method="POST" action="/chirp">
+            <input type="text" name="username" placeholder="Your username" required>
+            <textarea name="content" placeholder="What's on your mind?" maxlength="280" required></textarea>
+            <button type="submit" class="btn">Chirp!</button>
+        </form>
+    </div>
+
+    <div class="timeline">
+        <h3>Latest Chirps</h3>
+        {#if chirps.isEmpty()}
+            <div class="chirp">
+                <p>No chirps yet! Be the first to chirp something.</p>
+            </div>
+        {/if}
+        {#for chirp in chirps}
+            <div class="chirp">
+                <div class="chirp-meta">
+                    <a href="/profile/{chirp.author.username}" class="username">@{chirp.author.username}</a> 
+                    • {chirp.createdAt.format("MMM dd, yyyy 'at' HH:mm")}
+                </div>
+                <div class="chirp-content">{chirp.content}</div>
+                <div class="chirp-actions">
+                    <form method="POST" action="/like/{chirp.id}" style="display: inline;">
+                        <button type="submit">❤️ {chirp.likes}</button>
+                    </form>
+                    <button>🔄 {chirp.rechirps}</button>
+                </div>
+            </div>
+        {/for}
+    </div>
+{/content}
+{/include}

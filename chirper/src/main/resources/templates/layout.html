@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chirper - A Simple Twitter Clone</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+            background: #e6ecf0;
+        }
+        .header {
+            background: #1da1f2;
+            color: white;
+            padding: 24px 0 16px 0;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 8px rgba(29,161,242,0.08);
+            text-align: center;
+            margin-bottom: 24px;
+            border-radius: 0 0 18px 18px;
+        }
+        .header h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 2.2em;
+            margin: 0 0 4px 0;
+            letter-spacing: -1px;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+        .chirp-form {
+            background: white;
+            padding: 18px 20px 14px 20px;
+            border-radius: 18px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid #ccd6dd;
+        }
+        .chirp {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid #e1e8ed;
+        }
+        .chirp-meta {
+            color: #657786;
+            font-size: 0.93em;
+            margin-bottom: 8px;
+        }
+        .chirp-content {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 1.1em;
+        }
+        .chirp-actions {
+            display: flex;
+            gap: 18px;
+        }
+        .chirp-actions button {
+            background: none;
+            border: none;
+            color: #657786;
+            padding: 4px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.15s;
+        }
+        .chirp-actions button:hover {
+            background: #e8f5fd;
+            color: #1da1f2;
+        }
+        textarea {
+            width: 100%;
+            height: 70px;
+            border: 1px solid #ccd6dd;
+            border-radius: 12px;
+            padding: 10px;
+            resize: vertical;
+            font-size: 1em;
+            background: #f5f8fa;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccd6dd;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 1em;
+            background: #f5f8fa;
+        }
+        .btn {
+            background: #1da1f2;
+            color: white;
+            padding: 8px 22px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background 0.15s;
+            margin-top: 6px;
+        }
+        .btn:hover {
+            background: #1991da;
+        }
+        .username {
+            font-weight: bold;
+            color: #1da1f2;
+            text-decoration: none;
+            font-size: 1.05em;
+        }
+        .username:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 700px) {
+            body { max-width: 100vw; padding: 0 2vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Chirper</h1>
+        <p>Share your thoughts in 280 characters or less!</p>
+    </div>
+    
+    {#insert content /}
+</body>
+</html>
