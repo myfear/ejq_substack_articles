@@ -4,5 +4,5 @@
   # Ignore based on any subset of the file path
   paths = [
     # Ignore all example certs
-    '''\/jwt-case.*\.pem$'''
+    '''(?:^|\/)jwt-case.*\.pem$'''
     ]
