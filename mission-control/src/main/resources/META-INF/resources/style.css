@@ -1,0 +1,54 @@
+body {
+ font-family: 'Arial', sans-serif;
+ background-color: #000;
+ color: #fff;
+ margin: 0;
+ padding: 0;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ min-height: 100vh;
+}
+
+.dashboard {
+ background-color: rgba(0, 0, 0, 0.8);
+ padding: 20px;
+ border-radius: 8px;
+ width: 80%;
+ max-width: 800px;
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+ text-align: center;
+ color: #dc3545; /* Mission Impossible red */
+}
+
+#mission-details {
+ margin-top: 20px;
+ padding: 10px;
+ border: 1px solid #343a40;
+ border-radius: 4px;
+ white-space: pre-line; /* Preserve line breaks */
+}
+
+.pii-highlight {
+ background-color: yellow;
+ color: black;
+ font-weight: bold;
+}
+
+button {
+ background-color: #dc3545;
+ color: #fff;
+ padding: 10px 15px;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ display: block;
+ margin: 20px auto;
+}
+
+button:hover {
+ background-color: #c82333;
+}
