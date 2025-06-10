@@ -3,21 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission Impossible Dossier</title>
+    <title>IMF DOSSIER</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="dashboard">
-    <h1>Your Mission, Should You Choose to Accept It...</h1>
-    <div id="mission-details-container">
-        <div id="mission-details"></div>
-    </div>
-    <div class="button-container">
-        <button id="new-mission-button">Request New Mission</button>
-        <button id="accept-mission-button" style="display: none;">Accept Mission</button>
-    </div>
+
+<div class="container">
+    <header class="mission-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Mi-logo.svg" alt="IMF Logo" class="imf-logo"/>
+        <h1>IMF Field Operative Dossier</h1>
+        <div class="header-line"></div>
+    </header>
+
+    <main class="dossier-content">
+        <p class="mission-prompt">Your mission, should you choose to accept it...</p>
+        <div id="mission-details-container">
+            <div id="mission-details">
+                Awaiting transmission from HQ...
+            </div>
+        </div>
+        <div class="button-container">
+            <button id="accept-mission-button" style="display: none;">
+                <span class="button-icon accept-icon"></span> ACCEPT MISSION
+            </button>
+        </div>
+    </main>
+
+    <footer class="mission-footer">
+        <button id="new-mission-button">
+           <span class="button-icon new-mission-icon"></span> REQUEST NEW MISSION
+        </button>
+        <p class="footer-warning">This message will self-destruct upon mission acceptance.</p>
+    </footer>
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
