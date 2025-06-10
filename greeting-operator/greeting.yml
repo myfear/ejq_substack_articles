@@ -1,0 +1,7 @@
+apiVersion: demo.example.com/v1
+kind: Greeting
+metadata:
+  name: my-greeting
+  namespace: default
+spec:
+  message: "Hello from Quarkus Operator!"
