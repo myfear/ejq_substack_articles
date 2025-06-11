@@ -44,6 +44,11 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/quarkus-dto-mapstruct-guide)
 - [structured-ollama-tutorial/](structured-ollama-tutorial/): Structured data extraction with Ollama and LangChain4j.  
   [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
+- [grumbles-live/](grumbles-live/): Humorous AI news anchor built with LangChain4j.
+- [happy-place-app/](happy-place-app/): Sentiment-based content generator using local LLMs.
+- [openapi-ollama-doc-generator/](openapi-ollama-doc-generator/): Generate docs from OpenAPI using Ollama.
+- [quarkus-image-describer/](quarkus-image-describer/): Describes images with a LangChain4j service.
+- [quarkus-meme-generator/](quarkus-meme-generator/): Meme generation service.
 
 ### 📊 Data Processing & Integration
 - [csv-uploader/](csv-uploader/): Dynamic CSV ingestion and schema creation in PostgreSQL.  
@@ -52,6 +57,8 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
 - [qr-code-demo/](qr-code-demo/): QR code generation, image processing, and REST endpoints.  
   [Substack article](https://myfear.substack.com/p/qr-code-java-quarkus)
+- [hibernate-search-orm-elasticsearch-quickstart/](hibernate-search-orm-elasticsearch-quickstart/): Hibernate Search quickstart with Elasticsearch.
+- [quarkus-hibernate-filters/](quarkus-hibernate-filters/): Query filtering using Hibernate ORM.
 
 ### 🛡️ Security & Error Handling
 - [custom-error-pages-classic/](custom-error-pages-classic/): Custom error pages and JSON error responses with Qute and ExceptionMappers.  
@@ -62,6 +69,8 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
 - [totp-vault/](totp-vault/): TOTP and Vault-based secrets management.  
   [Substack article](https://myfear.substack.com/p/secure-java-api-totp-quarkus-vault)
+- [quarkflix-guards/](quarkflix-guards/): Guard patterns and interceptors for a streaming API.
+- [quarkus-response-tutorial/](quarkus-response-tutorial/): Custom JSON error handling for REST APIs.
 
 ### 🏗️ Application Architecture & Patterns
 - [flyway-adventure/](flyway-adventure/): Database migrations with Flyway.  
@@ -76,12 +85,22 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/validation-java-quarkus)
 - [i18n-demo/](i18n-demo/): Database-backed internationalization.  
   [Substack article](https://myfear.substack.com/p/java-quarkus-i18n-multilingual-app)
+- [chirper/](chirper/): Simple microblogging demo.
+- [credit-line-app/](credit-line-app/): Workflow example managing credit line approvals.
+- [greeting-operator/](greeting-operator/): Kubernetes operator for greeting resources.
+- [mission-control/](mission-control/): Mission planning service with async tasks.
+- [multi-tenant-todo-app/](multi-tenant-todo-app/): Multi-tenant TODO API.
+- [quarkus-panache-transaction-tutorial/](quarkus-panache-transaction-tutorial/): Transaction patterns with Hibernate Panache.
+- [quarkus-unleash-tutorial/](quarkus-unleash-tutorial/): Feature toggles with the Unleash service.
 
 ### 🛠️ Utilities, Monitoring & Misc
 - [realtime-monitor/](realtime-monitor/): JVM heap memory monitoring and dashboard UI.  
   [Substack article](https://myfear.substack.com/p/quarkus-dev-services-continuous-testing)
 - [quote-cli/](quote-cli/): CLI tool for quotes or text processing.  
   [Substack article](https://myfear.substack.com/p/quarkus-native-cli-java-quotes)
+- [cloud-metrics/](cloud-metrics/): Tenant-aware metrics and rate limiting demo.
+- [matrix-test/](matrix-test/): Simple Quarkus demo inspired by The Matrix.
+- [quarkus-coverage-tutorial/](quarkus-coverage-tutorial/): Jacoco code coverage setup.
 
 ## 🚧 Work in Progress
 
