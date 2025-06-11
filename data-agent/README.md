@@ -1,5 +1,9 @@
 # data-agent
 
+A Quarkus-based AI agent that analyzes CSV data using LangChain4j and a local LLM (via Ollama). This project demonstrates how to expose a REST and Qute-based chat interface where users can ask questions about a sales dataset, and the agent uses tool-calling to extract structured data, reason over it, and provide natural language answers. The architecture combines Java, Apache Commons CSV, and modern AI techniques for local, privacy-friendly data analysis.
+
+- [Supporting article: The Curious Case of the Talking CSV — Building an AI-Powered Java Agent with Quarkus](https://myfear.substack.com/p/ai-java-agent-quarkus-langchain4j-ollama)
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.

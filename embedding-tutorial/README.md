@@ -1,6 +1,8 @@
 # Embedding Similarity Calculator
 
-A Quarkus application that calculates and visualizes the similarity between two text inputs using embeddings and various similarity metrics.
+A Quarkus application that demonstrates how to compare the meaning of two texts using AI-powered embeddings. It uses LangChain4j and a local Ollama model to generate high-dimensional vectors for each input, then calculates cosine similarity and Euclidean distance to show how semantically close the texts are. The app features a web UI built with Qute for visualizing similarity scores, vector dimensions, and partial embeddings—making it a hands-on example of semantic search and vector math in Java.
+
+- [Supporting article: From Strings to Semantics — Comparing Text with Java, Quarkus, and Embeddings](https://myfear.substack.com/p/java-quarkus-text-embeddings-similarity)
 
 ## Features
 

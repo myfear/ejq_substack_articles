@@ -1,6 +1,8 @@
 # csv-uploader
 
-A Quarkus-based application that provides a REST API for uploading and processing CSV files. The application automatically creates database tables based on the CSV structure, infers column types, and stores the data in a PostgreSQL database. It also provides endpoints to view the uploaded data and metadata.
+A Quarkus-based application for dynamic CSV ingestion: upload any CSV file, and the app will automatically create a matching PostgreSQL table, infer column types, and store the data—no fixed schema required. Features include flexible REST endpoints for upload and data access, metadata tracking, and OpenAPI docs. Built with Hibernate Panache and Jackson CSV, this project is ideal for internal tools, data sandboxes, or rapid prototyping where CSV structure is unpredictable.
+
+- [Supporting article: Dynamic CSV Uploads in Java — Building Smart, Flexible Databases with Quarkus](https://myfear.substack.com/p/dynamic-csv-uploads-java-quarkus-postgresql)
 
 Key features:
 - CSV file upload and parsing

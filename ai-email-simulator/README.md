@@ -1,6 +1,8 @@
 # ai-email-simulator
 
-The AI Email Simulator is a Quarkus-based application that simulates email generation and processing using AI models. It integrates with LangChain4j to leverage advanced AI capabilities for generating email content, processing responses, and managing tasks via a to-do list.
+A Quarkus-based application that demonstrates how to use local LLMs (via Ollama) and LangChain4j to automate email generation, parse emails for actionable tasks using tool-calling, and manage a to-do list—all running fully on your machine. The app simulates a workflow where one model generates realistic internal emails and another processes them to extract and log tasks, showcasing a local-first, cloud-optional AI automation pattern in Java.
+
+- [Supporting article: Local AI with LangChain4j and Quarkus — Build an Email Task Extractor with Tool Calling](https://myfear.substack.com/p/quarkus-langchain4j-local-ai-task-extractor)
 
 ## Running the application in dev mode
 

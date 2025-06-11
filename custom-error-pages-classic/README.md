@@ -1,5 +1,9 @@
 # custom-error-pages-classic
 
+A Quarkus project demonstrating how to create custom error pages and JSON error responses for your REST APIs and web frontends. Using ExceptionMappers, Qute templates, and content negotiation, this app shows how to handle 404 and 500 errors with style—returning branded HTML for browsers and clean JSON for API clients. Learn to improve user experience, security, and clarity when things go wrong in your Java applications.
+
+- [Supporting article: Customize Your Error Pages in Quarkus — Because 500 Deserves Better Than “Oops!”](https://myfear.substack.com/p/quarkus-custom-error-pages-rest-qute)
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
