@@ -1,0 +1,191 @@
+ :root {
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      --primary: #0b3d91;
+      --accent: #005fcc;
+      --bg: #f5f7fa;
+      --text: #1a1a1a;
+    }
+
+    body {
+      font-family: var(--font-family);
+      margin: 0;
+      padding: 2rem;
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 768px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    input[type='text'] {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: var(--accent);
+    }
+
+    h2,
+    h3 {
+      color: var(--primary);
+    }
+
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin: 0;
+      color: var(--primary);
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+
+    form {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+      background: white;
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      align-items: center;
+    }
+
+    input[type='text'] {
+      border: none;
+      font-size: 1rem;
+      padding: 0.5rem;
+      flex: 1;
+      outline: none;
+      font-family: inherit;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    section,
+    .fade-in {
+      background: white;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    a {
+      font-weight: 500;
+      display: inline-block;
+      padding: 0.5rem 0;
+    }
+
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      input[type='text'] {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      form {
+        flex-direction: column;
+      }
+    }
+
+    .loading,
+    .error {
+      margin-bottom: 1rem;
+    }
+
+    .error {
+      color: red;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .loading .dot::after {
+      content: '...';
+      animation: dots 1.5s steps(3, end) infinite;
+    }
+
+    @keyframes dots {
+
+      0%,
+      20% {
+        content: '.';
+      }
+
+      40% {
+        content: '..';
+      }
+
+      60%,
+      100% {
+        content: '...';
+      }
+    }

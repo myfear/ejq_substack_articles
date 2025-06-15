@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ask Quantum – Smart Renderer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module">
+    import { h, render } from "https://esm.sh/preact@10.19.2";
+    import { useEffect, useState } from "https://esm.sh/preact@10.19.2/hooks";
+    import htm from "https://esm.sh/htm@3.1.1";
+
+    const html = htm.bind(h);
+
+    const TextBlock = ({ title, text }) => html`
+        <section class="fade-in" style="margin-bottom: 1.5rem;">
+          <h2>${title}</h2>
+          <p>${text}</p>
+        </section>
+      `;
+
+    const ListBlock = ({ title, items }) => html`
+        <section class="fade-in" style="margin-bottom: 1.5rem;">
+          <h3>${title}</h3>
+          <ul>
+            ${items.map((item) => html`<li>${item}</li>`)}
+          </ul>
+        </section>
+      `;
+
+    const WebsiteLink = ({ title, url }) => html`
+        <div class="fade-in" style="margin-bottom: 1rem;">
+          <a href="${url}" target="_blank" rel="noopener noreferrer">
+            🔗 ${title}
+          </a>
+        </div>
+      `;
+
+    const Book = ({ title, url }) => html`
+        <div class="fade-in" style="margin-bottom: 1rem;">
+          <a href="${url}" target="_blank" rel="noopener noreferrer">
+            🔗 ${title}
+          </a>
+        </div>
+      `;
+    const Podcast = ({ title, url }) => html`
+        <div class="fade-in" style="margin-bottom: 1rem;">
+          <a href="${url}" target="_blank" rel="noopener noreferrer">
+            🔗 ${title}
+          </a>
+        </div>
+      `;
+
+    const UnsupportedRender = ({ renderHint, data }) => html`
+        <div class="fade-in" style="margin-bottom: 1rem;">
+          <h3>${renderHint}</h3>
+          <pre style="font-size: 0.9rem;">${JSON.stringify(data, null, 2)}</pre>
+        </div>
+      `;
+
+    const Renderer = ({ elements }) => html`
+        <div>
+          ${elements.map(({ renderHint, data }) => {
+      switch (renderHint) {
+        case "text":
+          return html`<${TextBlock} ...${data} />`;
+        case "list":
+          return html`<${ListBlock} ...${data} />`;
+        case "website":
+          return html`<${WebsiteLink} ...${data} />`;
+        case "book":
+          return html`<${Book} ...${data} />`;
+        case "podcast":
+          return html`<${Podcast} ...${data} />`;
+        default:
+          return html`<${UnsupportedRender} renderHint=${renderHint} data=${data} />`;
+      }
+    })}
+        </div>
+      `;
+
+    const App = () => {
+      const [elements, setElements] = useState(null);
+      const [question, setQuestion] = useState("");
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const submitQuestion = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setElements(null); // ← Clear previous results
+
+        const formData = new URLSearchParams(); // ← declare it here
+        formData.append("question", question);
+
+        fetch("http://localhost:8080/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: formData.toString(),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch response");
+            return res.json();
+          })
+          .then((data) => {
+            setElements(data.elements);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setError(err.message);
+            setLoading(false);
+          });
+      };
+
+      return html`
+    <div>
+    <header>
+      <h1>Ask The Llama</h1>
+      <p>A smarter way to explore things, ideas, and knowledge – powered by AI</p>
+    </header>
+
+    <form onSubmit=${submitQuestion}>
+      <input
+        type="text"
+        name="question"
+        size="50"
+        placeholder="Ask a question about quantum physics..."
+        value=${question}
+        required
+        onInput=${(e) => setQuestion(e.target.value)}
+      />
+      <button type="submit">Ask</button>
+    </form>
+
+    ${loading && html`<p class="loading"><span class="dot">.</span></p>`}
+    ${error && html`<p class="error">${error}</p>`}
+    ${elements && html`<${Renderer} elements=${elements} />`}
+  </div>
+        `;
+    };
+
+    render(html`<${App} />`, document.body);
+  </script>
+</head>
+
+<body style="font-family: sans-serif; padding: 2rem;"></body>
+
+</html>
