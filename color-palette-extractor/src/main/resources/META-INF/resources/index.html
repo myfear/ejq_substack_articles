@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Color Palette Pro</h1>
+        <p>Upload an image to extract a beautiful color palette with AI-generated names.</p>
+        <label for="imageInput" class="upload-label">Choose an Image</label>
+        <input type="file" id="imageInput" accept="image/*">
+        <p id="fileName"></p>
+        <img id="preview" src="" alt="Your image preview will appear here." style="display:none;"/>
+        <div id="loader"></div>
+        <div id="palette"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const paletteDiv = document.getElementById('palette');
+        const loader = document.getElementById('loader');
+        const fileNameSpan = document.getElementById('fileName');
+
+        imageInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            fileNameSpan.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+
+            await extractColors(file);
+        });
+
+        async function extractColors(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            paletteDiv.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/colors/extract', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.statusText);
+                }
+
+                const namedColors = await response.json();
+                displayPalette(namedColors);
+
+            } catch (error) {
+                paletteDiv.innerHTML = `<p style="color: red;">Error: Could not extract colors. Please try again.</p>`;
+                console.error(error);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayPalette(namedColors) {
+            namedColors.forEach(({ hex, name }) => {
+                const card = document.createElement('div');
+                card.className = 'color-card';
+
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box';
+                colorBox.style.backgroundColor = hex;
+                colorBox.title = `Copy ${hex}`;
+                colorBox.onclick = () => navigator.clipboard.writeText(hex);
+
+                const colorInfo = document.createElement('div');
+                colorInfo.className = 'color-info';
+                colorInfo.innerHTML = `${name}<br><span class="color-hex">${hex}</span>`;
+
+                card.appendChild(colorBox);
+                card.appendChild(colorInfo);
+                paletteDiv.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
