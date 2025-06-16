@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quarkus URL Shortener</title>
+    <style>
+        :root {
+            --primary: #0069ff;
+            --light: #f1f3f5;
+            --dark: #212529;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        main {
+            max-width: 720px;
+            margin: auto;
+            padding: 2rem 1rem;
+        }
+
+        footer {
+            margin: 3rem auto 1rem;
+            text-align: center;
+            font-size: .875rem;
+            opacity: .7;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        /* form layout */
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        form input[type=url] {
+            flex: 1 1 300px;
+            padding: .75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: .375rem;
+        }
+
+        form input[type=submit] {
+            padding: .75rem 1.5rem;
+            border: none;
+            border-radius: .375rem;
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* result card */
+        #result {
+            margin-top: 2rem;
+            background: #fff;
+            border-radius: .5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
+            padding: 1.5rem;
+        }
+
+        #result p {
+            margin: .5rem 0;
+            word-break: break-all;
+        }
+
+        #result img {
+            width: 180px;
+            /* keep it tidy on desktop */
+            max-width: 100%;
+            /* and shrink gracefully on mobile */
+            height: auto;
+            margin-top: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: .25rem;
+        }
+
+        /* mobile tweak: button drops under input */
+        @media (max-width:480px) {
+            form input[type=submit] {
+                flex: 1 0 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Quarkus URL Shortener</h1>
+        <p>Paste a long link, get something snack-sized.</p>
+
+        <form action="/shorten" method="post">
+            <input type="url" name="originalUrl" placeholder="https://example.com/very/long/..." required>
+            <input type="submit" value="Shorten">
+        </form>
+
+        {#if result}
+        <div id="result">
+            <p><strong>Original:</strong> {result.originalUrl}</p>
+            <p><strong>Short:</strong>
+                <a href="{result.shortUrl}" target="_blank">{result.shortUrl}</a>
+            </p>
+            <img src="{result.qrCodeUrl}" alt="QR code">
+        </div>
+        {/if}
+    </main>
+    <footer>
+        <p>
+            Made with
+            <a href="https://quarkus.io" target="_blank" rel="noopener">Quarkus</a>.
+            Follow my writing on
+            <a href="https://myfear.substack.com" target="_blank" rel="noopener">Substack</a>.
+        </p>
+    </footer>
+</body>
+
+</html>
