@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizard - Step 3: Additional Information</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .error { color: red; margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; resize: vertical; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+        button.back { background-color: #6c757d; }
+        button:hover { background-color: #0056b3; }
+        button.back:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+    <h1>Wizard - Step 3: Additional Information</h1>
+
+    {#include wizard/step_indicator.html}
+        {#currentStep = currentStep}
+        {#totalSteps = totalSteps}
+    {/include}
+
+    {#if errors}
+        <div class="error">
+            <p>Please correct the following errors:</p>
+            <ul>
+                {#for error in errors}
+                    <li>{error}</li>
+                {/for}
+            </ul>
+        </div>
+    {/if}
+
+    <form action="/wizard/step3" method="post">
+        <div class="form-group">
+            <label for="comments">Additional Comments (Optional):</label>
+            <textarea id="comments" name="comments" rows="5">{form.comments ?: ''}</textarea>
+        </div>
+
+        <input type="hidden" name="{inject:csrf.parameterName}" value="{inject:csrf.token}" />
+
+        <button type="button" class="back" onclick="location.href='/wizard/step/2'">Back</button>
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>

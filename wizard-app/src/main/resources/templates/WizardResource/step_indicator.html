@@ -1,0 +1,36 @@
+<nav>
+    <ul class="step-indicator">
+        {#for i in 1..totalSteps}
+            <li class="{#if i == currentStep}active{#else if i < currentStep}completed{/if}">
+                Step {i}
+            </li>
+        {/for}
+    </ul>
+</nav>
+<style>
+    .step-indicator {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
+    .step-indicator li {
+        flex-grow: 1;
+        text-align: center;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        margin: 0 5px;
+        font-weight: bold;
+        color: #888;
+    }
+    .step-indicator li.active {
+        background-color: #007bff;
+        color: white;
+    }
+    .step-indicator li.completed {
+        background-color: #28a745;
+        color: white;
+    }
+</style>
