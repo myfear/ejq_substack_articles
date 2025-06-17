@@ -13,7 +13,7 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpSession;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.BeanParam;
@@ -29,6 +29,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/wizard")
 @Produces(MediaType.TEXT_HTML)
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED) // Important for form submissions
+@SessionScoped
 public class WizardResource {
 
     @Inject
@@ -37,8 +38,7 @@ public class WizardResource {
     @Inject
     Validator validator; // For bean validation
 
-    @Inject
-    HttpSession httpSession;
+
 
     /**
      * Define Qute templates. Qute will automatically find these in
@@ -65,7 +65,7 @@ public class WizardResource {
     @GET
     @Path("/start")
     public TemplateInstance startWizard() {
-        org.jboss.logging.Logger.getLogger(WizardResource.class).info("Session is new: " + httpSession.isNew()); // Log session status
+    
         wizardState.reset(); // Reset state for a new wizard flow
         return Templates.step1(wizardState.getAddressForm(), null, 1, TOTAL_STEPS);
     }
