@@ -7,7 +7,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,16 +26,10 @@ public class WizardStateEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     public WizardState wizardState; // The serialized WizardState
 
-    @Column(name = "current_step")
+    
     public int currentStep;
-
-    @Column(name = "created_at")
     public Instant createdAt;
-
-    @Column(name = "updated_at")
     public Instant updatedAt;
-
-    @Column(name = "expires_at")
     public Instant expiresAt; // For scheduled cleanup
 
     public String getId() {
