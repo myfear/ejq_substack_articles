@@ -31,7 +31,9 @@ StateRepository repository;
 
         return repository.persist(newStateEntity)
                 .onItem().transform(wizardId -> {
-                        Log.infof("Wizard started with ID: %s", wizardId);
+                    // This does NOT work 
+                    // Log.infof("Wizard started with ID: %s", wizardId.getId());    
+                    Log.infof("Wizard started with ID: %s", wizardId);
                         return wizardId != null ? wizardId.toString() : null;
                 });
     }
