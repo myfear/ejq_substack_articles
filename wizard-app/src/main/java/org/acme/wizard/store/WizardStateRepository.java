@@ -1,14 +1,17 @@
 package org.acme.wizard.store;
 
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.UUID;
+
 import org.acme.wizard.model.WizardStateEntity;
 
-import io.quarkus.hibernate.reactive.panache.PanacheRepository;
+import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
 import io.smallrye.mutiny.Uni;
 
 
 @ApplicationScoped
-public class WizardStateRepository implements PanacheRepository<WizardStateEntity> {
+public class WizardStateRepository implements PanacheRepositoryBase<WizardStateEntity, UUID> {
     /**
      * Finds a WizardStateEntity by its ID.
      *
