@@ -1,23 +1,53 @@
+/**
+ * Holds the form data and wizard progress for the application.
+ * <p>
+ * This class is used to store the state of the wizard, including the data entered
+ * in each form step and the current step the user is on. It must implement
+ * {@link Serializable} to ensure compatibility with Jackson serialization and caching mechanisms.
+ * </p>
+ *
+ * <p>
+ * The state includes:
+ * <ul>
+ *   <li>{@link AddressForm} - Data for the address step.</li>
+ *   <li>{@link OrderForm} - Data for the order step.</li>
+ *   <li>{@link AdditionalInfoForm} - Data for the additional information step.</li>
+ *   <li>currentStep - The current step in the wizard process.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Forms are initialized to empty instances in the default constructor to avoid
+ * {@link NullPointerException}s during usage.
+ * </p>
+ *
+ * <p>
+ * Note: There is no {@code reset()} method; state management is handled by creating or loading entities.
+ * </p>
+ */
 package org.acme.wizard.model;
 
-import io.quarkus.logging.Log;
-import io.quarkus.arc.DefaultBean;
-import jakarta.enterprise.context.SessionScoped;
 import org.acme.wizard.forms.AddressForm;
 import org.acme.wizard.forms.AdditionalInfoForm;
 import org.acme.wizard.forms.OrderForm;
-
 import java.io.Serializable;
 
-@SessionScoped
-@DefaultBean
 public class WizardState implements Serializable {
 
-    private AddressForm addressForm = new AddressForm();
-    private OrderForm orderForm = new OrderForm();
-    private AdditionalInfoForm additionalInfoForm = new AdditionalInfoForm();
-    private int currentStep = 1;
+    private AddressForm addressForm;
+    private OrderForm orderForm;
+    private AdditionalInfoForm additionalInfoForm;
+    private int currentStep;
 
+    public WizardState() {
+        // Initialize with empty forms to avoid NullPointerExceptions
+        this.addressForm = new AddressForm();
+        this.orderForm = new OrderForm();
+        this.additionalInfoForm = new AdditionalInfoForm();
+        this.currentStep = 1;
+    }
+
+    // Getters and Setters
     public AddressForm getAddressForm() {
         return addressForm;
     }
@@ -50,11 +80,5 @@ public class WizardState implements Serializable {
         this.currentStep = currentStep;
     }
 
-    public void reset() {
-        this.addressForm = new AddressForm();
-        this.orderForm = new OrderForm();
-        this.additionalInfoForm = new AdditionalInfoForm();
-        this.currentStep = 1;
-        Log.info("Wizard state reset.");
-    }
+    // No `reset()` here, as state is managed by creating/loading entities.
 }

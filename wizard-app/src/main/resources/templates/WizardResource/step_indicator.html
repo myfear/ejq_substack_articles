@@ -1,6 +1,6 @@
 <nav>
     <ul class="step-indicator">
-        {#for i in 1..totalSteps}
+        {#for i in totalSteps}
             <li class="{#if i == currentStep}active{#else if i < currentStep}completed{/if}">
                 Step {i}
             </li>

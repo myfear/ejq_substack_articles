@@ -19,7 +19,7 @@
 <body>
     <h1>Wizard - Step 3: Additional Information</h1>
 
-    {#include wizard/step_indicator.html}
+    {#include WizardResource/step_indicator.html}
         {#currentStep = currentStep}
         {#totalSteps = totalSteps}
     {/include}
@@ -41,9 +41,10 @@
             <textarea id="comments" name="comments" rows="5">{form.comments ?: ''}</textarea>
         </div>
 
+         <input type="hidden" name="wizardId" value="{wizardId}">
         <input type="hidden" name="{inject:csrf.parameterName}" value="{inject:csrf.token}" />
 
-        <button type="button" class="back" onclick="location.href='/wizard/step/2'">Back</button>
+        <button type="button" class="back" onclick="location.href='/wizard/step/2/{wizardId}'">Back</button>
         <button type="submit">Next</button>
     </form>
 </body>

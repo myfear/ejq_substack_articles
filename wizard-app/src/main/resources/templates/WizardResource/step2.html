@@ -19,7 +19,7 @@
 <body>
     <h1>Wizard - Step 2: Order Details</h1>
 
-    {#include wizard/step_indicator.html}
+    {#include WizardResource/step_indicator.html}
         {#currentStep = currentStep}
         {#totalSteps = totalSteps}
     {/include}
@@ -45,9 +45,10 @@
             <input type="number" id="quantity" name="quantity" value="{form.quantity ?: ''}">
         </div>
 
+         <input type="hidden" name="wizardId" value="{wizardId}">
         <input type="hidden" name="{inject:csrf.parameterName}" value="{inject:csrf.token}" />
 
-        <button type="button" class="back" onclick="location.href='/wizard/step/1'">Back</button>
+        <button type="button" class="back" onclick="location.href='/wizard/step/1/{wizardId}'">Back</button>
         <button type="submit">Next</button>
     </form>
 </body>

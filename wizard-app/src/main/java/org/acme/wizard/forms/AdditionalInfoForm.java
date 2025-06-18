@@ -1,10 +1,12 @@
 package org.acme.wizard.forms;
 
+import java.io.Serializable;
+
 import org.jboss.resteasy.reactive.RestForm;
 
 import jakarta.validation.constraints.Size;
 
-public class AdditionalInfoForm {
+public class AdditionalInfoForm implements Serializable {
      @RestForm
     @Size(max = 200, message = "Additional comments cannot exceed 200 characters")
     public String comments;
