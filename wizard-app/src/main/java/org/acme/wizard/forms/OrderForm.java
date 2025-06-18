@@ -1,18 +1,20 @@
 package org.acme.wizard.forms;
 
+import java.io.Serializable;
+
 import org.jboss.resteasy.reactive.RestForm;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 
-public class OrderForm {
-     @RestForm
+public class OrderForm implements Serializable {
+    @RestForm
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
     public Integer quantity;
 
-     @RestForm
+    @RestForm
     @NotBlank(message = "Product name is required")
     public String productName;
 

@@ -1,7 +1,5 @@
 package org.acme.wizard.store;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.cache.CacheResult;
 import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.logging.Log;
@@ -13,16 +11,12 @@ import org.acme.wizard.model.WizardState;
 import org.acme.wizard.model.WizardStateEntity;
 import io.smallrye.mutiny.Uni;
 import java.util.Optional;
-import java.util.UUID;
 
 @ApplicationScoped
 public class WizardStateStore {
 
     @Inject
-    WizardStateRepository repository; // PanacheRepositoryBase<WizardStateEntity, UUID>
-
-    @Inject
-    ObjectMapper objectMapper; // Jackson ObjectMapper for serialization/deserialization
+    WizardStateRepository repository; 
 
     private static final String CACHE_NAME = "wizard-states";
 
@@ -38,24 +32,14 @@ public class WizardStateStore {
         Log.infof("Attempting to load wizard state for ID: %s from DB.", wizardIdStr);
 
         return Panache.withTransaction(() -> repository.findById(wizardIdStr))
-
                 .onItem().transform(entity -> {
                     if (entity == null) {
                         return Optional.<WizardState>empty();
                     }
-                    try {
-                        // Deserialize JSON string to WizardState object
-                        WizardState state = objectMapper.readValue(entity.stateDataJson, WizardState.class);
-                        entity.setWizardState(state); // Set transient field for completeness
-                        return Optional.of(state);
-                    } catch (JsonProcessingException e) {
-                        Log.errorf(e, "Failed to deserialize wizard state for ID: %s", wizardIdStr);
-                        return Optional.<WizardState>empty(); // Treat as not found if deserialization fails
-                    }
+                    return Optional.of(entity.getWizardState());
                 })
                 .onFailure()
                 .invoke(e -> Log.errorf(e, "Error fetching wizard state from DB for ID: %s", wizardIdStr));
-
     }
 
     /**
@@ -67,44 +51,26 @@ public class WizardStateStore {
      * @param state       The WizardState object to save.
      * @return The UUID string of the saved wizard state.
      */
-    @WithTransaction
     @CacheInvalidate(cacheName = CACHE_NAME)
     public Uni<String> saveWizardState(String wizardIdStr, WizardState state) {
 
-        UUID wizardId;
-        try {
-            if (wizardIdStr != null && !wizardIdStr.isEmpty()) {
-                // Parse the provided ID
-                wizardId = UUID.fromString(wizardIdStr);
-            } else {
-
-                // If null or empty, generate a new UUID and treat as new state
-                return createNewWizardState(state);
-            }
-        } catch (IllegalArgumentException e) {
-            // Log.warnf("Invalid wizard ID format for save: %s. Creating new state.",
-            // wizardIdStr);
-            return createNewWizardState(state); // If invalid ID, treat as new
+        if (wizardIdStr == null || wizardIdStr.isEmpty()) {
+            // Parse the provided ID
+            return createNewWizardState(state);
         }
 
         return Panache.withSession(() -> repository.findById(wizardIdStr)
                 .onItem().transformToUni(entity -> {
                     WizardStateEntity entityToPersist = entity != null ? entity : new WizardStateEntity();
                     if (entity == null) {
-                        entityToPersist.setId(wizardId.toString()); // Set the ID if new entity
+                        entityToPersist.setId(wizardIdStr); // Set the ID if new entity
                     }
                     entityToPersist.setWizardState(state); // This sets currentStep and also sets wizardState
-                    try {
-                        // Serialize WizardState object to JSON string
-                        entityToPersist.stateDataJson = objectMapper.writeValueAsString(state);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException("Failed to serialize wizard state", e);
-                    }
                     return repository.persist(entityToPersist); // Returns Uni<Void> for persist
                 })
-                .replaceWith(wizardId.toString()) // Chain to return the wizardId string
+                .replaceWith(wizardIdStr) // Chain to return the wizardId string
         )
-                .onFailure().invoke(e -> Log.errorf(e, "Failed to save wizard state for ID: %s", wizardId));
+                .onFailure().invoke(e -> Log.errorf(e, "Failed to save wizard state for ID: %s", wizardIdStr));
     }
 
     /**
@@ -117,16 +83,10 @@ public class WizardStateStore {
     public Uni<String> createNewWizardState(WizardState initialState) {
         WizardStateEntity entity = new WizardStateEntity();
         entity.setWizardState(initialState);
-        try {
-            // Serialize WizardState object to JSON string
-            entity.stateDataJson = objectMapper.writeValueAsString(initialState);
-        } catch (JsonProcessingException e) {
-            return Uni.createFrom().failure(new RuntimeException("Failed to serialize initial wizard state", e));
-        }
+
         return repository.persist(entity)
                 .onItem().invoke(persistedEntity -> Log.infof("createNewWizardState %s", persistedEntity.getId()))
                 .onItem().transform(persistedEntity -> persistedEntity.getId());
-
     }
 
     /**

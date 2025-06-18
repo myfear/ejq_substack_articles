@@ -1,23 +1,25 @@
 package org.acme.wizard.forms;
 
+import java.io.Serializable;
+
 import org.jboss.resteasy.reactive.RestForm;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class AddressForm {
+public class AddressForm implements Serializable {
     @RestForm
     @NotBlank(message = "Street is required")
     @Size(min = 3, max = 100, message = "Street must be between 3 and 100 characters")
     public String street;
 
-     @RestForm
+    @RestForm
     @NotBlank(message = "City is required")
     @Size(min = 2, max = 50, message = "City must be between 2 and 50 characters")
     public String city;
 
-     @RestForm
-     @NotBlank(message = "Zip Code is required")
+    @RestForm
+    @NotBlank(message = "Zip Code is required")
     @Size(min = 5, max = 10, message = "Zip Code must be between 5 and 10 characters")
     public String zipCode;
 
