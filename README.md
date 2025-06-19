@@ -45,10 +45,14 @@ Below are the example projects included in this repository, organized by topic. 
 - [structured-ollama-tutorial/](structured-ollama-tutorial/): Structured data extraction with Ollama and LangChain4j.  
   [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
 - [grumbles-live/](grumbles-live/): Humorous AI news anchor built with LangChain4j.
+[Substack article](https://myfear.substack.com/p/quarkus-langchain4j-sarcastic-ai-news-anchor)
 - [happy-place-app/](happy-place-app/): Sentiment-based content generator using local LLMs.
+[Substack article](https://myfear.substack.com/p/quarkus-ai-happy-feed-reactive-app)
 - [openapi-ollama-doc-generator/](openapi-ollama-doc-generator/): Generate docs from OpenAPI using Ollama.
+[Substack article](https://myfear.substack.com/p/quarkus-openapi-ai-docs-langchain4j)
 - [quarkus-image-describer/](quarkus-image-describer/): Describes images with a LangChain4j service.
-- [quarkus-meme-generator/](quarkus-meme-generator/): Meme generation service.
+[Substack article](https://myfear.substack.com/p/quarkus-langchain4j-image-description-api)
+- [meme-generator/](meme-generator/): Meme generator utility project.
 
 ### 📊 Data Processing & Integration
 - [csv-uploader/](csv-uploader/): Dynamic CSV ingestion and schema creation in PostgreSQL.  
@@ -58,7 +62,10 @@ Below are the example projects included in this repository, organized by topic. 
 - [qr-code-demo/](qr-code-demo/): QR code generation, image processing, and REST endpoints.  
   [Substack article](https://myfear.substack.com/p/qr-code-java-quarkus)
 - [hibernate-search-orm-elasticsearch-quickstart/](hibernate-search-orm-elasticsearch-quickstart/): Hibernate Search quickstart with Elasticsearch.
+[Substack article](https://myfear.substack.com/p/hibernate-search-quarkus-elasticsearch-tutorial)
 - [quarkus-hibernate-filters/](quarkus-hibernate-filters/): Query filtering using Hibernate ORM.
+[Substack article](https://myfear.substack.com/p/quarkus-hibernate-filters-soft-deletes)
+- [color-palette-extractor/](color-palette-extractor/): Color palette extraction from images.
 
 ### 🛡️ Security & Error Handling
 - [custom-error-pages-classic/](custom-error-pages-classic/): Custom error pages and JSON error responses with Qute and ExceptionMappers.  
@@ -67,10 +74,13 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
 - [security-jpa-quickstart/](security-jpa-quickstart/): JPA-based user authentication and PostgreSQL integration.  
   [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
+- [security-jpa-quickstart2/](security-jpa-quickstart2/): Alternative JPA-based authentication example.
 - [totp-vault/](totp-vault/): TOTP and Vault-based secrets management.  
   [Substack article](https://myfear.substack.com/p/secure-java-api-totp-quarkus-vault)
-- [quarkflix-guards/](quarkflix-guards/): Guard patterns and interceptors for a streaming API.
-- [quarkus-response-tutorial/](quarkus-response-tutorial/): Custom JSON error handling for REST APIs.
+- [quarkflix-guards/](quarkflix-guards/): Hands on CDI Interceptors tutorial
+[Substack article](https://myfear.substack.com/p/quarkus-cdi-interceptors-real-world)
+- [quarkus-response-tutorial/](quarkus-response-tutorial/): HTTP Response handling
+[Substack article](https://myfear.substack.com/p/quarkus-http-response-guide-java-developers)
 
 ### 🏗️ Application Architecture & Patterns
 - [flyway-adventure/](flyway-adventure/): Database migrations with Flyway.  
@@ -86,13 +96,25 @@ Below are the example projects included in this repository, organized by topic. 
 - [i18n-demo/](i18n-demo/): Database-backed internationalization.  
   [Substack article](https://myfear.substack.com/p/java-quarkus-i18n-multilingual-app)
 - [chirper/](chirper/): Simple microblogging demo.
+[Substack article](https://myfear.substack.com/p/build-twitter-clone-quarkus-kafka-qute)
 - [credit-line-app/](credit-line-app/): Workflow example managing credit line approvals.
+[Substack article](https://myfear.substack.com/p/quarkus-credit-approval-state-machine)
 - [greeting-operator/](greeting-operator/): Kubernetes operator for greeting resources.
+[Substack article](https://myfear.substack.com/p/java-kubernetes-operator-quarkus-guide)
 - [mission-control/](mission-control/): Mission planning service with async tasks.
+[Substack article](https://myfear.substack.com/p/quarkus-ai-pii-redaction-dashboard)
 - [multi-tenant-todo-app/](multi-tenant-todo-app/): Multi-tenant TODO API.
+[Substack article](https://myfear.substack.com/p/quarkus-multi-tenant-todo-java-hibernate)
 - [quarkus-panache-transaction-tutorial/](quarkus-panache-transaction-tutorial/): Transaction patterns with Hibernate Panache.
-- [quarkus-unleash-tutorial/](quarkus-unleash-tutorial/): Feature toggles with the Unleash service.
-
+[Substack article](https://myfear.substack.com/p/quarkus-transactions-panache-guide?r=17bggb)
+- [dynamic-agent-spawner/](dynamic-agent-spawner/): Dynamic agent spawning example.
+[Substack article](https://myfear.substack.com/p/agentic-java-multi-model-ai-quarkus)
+- [dynamic-renderer/](dynamic-renderer/): Dynamic rendering service.
+[Substack article](https://myfear.substack.com/p/quarkus-langchain4j-ollama-two-step-ai-pipeline)
+- [url-shortener/](url-shortener/): URL shortening service.
+[Substack article](https://myfear.substack.com/p/java-quarkus-url-shortener-tutorial)
+- [wizard-app/](wizard-app/): Wizard-style application UI.
+[Substack article](https://myfear.substack.com/p/quarkus-multi-step-form-session-csrf)
 ### 🛠️ Utilities, Monitoring & Misc
 - [realtime-monitor/](realtime-monitor/): JVM heap memory monitoring and dashboard UI.  
   [Substack article](https://myfear.substack.com/p/quarkus-dev-services-continuous-testing)
