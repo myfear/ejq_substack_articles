@@ -4,6 +4,7 @@
 .mvn
 .vscode
 target/
+.gitignore
 
 # Log file
 *.log
