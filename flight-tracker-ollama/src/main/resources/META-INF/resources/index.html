@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Flight Tracker AI (Ollama)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            color: #222;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px 24px 24px 24px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 2.2rem;
+            margin-bottom: 0.5em;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        #queryInput {
+            width: 100%;
+            padding: 14px;
+            margin: 0 0 10px 0;
+            border-radius: 8px;
+            border: 1px solid #cfd8dc;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+            background: #f7fbff;
+            transition: border 0.2s;
+        }
+
+        #queryInput:focus {
+            border: 1.5px solid #007bff;
+            outline: none;
+        }
+
+        #submitBtn {
+            width: 100%;
+            padding: 14px 0;
+            background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        #submitBtn:hover {
+            background: linear-gradient(90deg, #0056b3 60%, #007bff 100%);
+            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.13);
+        }
+
+        #response {
+            background: #f4f8fb;
+            padding: 22px;
+            margin: 10px 0 0 0;
+            border-radius: 8px;
+            border: 1px solid #e3eaf1;
+            white-space: pre-wrap;
+            font-family: "JetBrains Mono", "Courier New", Courier, monospace;
+            font-size: 1.05rem;
+            min-height: 60px;
+        }
+
+        .examples {
+            background: linear-gradient(90deg, #e8f4f8 60%, #f7fbff 100%);
+            padding: 18px 16px;
+            margin: 18px 0 0 0;
+            border-left: 4px solid #007bff;
+            border-radius: 8px;
+        }
+
+        .examples h3 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 1.1rem;
+        }
+
+        .examples ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .examples li {
+            margin-bottom: 6px;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                max-width: 98vw;
+                margin: 16px 1vw;
+                padding: 18px 6vw 18px 6vw;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            #queryInput,
+            #submitBtn {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Flight Tracker AI Assistant</h1>
+
+        <div class="examples">
+            <h3>Try these examples:</h3>
+            <ul>
+                <li>"Show me military aircraft near Berlin"</li>
+                <li>"What flights are currently within 50 miles of Munich airport?"</li>
+                <li>"Are there any emergency situations right now?"</li>
+                <li>"Find flight DLH456"</li>
+            </ul>
+        </div>
+
+        <textarea id="queryInput" rows="3" placeholder="Ask me about flights..."></textarea>
+        <button id="submitBtn" onclick="submitQuery()">Ask AI Assistant</button>
+
+        <div id="response">
+            <p>...</p>
+        </div>
+    </div>
+
+    <script>
+        async function submitQuery() {
+            const query = document.getElementById('queryInput').value;
+            const responseDiv = document.getElementById('response');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!query.trim()) return;
+
+            responseDiv.textContent = 'Processing your query...';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Thinking...';
+
+            try {
+                const response = await fetch('/api/flights/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: query
+                });
+
+                const result = await response.text();
+                responseDiv.textContent = result;
+            } catch (error) {
+                responseDiv.textContent = 'Error: ' + error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Ask AI Assistant';
+            }
+        }
+
+        document.getElementById('queryInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitQuery();
+            }
+        });
+    </script>
+</body>
+
+</html>
