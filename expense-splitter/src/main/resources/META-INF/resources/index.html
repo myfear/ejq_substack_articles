@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Expense Splitter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #2d6cdf;
+      --primary-dark: #1b417a;
+      --bg: #f8fafc;
+      --card-bg: #fff;
+      --border: #e3e8ee;
+      --success: #2ecc40;
+      --error: #ff4136;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+    }
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0;
+    }
+    .container {
+      background: var(--card-bg);
+      margin: 40px 0;
+      padding: 2rem 2.5rem 2.5rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.08);
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: var(--primary-dark);
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    label {
+      font-weight: 500;
+      color: #222;
+      margin-bottom: 0.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    input[type="file"] {
+      border: none;
+      background: none;
+      padding: 0;
+    }
+    input[type="number"], input[type="text"] {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      background: #f6f8fa;
+      transition: border 0.2s;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    button[type="submit"] {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.9rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px 0 rgba(44, 108, 223, 0.08);
+      margin-top: 0.5rem;
+    }
+    button[type="submit"]:hover, button[type="submit"]:focus {
+      background: var(--primary-dark);
+    }
+    #spinner {
+      margin-top: 1.5rem;
+      text-align: center;
+      display: none;
+      color: var(--primary);
+      font-weight: 500;
+      letter-spacing: 1px;
+      font-size: 1.1rem;
+    }
+    #result {
+      margin-top: 1.5rem;
+      padding: 1.2rem 1rem;
+      background: #e9ecef;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px 0 rgba(44, 62, 80, 0.04);
+      display: none;
+      width: 100%;
+      font-size: 1.08rem;
+      color: #222;
+      border: 1px solid var(--border);
+      text-align: center;
+      animation: fadeIn 0.5s;
+    }
+    #result strong {
+      color: var(--primary-dark);
+      font-size: 1.13rem;
+    }
+    #result .success {
+      color: var(--success);
+    }
+    #result .error {
+      color: var(--error);
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.2rem 0.7rem 1.5rem 0.7rem;
+        max-width: 98vw;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      #result {
+        font-size: 1rem;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Expense Splitter</h1>
+    <form id="expenseForm" autocomplete="off">
+      <label>
+        Receipt Image
+        <input type="file" name="image" accept="image/*" required>
+      </label>
+      <label>
+        Number of People
+        <input type="number" name="nAttendees" min="1" required placeholder="Enter number of people">
+      </label>
+      <button type="submit">Split Bill</button>
+    </form>
+    <div id="spinner">Analyzing receipt...</div>
+    <div id="result"></div>
+  </div>
+  <script>
+    document.getElementById('expenseForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const resultDiv = document.getElementById('result');
+      const spinner = document.getElementById('spinner');
+
+      resultDiv.style.display = 'none';
+      spinner.style.display = 'block';
+
+      try {
+        const response = await fetch('/expenses/split', { method: 'POST', body: formData });
+        spinner.style.display = 'none';
+
+        if (!response.ok) throw new Error(await response.text());
+        const data = await response.json();
+
+        resultDiv.innerHTML = `
+          <div class="success">
+            <p>Total: <strong>$${data.total.toFixed(2)}</strong></p>
+            <p>People: <strong>${data.nAttendees}</strong></p>
+            <p>Each Pays: <strong>$${data.splitAmount.toFixed(2)}</strong></p>
+          </div>
+        `;
+        resultDiv.style.display = 'block';
+
+      } catch (err) {
+        spinner.style.display = 'none';
+        resultDiv.innerHTML = `<div class="error"><p><strong>Error:</strong> ${err.message}</p></div>`;
+        resultDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
