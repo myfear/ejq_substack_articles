@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semantic Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-right mb-4">
+            <a href="/" class="text-blue-500 hover:underline">&larr; Back to Main Page</a>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold mb-4">Bonus: Semantic Search</h1>
+            <p class="mb-4 text-sm text-gray-600">Search for concepts, not just keywords. Type a phrase like "love your neighbor" or "parable of the sower" to find semantically related verses across all imported translations.</p>
+
+            <form action="/search" method="GET" class="flex items-center space-x-4">
+                <input name="q" class="p-2 border rounded-md w-full" placeholder="Enter a search query..." value="{query ?: ''}">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Search</button>
+            </form>
+
+            {#if query ne null && query != ''}
+            <div id="search-results" class="mt-6 border-t pt-6">
+                <h3 class="text-xl font-semibold mt-2 mb-4">Results for "{query}"</h3>
+                {#if results.isEmpty}
+                    <p>No results found.</p>
+                {#else}
+                    {#for verse in results}
+                    <div class="border p-4 rounded-md bg-gray-50 mb-4">
+                        <h4 class="font-bold">{verse.translation} - {verse.book} {verse.chapter}:{verse.verseNum}</h4>
+                        <p class="font-serif mt-2">"{verse.text}"</p>
+                    </div>
+                    {/for}
+                {/if}
+            </div>
+            {/if}
+        </div>
+    </div>
+</body>
+</html>

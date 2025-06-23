@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentiment Analysis Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-right mb-4">
+            <a href="/" class="text-blue-500 hover:underline">&larr; Back to Main Page</a>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold mb-4">Demo 2: Sentimental Journey</h1>
+            <p class="mb-4 text-sm text-gray-600">Analyze the sentiment of a passage (e.g., the Prodigal Son in Luke 15:11-32). The chart shows the count of verses classified as Positive, Negative, or Neutral for each translation.</p>
+            
+            <form action="/sentiment" method="GET" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label for="book" class="block text-sm font-medium">Book</label>
+                    <input id="book" name="book" value="{s_book ?: 'Luke'}" class="mt-1 p-2 border rounded-md w-full">
+                </div>
+                <div>
+                    <label for="start_chapter" class="block text-sm font-medium">Start Ch.</label>
+                    <input id="start_chapter" name="start_chapter" type="number" value="{s_start_chapter ?: 15}" class="mt-1 p-2 border rounded-md w-full">
+                </div>
+                <div>
+                    <label for="start_verse" class="block text-sm font-medium">Start V.</label>
+                    <input id="start_verse" name="start_verse" type="number" value="{s_start_verse ?: 11}" class="mt-1 p-2 border rounded-md w-full">
+                </div>
+                <div>
+                    <label for="end_chapter" class="block text-sm font-medium">End Ch.</label>
+                    <input id="end_chapter" name="end_chapter" type="number" value="{s_end_chapter ?: 15}" class="mt-1 p-2 border rounded-md w-full">
+                </div>
+                <div>
+                    <label for="end_verse" class="block text-sm font-medium">End V.</label>
+                    <input id="end_verse" name="end_verse" type="number" value="{s_end_verse ?: 32}" class="mt-1 p-2 border rounded-md w-full">
+                </div>
+                <div class="col-span-full text-center mt-2">
+                    <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600">Analyze Sentiment</button>
+                </div>
+            </form>
+            
+            {#if sentimentChartData ne null}
+            <div class="mt-6 border-t pt-6">
+                <canvas id="sentimentChart"></canvas>
+            </div>
+            <script>
+                (function() {
+                    const data = JSON.parse('{sentimentChartData.raw}');
+                    const labels = ["POSITIVE", "NEUTRAL", "NEGATIVE"];
+                    const translations = Object.keys(data);
+                    const datasets = translations.map((t, i) => {
+                        const colors = ['rgba(75, 192, 192, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)'];
+                        return { label: t, data: labels.map(label => data[t][label] || 0), backgroundColor: colors[i % colors.length] };
+                    });
+                    const ctx = document.getElementById('sentimentChart').getContext('2d');
+                    new Chart(ctx, { type: 'bar', data: { labels, datasets }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+                })();
+            </script>
+          
+            {/if}
+        </div>
+    </div>
+</body>
+</html>

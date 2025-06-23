@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gospel in Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8">
+    
+
+ <div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Gospel in Code: Bible Analysis Demos</h1>
+    <h2 class="text-2xl font-semibold mb-4">Demo 1: Lost-in-Translation Comparator</h2>
+    <p class="mb-4 text-sm text-gray-600">Enter a verse to compare its wording and semantic meaning. A higher similarity score (closer to 1.0) means the vector embeddings are more alike.</p>
+    <p class="mb-4 text-xs text-red-700 font-semibold">Disclaimer: Semantic proximity does not imply doctrinal accuracy or correctness.</p>
+    
+    <form action="/" method="GET" class="flex items-end space-x-4 flex-wrap">
+        <div>
+            <label for="book" class="block text-sm font-medium">Book</label>
+            <input id="book" name="book" value="John" class="mt-1 p-2 border rounded-md">
+        </div>
+        <div>
+            <label for="chapter" class="block text-sm font-medium">Chapter</label>
+            <input id="chapter" name="chapter" value="3" type="number" class="mt-1 p-2 border rounded-md w-20">
+        </div>
+        <div>
+            <label for="verse" class="block text-sm font-medium">Verse</label>
+            <input id="verse" name="verse" value="16" type="number" class="mt-1 p-2 border rounded-md w-20">
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 self-end">Compare</button>
+    </form>
+
+    {#if comparisonResult ne null}
+    <div id="result" class="mt-6 border-t pt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {#for verse in comparisonResult.verses}
+            <div class="border p-4 rounded-md bg-gray-50">
+                <h3 class="font-bold text-lg">{verse.translation}</h3>
+                <p class="font-serif mt-2">"{verse.text}"</p>
+            </div>
+            {/for}
+        </div>
+        <div class="mt-6">
+            <h3 class="font-semibold text-lg">Semantic Similarity:</h3>
+            {#for entry in comparisonResult.similarity.entrySet}
+                <pre class="bg-gray-200 p-2 rounded mt-2 text-sm">{entry.key}: {entry.value}</pre>
+            {/for}
+        </div>
+    </div>
+    {/if}
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-4xl mx-auto text-center">
+    <h2 class="text-2xl font-semibold mb-4">Demo 2: Sentimental Journey</h2>
+    <p class="mb-4 text-sm text-gray-600">Analyze the sentiment of a passage on a dedicated page.</p>
+    <a href="/sentiment" class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 inline-block">Go to Sentiment Demo</a>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-4xl mx-auto text-center">
+    <h2 class="text-2xl font-semibold mb-4">Demo 3: Translation Style Fingerprint</h2>
+    <p class="mb-4 text-sm text-gray-600">Compare translation styles using text metrics on a dedicated page.</p>
+    <a href="/style" class="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 inline-block">Go to Style Demo</a>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto mt-8 text-center">
+    <h2 class="text-2xl font-semibold mb-4">Bonus: Semantic Search</h2>
+    <p class="mb-4 text-sm text-gray-600">Search for concepts, not just keywords, on a dedicated page.</p>
+    <a href="/search" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 inline-block">Go to Search Demo</a>
+</div>
+</body>
+</html>

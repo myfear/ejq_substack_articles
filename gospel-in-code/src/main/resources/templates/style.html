@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Style Fingerprint Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-right mb-4">
+            <a href="/" class="text-blue-500 hover:underline">&larr; Back to Main Page</a>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold mb-4">Demo 3: Translation Style Fingerprint</h1>
+            <p class="mb-4 text-sm text-gray-600">This radar chart visualizes the stylistic "fingerprint" of each translation for a selected book based on objective text metrics.</p>
+            
+            <form action="/style" method="GET" class="flex items-end space-x-4">
+                <div>
+                    <label for="book" class="block text-sm font-medium">Select a Book:</label>
+                    <select name="book" id="book" class="mt-1 p-2 border rounded-md">
+                        <option name="Psalms" value="Ps" selected="{selectedBook == 'Ps'}">Psalms</option>
+                        <option value="Sir" name="Book of Sirach" selected="{selectedBook == 'Sir'}">Book of Sirach</option>
+                        <option value="Rev" name="Revelation" selected="{selectedBook == 'Rev'}">Revelation</option>
+                        <option value="Acts" name="Acts of the Apostles" selected="{selectedBook == 'Acts'}">Acts of the Apostles</option>
+                        <option value="2Kgs" name="Book of 2 Kings" selected="{selectedBook == '2Kgs'}">Book of 2 Kinds</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600">Analyze Style</button>
+            </form>
+            
+            {#if styleJson ne null}
+            <div class="mt-6 border-t pt-6">
+                <canvas id="fingerprintChart"></canvas>
+            </div>
+            <script>
+                (function() {
+                    const chartData = JSON.parse('{styleJson.raw}');
+                    const datasets = chartData.datasets.map((d, i) => {
+                        const colors = ['rgba(255, 99, 132, 0.4)', 'rgba(54, 162, 235, 0.4)'];
+                        const borderColors = ['rgb(255, 99, 132)', 'rgb(54, 162, 235)'];
+                        return {
+                            label: d.label,
+                            data: d.data,
+                            fill: true,
+                            backgroundColor: colors[i % colors.length],
+                            borderColor: borderColors[i % borderColors.length],
+                            pointBackgroundColor: borderColors[i % borderColors.length]
+                        };
+                    });
+                    const ctx = document.getElementById('fingerprintChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: { labels: chartData.labels, datasets: datasets },
+                        options: {
+                            elements: { line: { tension: 0.1, borderWidth: 2 } },
+                            scales: { r: { angleLines: { display: false }, suggestedMin: 0, suggestedMax: 1 } }
+                        }
+                    });
+                })();
+            </script>
+            {/if}
+        </div>
+    </div>
+</body>
+</html>
