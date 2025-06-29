@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload with Progress</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'pulse-slow': 'pulse 3s infinite',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">File Upload</h1>
+        <p class="text-gray-600">Upload your files with real-time progress tracking</p>
+      </div>
+
+      <!-- Upload Card -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+        <!-- File Input Section -->
+        <div class="mb-6">
+          <label for="fileInput" class="block text-sm font-medium text-gray-700 mb-2">
+            Choose File
+          </label>
+          <div class="relative">
+            <input 
+              type="file" 
+              id="fileInput" 
+              class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 transition-colors"
+            />
+          </div>
+          <div id="fileInfo" class="mt-2 text-sm text-gray-500 hidden">
+            <span id="fileName"></span> - <span id="fileSize"></span>
+          </div>
+        </div>
+
+        <!-- Upload Button -->
+        <button 
+          id="uploadButton" 
+          class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          <span id="buttonText">Upload File</span>
+          <svg id="uploadIcon" class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <svg id="loadingIcon" class="hidden inline-block w-5 h-5 ml-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Progress Section -->
+      <div id="progressSection" class="bg-white rounded-2xl shadow-xl p-8 hidden">
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-700">Upload Progress</span>
+            <span id="progressPercent" class="text-sm font-medium text-blue-600">0%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div 
+              id="progressBar" 
+              class="h-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300 ease-out" 
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+        
+        <!-- Upload Stats -->
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-500 mb-1">Uploaded</div>
+            <div id="uploadedBytes" class="text-sm font-semibold text-gray-800">0 MB</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-500 mb-1">Total Size</div>
+            <div id="totalBytes" class="text-sm font-semibold text-gray-800">0 MB</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-500 mb-1">Chunks</div>
+            <div id="chunkInfo" class="text-sm font-semibold text-gray-800">0 / 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div id="successMessage" class="bg-green-50 border border-green-200 rounded-2xl p-6 mt-6 hidden">
+        <div class="flex items-center">
+          <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div>
+            <h3 class="text-lg font-semibold text-green-800">Upload Complete!</h3>
+            <p class="text-green-600 mt-1">Your file has been successfully uploaded.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CHUNK_SIZE = 1024 * 1024;
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressSection = document.getElementById('progressSection');
+    const successMessage = document.getElementById('successMessage');
+    const buttonText = document.getElementById('buttonText');
+    const uploadIcon = document.getElementById('uploadIcon');
+    const loadingIcon = document.getElementById('loadingIcon');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadedBytes = document.getElementById('uploadedBytes');
+    const totalBytes = document.getElementById('totalBytes');
+    const chunkInfo = document.getElementById('chunkInfo');
+    
+    const clientId = 'client-' + Math.random().toString(36).substr(2);
+    let currentChunk = 0;
+    let totalChunks = 0;
+
+    // Format bytes to human readable format
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Show file info when file is selected
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = formatBytes(file.size);
+        fileInfo.classList.remove('hidden');
+        uploadButton.disabled = false;
+        // Reset any previous success messages when a new file is selected
+        successMessage.classList.add('hidden');
+        progressSection.classList.add('hidden');
+        buttonText.textContent = 'Upload File';
+      } else {
+        fileInfo.classList.add('hidden');
+        uploadButton.disabled = true;
+      }
+    });
+
+    // Reset file input when clicked to allow selecting the same file again
+    fileInput.addEventListener('click', () => {
+      fileInput.value = '';
+    });
+
+    uploadButton.onclick = async () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please choose a file first.');
+        return;
+      }
+
+      // Reset UI
+      progressSection.classList.remove('hidden');
+      successMessage.classList.add('hidden');
+      uploadButton.disabled = true;
+      buttonText.textContent = 'Uploading...';
+      uploadIcon.classList.add('hidden');
+      loadingIcon.classList.remove('hidden');
+
+      const uploadId = 'upload-' + Math.random().toString(36).substr(2);
+      totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      currentChunk = 0;
+
+      // Update initial stats
+      totalBytes.textContent = formatBytes(file.size);
+      chunkInfo.textContent = `0 / ${totalChunks}`;
+      
+      // Reset progress display
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+      uploadedBytes.textContent = "0 Bytes";
+
+      const es = new EventSource(`/progress/${clientId}`);
+      es.addEventListener("upload-progress", (e) => {
+        try {
+          const progressData = JSON.parse(e.data);
+          const percentage = progressData.percentage || 0;
+          const uploaded = progressData.uploadedBytes || 0;
+          
+          progressBar.style.width = percentage + "%";
+          progressPercent.textContent = percentage + "%";
+          uploadedBytes.textContent = formatBytes(uploaded);
+          
+          console.log('Progress update:', progressData); // Debug logging
+        } catch (error) {
+          // Fallback: if it's just a number (old format)
+          console.log('Raw progress data:', e.data);
+          const percentage = parseInt(e.data, 10) || 0;
+          progressBar.style.width = percentage + "%";
+          progressPercent.textContent = percentage + "%";
+        }
+      });
+
+      try {
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * CHUNK_SIZE;
+          const end = Math.min(start + CHUNK_SIZE, file.size);
+          const chunk = file.slice(start, end);
+
+          await fetch('/upload/chunk', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/octet-stream',
+              'X-Upload-Id': uploadId,
+              'X-Chunk-Number': i + 1,
+              'X-Total-Bytes': file.size,
+              'X-Client-Id': clientId
+            },
+            body: chunk
+          });
+
+          currentChunk = i + 1;
+          chunkInfo.textContent = `${currentChunk} / ${totalChunks}`;
+        }
+
+        await fetch('/upload/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uploadId, fileName: file.name, totalChunks })
+        });
+
+        // Show success
+        successMessage.classList.remove('hidden');
+        buttonText.textContent = 'Upload Another File';
+        
+        // Reset file input to allow selecting files again
+        fileInput.value = '';
+        fileInfo.classList.add('hidden');
+        
+      } catch (error) {
+        console.error('Upload failed:', error);
+        alert('Upload failed. Please try again.');
+        buttonText.textContent = 'Upload File';
+      } finally {
+        uploadButton.disabled = false;
+        uploadIcon.classList.remove('hidden');
+        loadingIcon.classList.add('hidden');
+        es.close();
+        
+        // Re-enable file selection
+        uploadButton.disabled = true; // Will be re-enabled when a file is selected
+      }
+    };
+
+    // Initial state
+    uploadButton.disabled = true;
+  </script>
+</body>
+</html>
