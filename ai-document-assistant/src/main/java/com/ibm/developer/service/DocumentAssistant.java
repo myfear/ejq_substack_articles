@@ -4,7 +4,7 @@ import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
-@RegisterAiService(retrievalAugmentor = RetrievalAugmentorExample.class)
+@RegisterAiService
 public interface DocumentAssistant {
     
     @SystemMessage("""
