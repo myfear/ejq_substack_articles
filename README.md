@@ -30,6 +30,7 @@ Each folder in this repository matches an article from the Substack and includes
 Below are the example projects included in this repository, organized by topic. Each project folder is linked for easy access, and where available, a link to the corresponding Substack article is provided:
 
 ### 🧠 AI & LLM Integration
+- [ai-document-assistant/](ai-document-assistant/): Document Q&A system with LangChain4j, Ollama, and pgvector for RAG capabilities.
 - [ai-email-simulator/](ai-email-simulator/): Automating email generation and task extraction with LangChain4j and Ollama.  
   [Substack article](https://myfear.substack.com/p/quarkus-langchain4j-local-ai-task-extractor)
 - [ai-error-handler-pii/](ai-error-handler-pii/): AI-powered exception handling, PII redaction, and user-friendly error messages.  
@@ -38,6 +39,10 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/ai-java-agent-quarkus-langchain4j-ollama)
 - [embedding-tutorial/](embedding-tutorial/): Text similarity and embeddings with LangChain4j and Ollama.  
   [Substack article](https://myfear.substack.com/p/java-quarkus-text-embeddings-similarity)
+- [expense-splitter/](expense-splitter/): AI-powered expense splitting with receipt image processing using LangChain4j and Ollama.
+- [flight-tracker-ollama/](flight-tracker-ollama/): AI-powered flight tracking with real-time aviation data and natural language queries.
+- [gospel-in-code/](gospel-in-code/): Bible analysis application with semantic comparison, sentiment analysis, and vector embeddings.
+- [quarkus-chain-of-thought/](quarkus-chain-of-thought/): AI reasoning application implementing structured chain-of-thought problem solving.
 - [quarkus-chatbot/](quarkus-chatbot/): Real-time AI chatbot with LangChain4j and WebSocket.  
   [Substack article](https://myfear.substack.com/p/java-ai-chatbot-quarkus-langchain4j-websockets)
 - [sentiment-analysis/](sentiment-analysis/): REST API for sentiment analysis with LangChain4j and Ollama.  
@@ -57,6 +62,8 @@ Below are the example projects included in this repository, organized by topic. 
 ### 📊 Data Processing & Integration
 - [csv-uploader/](csv-uploader/): Dynamic CSV ingestion and schema creation in PostgreSQL.  
   [Substack article](https://myfear.substack.com/p/dynamic-csv-uploads-java-quarkus-postgresql)
+- [file-upload-progress/](file-upload-progress/): Chunked file uploads with real-time progress tracking using Server-Sent Events (SSE).
+- [quarkus-docling-converter/](quarkus-docling-converter/): Document conversion service using Docling library to convert various formats to text.
 - [resource-reader/](resource-reader/): File resource handling, stream processing, and error handling.  
   [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
 - [qr-code-demo/](qr-code-demo/): QR code generation, image processing, and REST endpoints.  
@@ -68,6 +75,7 @@ Below are the example projects included in this repository, organized by topic. 
 - [color-palette-extractor/](color-palette-extractor/): Color palette extraction from images.
 
 ### 🛡️ Security & Error Handling
+- [api-key-manager/](api-key-manager/): Secret Agent themed API key management system with secure key generation, rotation, and usage tracking.
 - [custom-error-pages-classic/](custom-error-pages-classic/): Custom error pages and JSON error responses with Qute and ExceptionMappers.  
   [Substack article](https://myfear.substack.com/p/quarkus-custom-error-pages-rest-qute)
 - [jwt-case/](jwt-case/): JWT-based authentication and authorization.  
@@ -83,8 +91,10 @@ Below are the example projects included in this repository, organized by topic. 
 [Substack article](https://myfear.substack.com/p/quarkus-http-response-guide-java-developers)
 
 ### 🏗️ Application Architecture & Patterns
+- [composite-key-app/](composite-key-app/): Demonstrates composite keys with Hibernate Panache and student enrollment modeling.
 - [flyway-adventure/](flyway-adventure/): Database migrations with Flyway.  
   [Substack article](https://myfear.substack.com/p/quarkus-flyway-database-migrations-java)
+- [http-header-tutorial/](http-header-tutorial/): HTTP header handling tutorial with request/response manipulation and GZIP compression.
 - [quarkus-dto-tutorial/](quarkus-dto-tutorial/): DTO mapping and transformation.  
   [Substack article](https://myfear.substack.com/p/quarkus-dto-mapstruct-guide)
 - [quarkus-graphql/](quarkus-graphql/): Building GraphQL APIs in Quarkus.  
@@ -139,6 +149,8 @@ Watch the repo or subscribe to the Substack to stay updated.
 
 Stay up to date and reach out through my channels:
 
+- Mastodon: [myfear@mastodon.online](https://mastodon.online/@myfear)
+- Bluesky: [@myfear.com](https://bsky.app/profile/myfear.com)
 - 🐦 Twitter/X: [@myfear](https://twitter.com/myfear)
 - 💻 GitHub: [myfear](https://github.com/myfear)
 - 🔗 LinkedIn: [Markus Eisele](https://www.linkedin.com/in/markuseisele/)
