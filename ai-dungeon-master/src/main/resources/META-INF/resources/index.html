@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Dungeon Master</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        body { 
+            font-family: 'Courier Prime', 'Courier New', monospace; 
+            background-color: #0a0a0a; 
+            color: #30bcc1; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.5;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            min-height: 100vh;
+            grid-template-areas: 
+                "header sidebar"
+                "main sidebar"
+                "input sidebar";
+        }
+        
+        .game-header {
+            grid-area: header;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .game-main { 
+            grid-area: main;
+            background-color: #000; 
+            border: 1px solid #30bcc1; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(48, 188, 193, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-input {
+            grid-area: input;
+            margin-top: 10px;
+        }
+        
+        .sidebar { 
+            grid-area: sidebar;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel {
+            background-color: #000; 
+            border: 1px solid #30bcc1; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(48, 188, 193, 0.2);
+        }
+        
+        .panel-header {
+            background-color: #30bcc1;
+            color: #000;
+            padding: 12px 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        
+        .panel-content {
+            padding: 16px;
+        }
+        
+        h1 { 
+            color: #30bcc1; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 0 0 15px #30bcc1;
+            font-size: 28px;
+        }
+        
+        .narrative-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+        
+        .narrative-header {
+            background-color: #30bcc1;
+            color: #000;
+            padding: 12px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        
+        #narrative { 
+            white-space: pre-wrap; 
+            line-height: 1.7; 
+            flex: 1;
+            background-color: #000;
+            padding: 20px;
+            font-size: 15px;
+            overflow-y: auto;
+            border: none;
+            color: #e0e0e0;
+            margin: 0;
+        }
+        
+        .narrative-footer {
+            background-color: #111;
+            border-top: 1px solid #30bcc1;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #30bcc1;
+            text-align: center;
+        }
+        
+        .input-container {
+            background-color: #000;
+            border: 1px solid #30bcc1;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(48, 188, 193, 0.2);
+        }
+        
+        .input-header {
+            background-color: #30bcc1;
+            color: #000;
+            padding: 8px 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+        
+        .input-area { 
+            display: flex; 
+            background-color: #000;
+            border: none;
+            padding: 8px;
+        }
+        
+        .input-area::before {
+            content: '> ';
+            color: #30bcc1;
+            padding: 12px 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        #actionInput { 
+            flex-grow: 1; 
+            padding: 12px; 
+            background-color: #111; 
+            border: 1px solid #333; 
+            border-radius: 4px;
+            color: #30bcc1; 
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-size: 15px;
+            outline: none;
+            margin-right: 8px;
+        }
+        
+        #actionInput:focus {
+            background-color: #1a1a1a;
+            border-color: #30bcc1;
+            box-shadow: 0 0 8px rgba(48, 188, 193, 0.3);
+        }
+        
+        #submitButton { 
+            padding: 12px 20px; 
+            background-color: #30bcc1; 
+            border: none; 
+            border-radius: 4px;
+            color: #000; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        #submitButton:hover {
+            background-color: #2aa8b0;
+            box-shadow: 0 0 15px rgba(48, 188, 193, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        #submitButton:disabled { 
+            background-color: #333; 
+            color: #666;
+            cursor: not-allowed; 
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #30bcc1;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+        
+        .stat-value {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .hp-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #30bcc1, #2aa8b0);
+            transition: width 0.3s ease;
+        }
+        
+        .inventory-list { 
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0;
+        }
+        
+        .inventory-item { 
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+        
+        .inventory-item:last-child {
+            border-bottom: none;
+        }
+        
+        .inventory-item::before {
+            content: '• ';
+            color: #30bcc1;
+            margin-right: 8px;
+        }
+        
+        .empty-inventory {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        /* Blinking cursor effect */
+        .cursor-blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "header"
+                    "main"
+                    "input"
+                    "sidebar";
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                gap: 15px;
+            }
+            
+            .panel {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="game-header">
+        <h1>⚔️ AI Dungeon Master ⚔️</h1>
+    </div>
+
+    <div class="game-main">
+        <div class="narrative-container">
+            <div class="narrative-header">Adventure Log</div>
+            <div id="narrative">████████████████████████████████████████████████████████████████
+█                                                              █
+█   ╔══════════════════════════════════════════════════════╗   █
+█   ║                INITIALIZING SYSTEM                  ║   █
+█   ║                                                     ║   █
+█   ║   Loading adventure parameters...                   ║   █
+█   ║   Generating world...                               ║   █
+█   ║   Preparing dungeon master...                       ║   █
+█   ║                                                     ║   █
+█   ║   Please wait...                                    ║   █
+█   ╚══════════════════════════════════════════════════════╝   █
+█                                                              █
+████████████████████████████████████████████████████████████████</div>
+            <div class="narrative-footer">Type your actions below to begin your adventure</div>
+        </div>
+    </div>
+
+    <div class="game-input">
+        <div class="input-container">
+            <div class="input-header">Command Terminal</div>
+            <div class="input-area">
+                <input type="text" id="actionInput" placeholder="Enter your command..." disabled>
+                <button id="submitButton" onclick="performAction()" disabled>Execute</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="panel">
+            <div class="panel-header">⚔️ Player Status</div>
+            <div class="panel-content">
+                <div class="stat-row">
+                    <span class="stat-label">Health</span>
+                    <span class="stat-value" id="player-hp">--</span>
+                </div>
+                <div class="hp-bar">
+                    <div class="hp-fill" id="hp-bar" style="width: 100%"></div>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Strength</span>
+                    <span class="stat-value" id="player-str">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Dexterity</span>
+                    <span class="stat-value" id="player-dex">--</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Intelligence</span>
+                    <span class="stat-value" id="player-int">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">🎒 Inventory</div>
+            <div class="panel-content">
+                <ul class="inventory-list" id="player-inventory">
+                    <li class="empty-inventory">Loading...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const narrativeDiv = document.getElementById('narrative');
+    const actionInput = document.getElementById('actionInput');
+    const submitButton = document.getElementById('submitButton');
+
+    async function updateUI(response) {
+        const data = await response.json();
+        
+        // Update narrative
+        narrativeDiv.innerText = data.narrative;
+        narrativeDiv.scrollTop = narrativeDiv.scrollHeight;
+
+        // Update player stats
+        const player = data.player;
+        document.getElementById('player-hp').innerText = `${player.hp}/${player.maxHp}`;
+        document.getElementById('player-str').innerText = player.strength;
+        document.getElementById('player-dex').innerText = player.dexterity;
+        document.getElementById('player-int').innerText = player.intelligence;
+
+        // Update HP bar
+        const hpPercentage = (player.hp / player.maxHp) * 100;
+        const hpBar = document.getElementById('hp-bar');
+        hpBar.style.width = `${hpPercentage}%`;
+        
+        // Change HP bar color based on health
+        if (hpPercentage > 60) {
+            hpBar.style.background = 'linear-gradient(90deg, #30bcc1, #2aa8b0)';
+        } else if (hpPercentage > 30) {
+            hpBar.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+        } else {
+            hpBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+        }
+
+        // Update inventory
+        const inventoryList = document.getElementById('player-inventory');
+        inventoryList.innerHTML = ''; // Clear old items
+        if (player.inventory && player.inventory.length > 0) {
+            player.inventory.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'inventory-item';
+                li.textContent = item;
+                inventoryList.appendChild(li);
+            });
+        } else {
+            const emptyLi = document.createElement('li');
+            emptyLi.className = 'empty-inventory';
+            emptyLi.textContent = 'Empty';
+            inventoryList.appendChild(emptyLi);
+        }
+
+        actionInput.disabled = false;
+        submitButton.disabled = false;
+        actionInput.focus();
+    }
+
+    async function startGame() {
+        const response = await fetch('/dungeon/start', { method: 'POST' });
+        await updateUI(response);
+    }
+
+    async function performAction() {
+        const action = actionInput.value.trim();
+        if (!action) return;
+
+        // Show user input and processing message
+        narrativeDiv.innerText += "\n\n> " + action + "\n\n[Processing your action...]";
+        narrativeDiv.scrollTop = narrativeDiv.scrollHeight;
+        
+        actionInput.value = '';
+        actionInput.disabled = true;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+
+        try {
+            const response = await fetch('/dungeon/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: action
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            await updateUI(response);
+        } catch (error) {
+            narrativeDiv.innerText += "\n\n[Error: Failed to process action. Please try again.]";
+            actionInput.disabled = false;
+            submitButton.disabled = false;
+            actionInput.focus();
+        }
+        
+        submitButton.textContent = 'Execute';
+    }
+    
+    actionInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            performAction();
+        }
+    });
+
+    // Start the game on page load
+    startGame();
+</script>
+
+</body>
+</html>
