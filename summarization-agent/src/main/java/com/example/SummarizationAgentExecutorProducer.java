@@ -35,6 +35,7 @@ public class SummarizationAgentExecutorProducer {
         private final SummarizationAgent summarizationAgent;
 
         public SummarizationAgentExecutor(SummarizationAgent summarizationAgent) {
+            Log.info("SummarizationAgentExecutor() called");
             this.summarizationAgent = summarizationAgent;
         }
 
