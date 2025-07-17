@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative AI Editor</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 1.5rem;
+        }
+
+        #editor {
+            width: 100%;
+            height: 400px;
+            font-size: 16px;
+            line-height: 1.6;
+            border: 1px solid #ccd0d5;
+            border-radius: 8px;
+            padding: 1rem;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        #editor:focus {
+            outline: none;
+            border-color: #0056b3;
+            box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #004494;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #suggestion-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #0056b3;
+            padding: 1rem;
+            border-radius: 4px;
+            font-style: italic;
+            color: #004494;
+            min-height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Collaborative AI Editor</h1>
+        <textarea id="editor" spellcheck="false"></textarea>
+        <div class="controls">
+            <button id="suggestBtn">Get Suggestion</button>
+        </div>
+        <div id="suggestion-box"></div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const suggestBtn = document.getElementById('suggestBtn');
+        const suggestionBox = document.getElementById('suggestion-box');
+
+        // This holds the local representation of the CRDT document
+        let localDocument = [];
+        let isSyncing = false; // A flag to prevent sending updates while processing one
+        let pendingOperations = new Set(); // Track operations we've sent but haven't received back
+
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${protocol}//${location.host}/editor`);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established.');
+            // Initialize previousText when connection opens
+            previousText = editor.value;
+        };
+        ws.onclose = () => console.log('WebSocket connection closed.');
+        ws.onerror = (error) => console.error('WebSocket error:', error);
+
+        ws.onmessage = (event) => {
+            isSyncing = true;
+            try {
+                const msg = JSON.parse(event.data);
+                switch (msg.type) {
+                    case 'SYNC_DOCUMENT':
+                        localDocument = msg.payload;
+                        pendingOperations.clear(); // Clear any pending operations on sync
+                        updateEditorFromLocalDoc();
+                        // Update previousText to match the synced document
+                        previousText = editor.value;
+                        break;
+                    case 'INSERT':
+                        const { char, index } = msg.payload;
+                        // Check if this is our own operation that we already applied
+                        if (pendingOperations.has(char.id)) {
+                            pendingOperations.delete(char.id);
+                            // Don't apply again - we already did it locally
+                        } else {
+                            // This is from another client - apply it
+                            const currentCursor = editor.selectionStart;
+                            const currentText = editor.value;
+                            
+                            // Insert at the specified index, but validate it's within bounds
+                            const insertIndex = Math.min(index, localDocument.length);
+                            localDocument.splice(insertIndex, 0, char);
+                            
+                            // Smart cursor adjustment: if insertion was before cursor, move cursor forward
+                            const newCursor = insertIndex <= currentCursor ? currentCursor + 1 : currentCursor;
+                            updateEditorFromLocalDoc(false); // Don't preserve cursor, we'll set it manually
+                            editor.setSelectionRange(newCursor, newCursor);
+                        }
+                        break;
+                    case 'DELETE':
+                        const { charId } = msg.payload;
+                        // Check if this is our own operation that we already applied
+                        if (pendingOperations.has(charId)) {
+                            pendingOperations.delete(charId);
+                            // Don't apply again - we already did it locally
+                        } else {
+                            // This is from another client - apply it
+                            const currentCursor = editor.selectionStart;
+                            const deleteIndex = localDocument.findIndex(c => c.id === charId);
+                            if (deleteIndex > -1) {
+                                localDocument.splice(deleteIndex, 1);
+                                
+                                // Smart cursor adjustment: if deletion was before cursor, move cursor back
+                                const newCursor = deleteIndex < currentCursor ? Math.max(0, currentCursor - 1) : currentCursor;
+                                updateEditorFromLocalDoc(false); // Don't preserve cursor, we'll set it manually
+                                editor.setSelectionRange(newCursor, newCursor);
+                            }
+                        }
+                        break;
+                    case 'SUGGESTION':
+                        const suggestion = msg.payload.suggestion;
+                        suggestionBox.textContent = suggestion;
+                        
+                        // If it's not the default empty message, insert the suggestion into the editor
+                        if (suggestion && !suggestion.includes("Start by typing")) {
+                            insertSuggestionIntoEditor(suggestion);
+                        }
+                        break;
+                }
+            } catch (e) {
+                console.error("Failed to process message", e);
+            } finally {
+                // Use a short timeout to allow the DOM to update before re-enabling input handling
+                setTimeout(() => { isSyncing = false; }, 50);
+            }
+        };
+
+        function updateEditorFromLocalDoc(preserveCursor = true) {
+            const text = localDocument.map(c => c.value).join('');
+            const cursorPos = preserveCursor ? editor.selectionStart : 0;
+            const selectionEnd = preserveCursor ? editor.selectionEnd : 0;
+            
+            // Only update if text actually changed to avoid unnecessary cursor jumps
+            if (editor.value !== text) {
+                editor.value = text;
+                
+                // Restore cursor position, but ensure it's within bounds
+                const maxPos = text.length;
+                const newCursorPos = Math.min(cursorPos, maxPos);
+                const newSelectionEnd = Math.min(selectionEnd, maxPos);
+                editor.setSelectionRange(newCursorPos, newSelectionEnd);
+            }
+        }
+
+        let previousText = "";
+        let isLocalChange = false;
+        
+        editor.addEventListener('input', (e) => {
+            if (isSyncing) return;
+
+            isLocalChange = true;
+            const newText = editor.value;
+            const newCursorPos = editor.selectionStart;
+            
+            // Find the differences between old and new text
+            const changes = findTextDifferences(previousText, newText);
+            
+            // Process each change
+            changes.forEach(change => {
+                if (change.type === 'insert') {
+                    // Handle character insertions
+                    for (let i = 0; i < change.text.length; i++) {
+                        const charValue = change.text[i];
+                        const crdtChar = { value: charValue, id: crypto.randomUUID() };
+                        const insertIndex = change.position + i;
+                        
+                        // Apply locally AND send to server - but track this operation
+                        localDocument.splice(insertIndex, 0, crdtChar);
+                        pendingOperations.add(crdtChar.id);
+                        sendMessage('INSERT', { char: crdtChar, index: insertIndex });
+                    }
+                } else if (change.type === 'delete') {
+                    // Handle character deletions
+                    for (let i = 0; i < change.length; i++) {
+                        const deletedChar = localDocument[change.position];
+                        if (deletedChar) {
+                            localDocument.splice(change.position, 1);
+                            pendingOperations.add(deletedChar.id);
+                            sendMessage('DELETE', { charId: deletedChar.id });
+                        }
+                    }
+                }
+            });
+            
+            previousText = newText;
+            isLocalChange = false;
+        });
+        
+        // Better text diffing function
+        function findTextDifferences(oldText, newText) {
+            const changes = [];
+            let oldIndex = 0;
+            let newIndex = 0;
+            
+            while (oldIndex < oldText.length || newIndex < newText.length) {
+                if (oldIndex < oldText.length && newIndex < newText.length && 
+                    oldText[oldIndex] === newText[newIndex]) {
+                    // Characters match, move forward
+                    oldIndex++;
+                    newIndex++;
+                } else if (newIndex < newText.length && 
+                          (oldIndex >= oldText.length || oldText[oldIndex] !== newText[newIndex])) {
+                    // Character was inserted
+                    let insertText = '';
+                    const startPos = newIndex;
+                    while (newIndex < newText.length && 
+                           (oldIndex >= oldText.length || oldText[oldIndex] !== newText[newIndex])) {
+                        insertText += newText[newIndex];
+                        newIndex++;
+                    }
+                    changes.push({ type: 'insert', position: oldIndex, text: insertText });
+                } else if (oldIndex < oldText.length) {
+                    // Character was deleted
+                    let deleteCount = 0;
+                    while (oldIndex < oldText.length && 
+                           (newIndex >= newText.length || oldText[oldIndex] !== newText[newIndex])) {
+                        oldIndex++;
+                        deleteCount++;
+                    }
+                    changes.push({ type: 'delete', position: oldIndex - deleteCount, length: deleteCount });
+                }
+            }
+            
+            return changes;
+        }
+
+        editor.addEventListener('focus', () => {
+            // Sync previousText with current editor content to ensure accurate diffing
+            previousText = editor.value;
+        });
+
+
+        suggestBtn.onclick = () => {
+            suggestionBox.textContent = '🤖 Getting suggestion...';
+            sendMessage('GET_SUGGESTION', {});
+        };
+
+        function sendMessage(type, payload) {
+            if (ws.readyState === WebSocket.OPEN) {
+                const msg = { type, payload };
+                ws.send(JSON.stringify(msg));
+            }
+        }
+        
+        function insertSuggestionIntoEditor(suggestion) {
+            // Get current cursor position
+            const cursorPos = editor.selectionStart;
+            
+            // Insert the suggestion at cursor position
+            const currentText = editor.value;
+            const beforeCursor = currentText.substring(0, cursorPos);
+            const afterCursor = currentText.substring(cursorPos);
+            
+            // Add a space before the suggestion if needed
+            const spaceBefore = (beforeCursor.length > 0 && !beforeCursor.endsWith(' ')) ? ' ' : '';
+            const textToInsert = spaceBefore + suggestion;
+            
+            // Temporarily disable syncing to prevent conflicts
+            isSyncing = true;
+            
+            // Insert each character individually to maintain CRDT consistency
+            for (let i = 0; i < textToInsert.length; i++) {
+                const charValue = textToInsert[i];
+                const crdtChar = { value: charValue, id: crypto.randomUUID() };
+                const insertIndex = cursorPos + i;
+                
+                // Apply locally AND send to server - but track this operation
+                localDocument.splice(insertIndex, 0, crdtChar);
+                pendingOperations.add(crdtChar.id);
+                sendMessage('INSERT', { char: crdtChar, index: insertIndex });
+            }
+            
+            // Update the editor
+            updateEditorFromLocalDoc();
+            
+            // Set cursor to end of inserted text
+            const newCursorPos = cursorPos + textToInsert.length;
+            editor.setSelectionRange(newCursorPos, newCursorPos);
+            
+            // Update previousText and re-enable syncing
+            previousText = editor.value;
+            setTimeout(() => { isSyncing = false; }, 100);
+        }
+    </script>
+</body>
+
+</html>
