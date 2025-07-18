@@ -1,6 +1,9 @@
 # error-handling-app
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Stop Leaking Stack Traces: Mastering RFC 7807 Error Handling in Quarkus
+A Hands-On Guide to Building Secure, Standards-Based APIs in Java Without Exposing Your Backend
+
+The supporting substack article: https://myfear.substack.com/p/quarkus-rfc7807-error-handling-java
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
