@@ -1,6 +1,9 @@
 # secure-service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Encrypt Everything: Building Secure REST APIs with Quarkus and Custom JSON Processing
+Learn how to automatically encrypt and decrypt sensitive fields in your JSON payloads using Quarkus, JAX-RS providers, and AES-GCM
+
+Related Substack article: https://myfear.substack.com/p/secure-rest-api-json-encryption-quarkus
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
