@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quarkus Todo App</title>
+</head>
+<body>
+    <h1>My Todo List</h1>
+    <ul>
+        {#for todo in todos}
+            <li>
+                {todo.title} - {todo.completed ? 'Done' : 'Pending'}
+            </li>
+        {/for}
+    </ul>
+
+    <h2>Add New Todo</h2>
+    <form method="POST" action="/page/todos">
+        <input type="text" name="title" required>
+        <button type="submit">Add</button>
+    </form>
+</body>
+</html>
