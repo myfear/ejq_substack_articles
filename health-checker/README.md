@@ -1,6 +1,9 @@
 # health-checker
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Is It Down For Everyone? Build a Live Website Health Checker with Quarkus
+Monitor External URLs in Real-Time with MicroProfile Health, YAML Config, and a HttpClient.
+
+Substack article: <https://myfear.substack.com/p/quarkus-website-health-check-yaml>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
