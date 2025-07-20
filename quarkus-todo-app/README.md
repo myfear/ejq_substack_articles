@@ -1,6 +1,9 @@
 # quarkus-todo-app
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Build a Full-Stack Todo App with Quarkus, Panache, and Qute
+From Zero to Web App with a Reactive Backend, Templated Frontend, and Zero Config PostgreSQL
+
+Substack article <https://myfear.substack.com/p/quarkus-fullstack-todo-app-java-panache-qute>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
