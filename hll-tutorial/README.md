@@ -1,6 +1,9 @@
 # hll-tutorial
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Counting Millions of Things with Kilobytes
+A Hands-On Quarkus Tutorial for Scalable Unique Counting with HyperLogLog
+
+Substack article: <https://myfear.substack.com/p/quarkus-hyperloglog-unique-counting-java>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
