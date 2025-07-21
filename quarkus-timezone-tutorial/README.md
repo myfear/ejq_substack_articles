@@ -1,6 +1,9 @@
 # quarkus-timezone-tutorial
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Time Zones Don’t Have to Be a Nightmare: Handling Dates Properly with Quarkus and Hibernate Panache
+Store dates in UTC, convert like a pro, and never mess up a user’s local time again, with just a few lines of code.
+
+Substack article: <https://myfear.substack.com/p/quarkus-java-timezone-best-practices>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
