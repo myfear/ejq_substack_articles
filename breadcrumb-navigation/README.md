@@ -1,6 +1,9 @@
 # breadcrumb-navigation
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+The Art of the URI: Crafting a Perfect Breadcrumb Component in Quarkus
+Move beyond static links. This guide shows you how to build a smart, zero-configuration UI component that automatically generates perfect breadcrumbs.
+
+Substack article: <https://myfear.substack.com/p/quarkus-qute-dynamic-breadcrumb>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
