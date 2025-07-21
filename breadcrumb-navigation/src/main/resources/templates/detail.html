@@ -1,0 +1,66 @@
+{#include base}
+  {#title}Product Details{/title}
+  {#body}
+    <h1>Dynamic Breadcrumb Navigation</h1>
+    <p>This page demonstrates dynamic breadcrumbs using Qute extensions.</p>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Current URL Information</h5>
+      </div>
+      <div class="card-body">
+        <p><strong>Full Path:</strong> <code>{uriInfo.path}</code></p>
+        <p><strong>Base URI:</strong> <code>{uriInfo.baseUri}</code></p>
+        <p><strong>Request URI:</strong> <code>{uriInfo.requestUri}</code></p>
+        
+        {#if product}
+          <p><strong>Product:</strong> <span class="badge bg-primary">{product}</span></p>
+        {/if}
+        
+        {#if categories}
+          <p><strong>Raw Categories:</strong> <code>{categories}</code></p>
+        {/if}
+        
+        {#if categorySegments}
+          <p><strong>Category Segments:</strong> 
+            {#for segment in categorySegments}
+              <span class="badge bg-light text-dark me-1">{segment}</span>
+            {/for}
+          </p>
+        {/if}
+        
+        {#if additional}
+          <p><strong>Additional Segment:</strong> <span class="badge bg-secondary">{additional}</span></p>
+        {/if}
+        
+        {#if cat1}
+          <p><strong>Category 1:</strong> <span class="badge bg-success">{cat1}</span></p>
+        {/if}
+        
+        {#if cat2}
+          <p><strong>Category 2:</strong> <span class="badge bg-info">{cat2}</span></p>
+        {/if}
+        
+        {#if cat3}
+          <p><strong>Category 3+:</strong> <span class="badge bg-warning">{cat3}</span></p>
+        {/if}
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Test URLs</h5>
+      </div>
+      <div class="card-body">
+        <p>Try these URLs to test the dynamic breadcrumb navigation:</p>
+        <ul>
+          <li><a href="/products/laptop/details">/products/laptop/details</a> (1 segment)</li>
+          <li><a href="/products/smartphone/electronics/details">/products/smartphone/electronics/details</a> (2 segments)</li>
+          <li><a href="/products/gaming-chair/furniture/office/details">/products/gaming-chair/furniture/office/details</a> (3 segments)</li>
+          <li><a href="/products/monitor/electronics/displays/ultrawide/details">/products/monitor/electronics/displays/ultrawide/details</a> (4+ segments)</li>
+          <li><a href="/products/keyboard/mechanical/gaming/rgb/wireless/details">/products/keyboard/mechanical/gaming/rgb/wireless/details</a> (5+ segments)</li>
+        </ul>
+      </div>
+    </div>
+  {/body}
+{/include}

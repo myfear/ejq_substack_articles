@@ -1,0 +1,18 @@
+{@jakarta.ws.rs.core.UriInfo uriInfo}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    {#for crumb in uriInfo.breadcrumbs}
+      <li class="breadcrumb-item {#if crumb.isLast}active{/if}" {#if crumb.isLast}aria-current="page"{/if}>
+        {#if crumb.isLast}
+          {crumb.label}
+        {#else}
+          {#if crumb.url}
+            <a href="{crumb.url}">{crumb.label}</a>
+          {#else}
+            <span class="text-muted">{crumb.label}</span>
+          {/if}
+        {/if}
+      </li>
+    {/for}
+  </ol>
+</nav>
