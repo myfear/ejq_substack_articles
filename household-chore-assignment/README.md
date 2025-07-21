@@ -1,6 +1,9 @@
 # household-chore-assignment
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Stable Chores with Java: Building a Fair Assignment API Using the Gale-Shapley Algorithm
+Build a REST API That Distributes Household Tasks Fairly
+
+Substack article: <https://myfear.substack.com/p/fair-chore-assignment-java-quarkus-gale-shapley>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
