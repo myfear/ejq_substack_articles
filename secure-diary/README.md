@@ -1,6 +1,9 @@
 # secure-diary
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Building a Secure Diary with Quarkus, Bouncy Castle, and Panache
+Protect your thoughts, one encrypted entry at a time.
+
+Substack article: <https://myfear.substack.com/p/secure-diary-quarkus-bouncy-castle-java-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
