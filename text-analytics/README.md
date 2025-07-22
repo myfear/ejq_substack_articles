@@ -1,6 +1,9 @@
 # text-analytics
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Charting Twain: Building a Character Interaction Graph with Quarkus, OpenNLP, and a local Ollama Model
+Uncover hidden dynamics in Huckleberry Finn using Java, sentiment analysis, and modern NLP.
+
+Substack article: <https://myfear.substack.com/p/text-analytics-quarkus-opennlp-huckleberry-finn>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
