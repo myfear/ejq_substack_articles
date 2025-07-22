@@ -70,8 +70,6 @@ public class SelfLearningWAFFilter implements ContainerRequestFilter {
     private ScheduledExecutorService scheduler;
     private final AtomicInteger trainingCycle = new AtomicInteger(0);
 
-    // Inside SelfLearningWAFFilter class
-
     @PostConstruct
     public void init() {
         logger.info("Initializing Self-Learning WAF Filter...");
@@ -94,8 +92,6 @@ public class SelfLearningWAFFilter implements ContainerRequestFilter {
             scheduler.shutdownNow();
         }
     }
-
-    // Inside SelfLearningWAFFilter class
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
@@ -130,8 +126,6 @@ public class SelfLearningWAFFilter implements ContainerRequestFilter {
             logger.log(Level.SEVERE, "Error in WAF filter, allowing request to proceed.", e);
         }
     }
-
-    // Inside SelfLearningWAFFilter class
 
     private void initializeModel() {
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
@@ -243,8 +237,6 @@ public class SelfLearningWAFFilter implements ContainerRequestFilter {
 
         return features;
     }
-
-    // Inside SelfLearningWAFFilter class
 
     private boolean isObviousAttack(RestRequestInfo request) {
         String fullUrl = request.path() + (request.query() != null ? "?" + request.query() : "");

@@ -1,6 +1,9 @@
 # self-learning-waf
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Build a Self-Learning Web Application Firewall with Quarkus and DeepLearning4j
+Explore how to create a self-learning Web Application Firewall without static rules, just smart, reactive Java security.
+
+Substack article <https://myfear.substack.com/p/self-learning-waf-quarkus-java-deeplearning4j>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
