@@ -1,0 +1,11 @@
+services:
+  sftp:
+    image: atmoz/sftp:latest
+    container_name: my-sftp-dev
+    volumes:
+      - ./target/sftp_data:/home/testuser/upload
+    ports:
+      - "2222:22"
+    command: testuser:testpass:::upload
+    labels:
+      io.quarkus.devservices.compose.wait_for.logs: .*Server listening on.*
