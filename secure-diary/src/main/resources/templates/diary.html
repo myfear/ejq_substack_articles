@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Diary</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            color: #34495e;
+            margin: 30px 0 20px 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input[type="date"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="date"]:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        button[type="submit"] {
+            background: #27ae60;
+        }
+
+        button[type="submit"]:hover {
+            background: #229954;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .filter-section label {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            background: white;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        li strong {
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #e9ecef;
+        }
+
+        .archive-btn {
+            background: #e74c3c;
+            font-size: 14px;
+            padding: 8px 15px;
+            margin-top: 10px;
+        }
+
+        .archive-btn:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            input[type="date"], textarea, button {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            li {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            form {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>My Secure Diary</h1>
+
+        <form action="/entries" method="post">
+            <label for="entryDate">Date:</label>
+            <input type="date" id="entryDate" name="entryDate" required>
+            <label for="content">Content:</label>
+            <textarea id="content" name="content" rows="5" placeholder="Write your diary entry here..." required></textarea>
+            <button type="submit">Save Entry</button>
+        </form>
+
+        <h2>Entries</h2>
+
+        <div class="filter-section">
+            <label for="dateFilter">Filter by date:</label>
+            <input type="date" id="dateFilter" onchange="filterByDate(this.value)">
+        </div>
+
+        <ul>
+            {#for entry in entries}
+            <li>
+                <strong>{entry.entryDate}</strong>
+                <pre>{entry.encryptedContent}</pre>
+                <form action="/entries/{entry.id}/archive" method="post" style="display:inline">
+                    <button type="submit" class="archive-btn">Archive</button>
+                </form>
+            </li>
+            {/for}
+        </ul>
+    </div>
+
+    <script>
+        // Prefill the entry date with today's date
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('entryDate').value = today;
+        });
+
+        function filterByDate(date) {
+            window.location.href = '/?date=' + date;
+        }
+    </script>
+</body>
+
+</html>
