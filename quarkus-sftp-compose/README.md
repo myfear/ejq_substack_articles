@@ -1,6 +1,9 @@
 # quarkus-sftp-compose
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+SFTP Meets PostgreSQL: Building a Smart File Upload System with Quarkus Dev Services
+Most file-handling tutorials stop at REST endpoints and a local filesystem.
+
+Substack article <https://myfear.substack.com/p/quarkus-sftp-postgresql-file-upload-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
