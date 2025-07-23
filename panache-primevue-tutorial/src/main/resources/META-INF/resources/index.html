@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarkus + PrimeVue</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #256029;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" class="card">
+        <h1>Monthly Revenue Report</h1>
+        <p>Data served from a Quarkus backend with Hibernate Panache.</p>
+
+        <p-datatable :value="revenues" :paginator="true" :rows="5" sortMode="multiple" v-model:filters="filters"
+            filterDisplay="row" :globalFilterFields="['period']">
+
+            <template #header>
+                <div style="text-align: left;">
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <p-inputtext v-model="filters['global'].value" placeholder="Search by Period" />
+                    </span>
+                </div>
+            </template>
+
+            <p-column field="period" header="Period" :sortable="true"></p-column>
+            <p-column field="revenue" header="Revenue (USD)" :sortable="true">
+                <template #body="slotProps">
+                    {{ formatCurrency(slotProps.data.revenue) }}
+                </template>
+            </p-column>
+
+        </p-datatable>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        const app = createApp({
+            setup() {
+                const revenues = ref([]);
+                const filters = ref({
+                    'global': { value: null, matchMode: 'contains' },
+                });
+
+                onMounted(async () => {
+                    const response = await fetch('/api/revenue');
+                    revenues.value = await response.json();
+                });
+
+                const formatCurrency = (value) => {
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                    }).format(value);
+                };
+
+                return { revenues, filters, formatCurrency };
+            }
+        });
+
+        app.use(PrimeVue.Config, {
+            theme: {
+                preset: PrimeUIX.Themes.Aura
+            }
+        });
+        app.component('p-datatable', PrimeVue.DataTable);
+        app.component('p-column', PrimeVue.Column);
+        app.component('p-inputtext', PrimeVue.InputText);
+        app.mount('#app');
+    </script>
+
+</body>
+
+</html>
