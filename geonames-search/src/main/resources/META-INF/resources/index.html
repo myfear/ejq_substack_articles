@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-B">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoNames Search</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2em;
+            background: #f4f4f9;
+        }
+
+        #search-box {
+            width: 300px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        #autocomplete-list {
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .autocomplete-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #eee;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>GeoNames Search</h1>
+    <form id="search-form">
+        <input type="text" id="search-box" placeholder="Search for a location..." autocomplete="off">
+        <div id="autocomplete-list"></div>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="results"></div>
+    <div class="pagination">
+        <button id="prev-btn" style="display:none;">Previous</button>
+        <span id="page-info"></span>
+        <button id="next-btn" style="display:none;">Next</button>
+    </div>
+
+    <script>
+        const searchBox = document.getElementById('search-box');
+        const autocompleteList = document.getElementById('autocomplete-list');
+        const searchForm = document.getElementById('search-form');
+        const resultsDiv = document.getElementById('results');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageInfo = document.getElementById('page-info');
+
+        let currentPage = 0;
+        let currentTerm = '';
+
+        // Autocomplete functionality
+        searchBox.addEventListener('keyup', async (e) => {
+            const term = e.target.value;
+            if (term.length < 3) {
+                autocompleteList.innerHTML = '';
+                return;
+            }
+            const response = await fetch(`/geonames/autocomplete?term=${term}`);
+            const suggestions = await response.json();
+
+            autocompleteList.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = suggestion;
+                item.addEventListener('click', () => {
+                    searchBox.value = suggestion;
+                    autocompleteList.innerHTML = '';
+                    searchForm.requestSubmit();
+                });
+                autocompleteList.appendChild(item);
+            });
+        });
+
+        // Search form submission
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            currentTerm = searchBox.value;
+            currentPage = 0;
+            autocompleteList.innerHTML = '';
+            fetchResults();
+        });
+
+        // Pagination button listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                fetchResults();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentPage++;
+            fetchResults();
+        });
+
+        async function fetchResults() {
+            if (!currentTerm) return;
+            const response = await fetch(`/geonames/search?term=${currentTerm}&page=${currentPage}`);
+            const results = await response.json();
+
+            renderResults(results);
+        }
+
+        function renderResults(results) {
+            resultsDiv.innerHTML = '';
+            if (results.length === 0 && currentPage === 0) {
+                resultsDiv.innerHTML = '<p>No results found.</p>';
+            }
+
+            results.forEach(result => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `<b>${result.name}</b> (${result.country_code})<br>Population: ${result.population.toLocaleString()}`;
+                resultsDiv.appendChild(item);
+            });
+
+            // Update pagination controls
+            pageInfo.textContent = `Page ${currentPage + 1}`;
+            prevBtn.style.display = currentPage > 0 ? 'inline' : 'none';
+            nextBtn.style.display = results.length === 10 ? 'inline' : 'none'; // Show next if we got a full page
+        }
+    </script>
+</body>
+
+</html>
