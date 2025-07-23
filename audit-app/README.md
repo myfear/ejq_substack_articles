@@ -1,6 +1,9 @@
 # audit-app
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Let the Logs Speak: Building an Audit Trail with Quarkus and JSON Logging
+Track every user action in your Java APIs with structured logs, OIDC identity, and zero external tools.
+
+Substack article: <https://myfear.substack.com/p/quarkus-audit-trail-json-logging-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
