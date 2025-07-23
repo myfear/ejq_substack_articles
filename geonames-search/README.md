@@ -1,6 +1,9 @@
 # geonames-search
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+High-Performance Autocomplete Search with Quarkus, Panache, and PostgreSQL
+Power intelligent, real-time search experiences with fast indexing, efficient persistence, and a lean Java backend.
+
+Substack article <https://myfear.substack.com/p/high-performance-autocomplete-search-quarkus-java>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
