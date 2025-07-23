@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI White Paper Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #1a253c;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #a0c4e4;
+            cursor: not-allowed;
+        }
+
+        #loader {
+            text-align: center;
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AI White Paper Generator</h1>
+        <form id="paperForm">
+            <div class="form-group">
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" value="QuantumLeap AI Engine" required>
+            </div>
+            <div class="form-group">
+                <label for="targetAudience">Target Audience:</label>
+                <input type="text" id="targetAudience" value="CTOs and R&D Leads in Fortune 500 companies" required>
+            </div>
+            <div class="form-group">
+                <label for="features">Key Features (one per line):</label>
+                <textarea id="features" required>Real-time predictive analytics
+Scalable neural network architecture
+Natural Language Processing with 99% accuracy
+Automated data ingestion and cleaning</textarea>
+            </div>
+            <button type="submit" id="submitBtn">Generate PDF</button>
+            <div id="loader">Generating, please wait... This may take a minute.</div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('paperForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            loader.style.display = 'block';
+
+            const requestData = {
+                productName: document.getElementById('productName').value,
+                targetAudience: document.getElementById('targetAudience').value,
+                features: document.getElementById('features').value
+            };
+
+            try {
+                const response = await fetch('/whitepaper', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.statusText}`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'Innovatech_White_Paper.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate PDF. Please check the console for details.');
+            } finally {
+                submitBtn.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
