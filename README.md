@@ -1,12 +1,16 @@
-# Enterprise Java and Quarkus (EJQ) — Source Code for Substack Articles
+# The Main Thread (formerly EJQ) — Source Code for Substack Articles
 
-This repository contains the source code and hands-on examples for the [Enterprise Java and Quarkus](https://myfear.substack.com/) Substack publication by [Markus Eisele](https://twitter.com/myfear).
+This repository contains the source code and hands-on examples for the [The Main Thread](https://www.the-main-thread.com/) Substack publication by [Markus Eisele](https://twitter.com/myfear).
+
+For the past half year, this publication has operated under the banner Enterprise Java and Quarkus (EJQ). If you’ve been with me on that journey, you’ve seen more than 150 tutorials, walkthroughs, and hands-on projects. Each grounded in code and practical implementation. The new name “The Main Thread” reflects a broader purpose.
+
+Just like the main thread in a program coordinates and executes the core logic, The Main Thread ties together the ideas, tools, and decisions that move enterprise software forward.
 
 If you're working in enterprise software with Java, Quarkus, Jakarta EE, and cloud-native platforms, this is your launchpad for modern development.
 
 ## 📰 About the Publication
 
-[**EJQ on Substack**](https://myfear.substack.com/) is a curated collection of technical articles, guides, and deep dives focused on helping developers and architects:
+Welcome to [The Main Thread](https://www.the-main-thread.com/) — your strategic companion for navigating the evolving world of enterprise Java, software architecture, and AI-infused systems.
 
 - Build fast, cloud-native apps with **Quarkus**
 - Secure microservices with **Vault**, TOTP, and secrets management
@@ -37,6 +41,8 @@ Below are the example projects included in this repository, organized by topic. 
 - [ai-error-handler-pii/](ai-error-handler-pii/): AI-powered exception handling, PII redaction, and user-friendly error messages.  
   [Substack article](https://myfear.substack.com/p/quarkus-ai-exception-handling-pii)
 - [ai-memory/](ai-memory/): AI memory management and conversation context handling with LangChain4j.
+- [ai-whitepaper-generator/](ai-whitepaper-generator/): AI-powered white paper generator using LangChain4j, Ollama, and iText for PDF generation.  
+  [Substack article](https://myfear.substack.com/p/ai-whitepaper-generator-quarkus-langchain4j-itext)
 - [captains-log-generator/](captains-log-generator/): Star Trek-style captain's log generator using AI with stardate calculation and mood-based entries.
 - [credit-card-validator/](credit-card-validator/): AI-powered credit card validation using Luhn algorithm, brand detection, and LangChain4j chat interface.
 - [dad-joke-generator/](dad-joke-generator/): AI-powered dad joke generator with LangChain4j and Ollama for guaranteed groans.
@@ -59,12 +65,15 @@ Below are the example projects included in this repository, organized by topic. 
 [Substack article](https://myfear.substack.com/p/quarkus-langchain4j-image-description-api)
 - [quarkus-langchain4j-observability/](quarkus-langchain4j-observability/): Observability and monitoring for LangChain4j applications in Quarkus.
 - [quarkus-meme-generator/](quarkus-meme-generator/): AI-powered meme generator using LangChain4j and image processing.
+- [quarkus-supervisor-ai/](quarkus-supervisor-ai/): AI supervisor system with multiple specialized agents using Kafka messaging for distributed AI workflow orchestration.
 - [semantic-llm-router/](semantic-llm-router/): Intelligent LLM request routing based on semantic analysis and model capabilities.
 - [sentiment-analysis/](sentiment-analysis/): REST API for sentiment analysis with LangChain4j and Ollama.  
   [Substack article](https://myfear.substack.com/p/quarkus-dto-mapstruct-guide)
 - [structured-ollama-tutorial/](structured-ollama-tutorial/): Structured data extraction with Ollama and LangChain4j.  
   [Substack article](https://myfear.substack.com/p/structured-data-llm-quarkus-langchain4j)
 - [summarization-agent/](summarization-agent/): AI-powered text summarization agent with document processing capabilities.
+- [text-analytics/](text-analytics/): Character interaction graph analysis for Huckleberry Finn using Quarkus, OpenNLP, and Ollama for sentiment analysis.  
+  [Substack article](https://myfear.substack.com/p/text-analytics-quarkus-opennlp-huckleberry-finn)
 - [grumbles-live/](grumbles-live/): Humorous AI news anchor built with LangChain4j.
 [Substack article](https://myfear.substack.com/p/quarkus-langchain4j-sarcastic-ai-news-anchor)
 - [happy-place-app/](happy-place-app/): Sentiment-based content generator using local LLMs.
@@ -77,6 +86,8 @@ Below are the example projects included in this repository, organized by topic. 
 - [csv-uploader/](csv-uploader/): Dynamic CSV ingestion and schema creation in PostgreSQL.  
   [Substack article](https://myfear.substack.com/p/dynamic-csv-uploads-java-quarkus-postgresql)
 - [file-upload-progress/](file-upload-progress/): Chunked file uploads with real-time progress tracking using Server-Sent Events (SSE).
+- [panache-primevue-tutorial/](panache-primevue-tutorial/): Beautiful PrimeVue table backed by Quarkus and Panache with filterable, sortable Vue 3 frontend.  
+  [Substack article](https://myfear.substack.com/p/quarkus-primevue-table-panache-tutorial)
 - [quarkus-docling-converter/](quarkus-docling-converter/): Document conversion service using Docling library to convert various formats to text.
 - [reactive-db-app/](reactive-db-app/): Reactive database operations and streaming with Quarkus and reactive programming patterns.
 - [reactive-streaming-example/](reactive-streaming-example/): Reactive streams implementation with backpressure handling and event processing.
@@ -97,20 +108,30 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/quarkus-custom-error-pages-rest-qute)
 - [jwt-case/](jwt-case/): JWT-based authentication and authorization.  
   [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
+- [secure-diary/](secure-diary/): Secure diary application with Bouncy Castle encryption, protecting thoughts one encrypted entry at a time.  
+  [Substack article](https://myfear.substack.com/p/secure-diary-quarkus-bouncy-castle-java-tutorial)
 - [security-jpa-quickstart/](security-jpa-quickstart/): JPA-based user authentication and PostgreSQL integration.  
   [Substack article](https://myfear.substack.com/p/jwt-quarkus-murder-mystery)
 - [security-jpa-quickstart2/](security-jpa-quickstart2/): Alternative JPA-based authentication example.
+- [self-learning-waf/](self-learning-waf/): Self-learning Web Application Firewall using DeepLearning4j for reactive Java security without static rules.  
+  [Substack article](https://myfear.substack.com/p/self-learning-waf-quarkus-java-deeplearning4j)
 - [totp-vault/](totp-vault/): TOTP and Vault-based secrets management.  
   [Substack article](https://myfear.substack.com/p/secure-java-api-totp-quarkus-vault)
+- [zero-trust-uploads/](zero-trust-uploads/): Zero-trust file uploads with ClamAV antivirus scanning using secure in-memory pipeline before storage.  
+  [Substack article](https://www.the-main-thread.com/p/zero-trust-file-uploads-quarkus-antivirus)
 - [quarkflix-guards/](quarkflix-guards/): Hands on CDI Interceptors tutorial
 [Substack article](https://myfear.substack.com/p/quarkus-cdi-interceptors-real-world)
 - [quarkus-response-tutorial/](quarkus-response-tutorial/): HTTP Response handling
 [Substack article](https://myfear.substack.com/p/quarkus-http-response-guide-java-developers)
 
 ### 🏗️ Application Architecture & Patterns
+- [breadcrumb-navigation/](breadcrumb-navigation/): Dynamic breadcrumb navigation component in Quarkus with zero-configuration auto-generation from URI paths.  
+  [Substack article](https://myfear.substack.com/p/quarkus-qute-dynamic-breadcrumb)
 - [composite-key-app/](composite-key-app/): Demonstrates composite keys with Hibernate Panache and student enrollment modeling.
 - [flyway-adventure/](flyway-adventure/): Database migrations with Flyway.  
   [Substack article](https://myfear.substack.com/p/quarkus-flyway-database-migrations-java)
+- [hll-tutorial/](hll-tutorial/): Scalable unique counting with HyperLogLog algorithm for counting millions of things with kilobytes of memory.  
+  [Substack article](https://myfear.substack.com/p/quarkus-hyperloglog-unique-counting-java)
 - [http-header-tutorial/](http-header-tutorial/): HTTP header handling tutorial with request/response manipulation and GZIP compression.
 - [quarkus-dto-tutorial/](quarkus-dto-tutorial/): DTO mapping and transformation.  
   [Substack article](https://myfear.substack.com/p/quarkus-dto-mapstruct-guide)
@@ -118,6 +139,8 @@ Below are the example projects included in this repository, organized by topic. 
   [Substack article](https://myfear.substack.com/p/langchain4j-graphql-websocket-next)
 - [quarkus-interceptor-tutorial/](quarkus-interceptor-tutorial/): Custom request interceptors, logging, and auditing.  
   [Substack article](https://myfear.substack.com/p/langchain4j-graphql-websocket-next)
+- [quarkus-timezone-tutorial/](quarkus-timezone-tutorial/): Timezone handling best practices with Quarkus and Hibernate Panache for proper date management.  
+  [Substack article](https://myfear.substack.com/p/quarkus-java-timezone-best-practices)
 - [validation-example/](validation-example/): Form validation with Jakarta Validation and Qute.  
   [Substack article](https://myfear.substack.com/p/validation-java-quarkus)
 - [i18n-demo/](i18n-demo/): Database-backed internationalization.  
@@ -143,6 +166,16 @@ Below are the example projects included in this repository, organized by topic. 
 - [wizard-app/](wizard-app/): Wizard-style application UI.
 [Substack article](https://myfear.substack.com/p/quarkus-multi-step-form-session-csrf)
 ### 🛠️ Utilities, Monitoring & Misc
+- [error-handling-app/](error-handling-app/): RFC 7807 standardized error handling in Quarkus for secure, standards-based API error responses.  
+  [Substack article](https://myfear.substack.com/p/quarkus-rfc7807-error-handling-java)
+- [geonames-search/](geonames-search/): High-performance autocomplete search with Quarkus, Panache, and PostgreSQL for geographic locations.  
+  [Substack article](https://myfear.substack.com/p/high-performance-autocomplete-search-quarkus-java)
+- [health-checker/](health-checker/): Website health monitoring service using MicroProfile Health, YAML configuration, and HttpClient for uptime checking.  
+  [Substack article](https://myfear.substack.com/p/quarkus-website-health-check-yaml)
+- [household-chore-assignment/](household-chore-assignment/): Fair household chore assignment using the Gale-Shapley algorithm for stable matching.  
+  [Substack article](https://myfear.substack.com/p/fair-chore-assignment-java-quarkus-gale-shapley)
+- [quarkus-sftp-compose/](quarkus-sftp-compose/): Smart SFTP file upload system with PostgreSQL metadata storage using Quarkus Dev Services.  
+  [Substack article](https://myfear.substack.com/p/quarkus-sftp-postgresql-file-upload-tutorial)
 - [realtime-monitor/](realtime-monitor/): JVM heap memory monitoring and dashboard UI.  
   [Substack article](https://myfear.substack.com/p/quarkus-dev-services-continuous-testing)
 - [quote-cli/](quote-cli/): CLI tool for quotes or text processing.  

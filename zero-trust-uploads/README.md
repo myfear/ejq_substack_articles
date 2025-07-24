@@ -1,6 +1,9 @@
 # zero-trust-uploads
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Zero-Trust File Uploads: Scan Before You Store
+Build a secure, in-memory antivirus pipeline using ClamAV, Quarkus REST, Reactive, and ByteArrayInputStream in Java
+
+Substack article: <https://www.the-main-thread.com/p/zero-trust-file-uploads-quarkus-antivirus>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
