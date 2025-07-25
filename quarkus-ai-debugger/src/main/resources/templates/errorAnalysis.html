@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Development Error Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        h1 {
+            color: #dc3545;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        pre {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AI Debugging Assistant</h1>
+        <p>An exception was caught in development mode. Here is an analysis from Code Llama:</p>
+        <h2>Suggested Fix</h2>
+        <pre>{analysis}</pre>
+        <h2>Original Stack Trace</h2>
+        <pre>{stackTrace}</pre>
+    </div>
+</body>
+
+</html>
