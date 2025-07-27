@@ -1,6 +1,9 @@
 # granular-rbac-tutorial
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Beyond @RolesAllowed: Fine-Grained RBAC in Quarkus
+Secure every document with per-object permissions, JWT identity, and a lean 100-line service.
+
+Substack article <https://www.the-main-thread.com/p/quarkus-fine-grained-rbac-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
