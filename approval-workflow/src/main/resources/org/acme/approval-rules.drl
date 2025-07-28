@@ -1,0 +1,37 @@
+package org.acme.rules;
+
+import org.acme.ExpenseReport;
+
+// Auto-approve small expenses
+rule "Auto-Approve Low Amount"
+when
+    $report: ExpenseReport(amount < 50)
+then
+    $report.addApprovalStep("System (Auto-Approved)");
+end
+
+// Manager approval for medium expenses
+rule "Manager Approval for Medium Amount"
+when
+    $report: ExpenseReport(amount >= 50 && amount < 500)
+then
+    $report.addApprovalStep("Manager");
+end
+
+// Senior Manager approval for large expenses
+rule "Senior Manager Approval for High Amount"
+when
+    $report: ExpenseReport(amount >= 500)
+then
+    $report.addApprovalStep("Manager");
+    $report.addApprovalStep("Senior Manager");
+end
+
+// Sales department always requires Finance approval
+rule "Finance Approval for Sales Department"
+salience 10
+when
+    $report: ExpenseReport(department == "Sales")
+then
+    $report.addApprovalStep("Finance Department");
+end
