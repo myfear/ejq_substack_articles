@@ -1,6 +1,9 @@
 # approval-workflow
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Build Smarter Approval Workflows with Quarkus and Drools
+Create a dynamic expense approval engine in Java with hot-reloadable business rules and zero downtime updates.
+
+Substack article: <https://www.the-main-thread.com/p/quarkus-drools-dynamic-approval-workflow-java>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
