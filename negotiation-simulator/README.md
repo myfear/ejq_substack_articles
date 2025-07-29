@@ -1,6 +1,9 @@
 # negotiation-simulator
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Negotiating with AI Managers: Build a Role‑Playing Simulator Using Quarkus and Langchain4j
+A hands‑on guide for Java developers to create an AI‑powered negotiation training app with a local LLM and a clean frontend.
+
+Substack link: <https://www.the-main-thread.com/p/quarkus-java-ai-negotiation-simulator>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
