@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HR Performance Conversation Simulator</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main class="container">
+        <div class="header">
+            <h1><i class="fas fa-handshake"></i> HR Performance Conversation Simulator</h1>
+            <p>Practice your negotiation and performance discussion skills with AI managers</p>
+        </div>
+
+        <section id="setup">
+            <div class="setup-card">
+                <form id="setupForm">
+                    <div class="setup-grid">
+                        <div class="selection-section">
+                            <h3><i class="fas fa-user-tie"></i> Manager Personality</h3>
+                            <div id="personalities" class="selection-options"></div>
+                        </div>
+                        
+                        <div class="selection-section">
+                            <h3><i class="fas fa-clipboard-list"></i> Conversation Scenario</h3>
+                            <div id="scenarios" class="selection-options"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-input-section">
+                        <label for="userId"><i class="fas fa-user"></i> Your Name</label>
+                        <input type="text" id="userId" placeholder="Enter your name" required>
+                    </div>
+                    
+                    <button type="submit" class="start-button">
+                        <i class="fas fa-play"></i> Start Conversation
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="chat" class="hidden">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <i class="fas fa-comments"></i>
+                    <span>Performance Conversation in Progress</span>
+                </div>
+                <div id="messages" class="chat-messages"></div>
+                <form id="messageForm" class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Type your message..." required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+                </form>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <button id="endSessionBtn" class="start-button" style="width: auto; background: var(--danger-color);">
+                    <i class="fas fa-stop"></i> End Session & Get Feedback
+                </button>
+            </div>
+        </section>
+
+        <section id="feedback" class="hidden">
+            <div class="feedback-card">
+                <div class="score-display">
+                    <div class="score-circle" style="--score: 0">
+                        <div class="score-text" id="score">0</div>
+                    </div>
+                    <h3>Performance Score</h3>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-list">
+                        <h4><i class="fas fa-thumbs-up" style="color: var(--success-color);"></i> Strengths</h4>
+                        <ul id="strengths"></ul>
+                    </div>
+                    
+                    <div class="feedback-list">
+                        <h4><i class="fas fa-lightbulb" style="color: var(--warning-color);"></i> Areas for Improvement</h4>
+                        <ul id="improvements"></ul>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button onclick="location.reload()" class="start-button">
+                        <i class="fas fa-redo"></i> Start New Session
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+
+</html>
