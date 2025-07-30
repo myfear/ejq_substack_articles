@@ -1,6 +1,9 @@
 # car-filter-app
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Build a Dynamic Car Finder App with Quarkus and Panache
+A step-by-step guide to creating a real-world search and filter UI with Quarkus, PostgreSQL Dev Services, and PrimeVue.
+
+Substack article <https://www.the-main-thread.com/p/dynamic-car-filtering-app-quarkus-panache-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
