@@ -1,6 +1,9 @@
 # xa-transaction-tutorial
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Distributed Transactions Made Simple with Quarkus and JTA
+Learn how to build atomic operations across PostgreSQL and MSSql databases using XA transactions in three real-world banking examples.
+
+Substack article <https://www.the-main-thread.com/p/distributed-transactions-quarkus-jta-xa-postgresql>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
