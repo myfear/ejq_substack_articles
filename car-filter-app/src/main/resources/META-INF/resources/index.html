@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarkus Car Search</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 1rem;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #256029;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            grid-column: 1 / -1;
+            /* Span all columns */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Car Search</h1>
+        <p>Dynamic filtering with Quarkus Panache and PrimeVue.</p>
+
+        <div class="card">
+            <h2>Filters</h2>
+            <div class="filter-grid">
+                <div class="filter-item">
+                    <label for="brands">Brands</label>
+                    <p-multiselect v-model="filters.brandNames" :options="brandNames"
+                        placeholder="Select Brands" display="chip"></p-multiselect>
+                </div>
+                <div class="filter-item">
+                    <label for="dealers">Dealerships</label>
+                    <p-multiselect v-model="filters.dealershipNames" :options="dealershipNames"
+                        placeholder="Select Dealerships" display="chip"></p-multiselect>
+                </div>
+                <div class="filter-item">
+                    <label for="colors">Colors</label>
+                    <p-multiselect v-model="filters.colors" :options="filterOptions.colors" placeholder="Select Colors"
+                        display="chip"></p-multiselect>
+                </div>
+                <div class="filter-item">
+                    <label for="features">Features</label>
+                    <p-multiselect v-model="filters.features" :options="filterOptions.features"
+                        placeholder="Select Features" display="chip"></p-multiselect>
+                </div>
+                <div class="filter-item">
+                    <label for="minYear">Min Year</label>
+                    <p-inputnumber v-model="filters.minYear" :useGrouping="false"
+                        placeholder="e.g. 2020"></p-inputnumber>
+                </div>
+                <div class="filter-item">
+                    <label for="maxYear">Max Year</label>
+                    <p-inputnumber v-model="filters.maxYear" :useGrouping="false"
+                        placeholder="e.g. 2024"></p-inputnumber>
+                </div>
+                <div class="filter-item">
+                    <label for="minPrice">Min Price</label>
+                    <p-inputnumber v-model="filters.minPrice" mode="currency" currency="USD" locale="en-US"
+                        placeholder="$20,000"></p-inputnumber>
+                </div>
+                <div class="filter-item">
+                    <label for="maxPrice">Max Price</label>
+                    <p-inputnumber v-model="filters.maxPrice" mode="currency" currency="USD" locale="en-US"
+                        placeholder="$50,000"></p-inputnumber>
+                </div>
+                <div class="filter-actions">
+                    <p-button label="Search" icon="pi pi-search" @click="searchCars"></p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" severity="secondary" @click="resetFilters"></p-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <p-datatable :value="cars" :loading="loading" dataKey="id">
+                <template #header>
+                    Found {{ pagination.totalRecords }} cars
+                </template>
+                <p-column field="model" header="Model" :sortable="true"></p-column>
+                <p-column field="brand.name" header="Brand"></p-column>
+                <p-column field="dealership.name" header="Dealership"></p-column>
+                <p-column field="productionYear" header="Year" :sortable="true"></p-column>
+                <p-column field="color" header="Color"></p-column>
+                <p-column field="price" header="Price" :sortable="true">
+                    <template #body="slotProps">
+                        {{ formatCurrency(slotProps.data.price) }}
+                    </template>
+                </p-column>
+            </p-datatable>
+            <p-paginator :rows="pagination.rows" :totalRecords="pagination.totalRecords"
+                @page="onPageChange"></p-paginator>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        const app = createApp({
+            setup() {
+                // Reactive state variables
+                const cars = ref([]);
+                const loading = ref(false);
+                const filterOptions = ref({ brands: [], dealerships: [], colors: [], features: [] });
+                const filters = ref({});
+                const pagination = ref({ page: 0, rows: 5, totalRecords: 0 });
+
+                // Fetch data to populate filter dropdowns
+                const loadFilterOptions = async () => {
+                    const response = await fetch('/cars/filter-options');
+                    filterOptions.value = await response.json();
+                };
+
+                // Main search function
+                const searchCars = async () => {
+                    loading.value = true;
+                    
+                    // Convert brand and dealership names back to IDs for backend
+                    const transformedFilters = { ...filters.value };
+                    
+                    // Convert brand names to IDs
+                    if (transformedFilters.brandNames && transformedFilters.brandNames.length > 0) {
+                        transformedFilters.brandIds = transformedFilters.brandNames.map(name => {
+                            const brand = filterOptions.value.brands.find(b => b.name === name);
+                            return brand ? brand.id : null;
+                        }).filter(id => id !== null);
+                        delete transformedFilters.brandNames;
+                    }
+                    
+                    // Convert dealership names to IDs
+                    if (transformedFilters.dealershipNames && transformedFilters.dealershipNames.length > 0) {
+                        transformedFilters.dealershipIds = transformedFilters.dealershipNames.map(nameCity => {
+                            const dealership = filterOptions.value.dealerships.find(d => `${d.name} - ${d.city}` === nameCity);
+                            return dealership ? dealership.id : null;
+                        }).filter(id => id !== null);
+                        delete transformedFilters.dealershipNames;
+                    }
+                    
+                    // Remove null/empty properties from the filter object before sending
+                    const activeFilters = Object.entries(transformedFilters)
+                        .filter(([key, value]) => value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+                        .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+
+                    const response = await fetch(`/cars/search?page=${pagination.value.page}&size=${pagination.value.rows}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(activeFilters)
+                    });
+
+                    cars.value = await response.json();
+                    pagination.value.totalRecords = parseInt(response.headers.get('X-Total-Count') || 0);
+                    loading.value = false;
+                };
+
+                // Handle pagination changes
+                const onPageChange = (event) => {
+                    pagination.value.page = event.page;
+                    pagination.value.rows = event.rows;
+                    searchCars();
+                };
+
+                // Reset all filters and search again
+                const resetFilters = () => {
+                    filters.value = {};
+                    pagination.value.page = 0; // Go back to the first page
+                    searchCars();
+                };
+
+                // Helper to format currency
+                const formatCurrency = (value) => {
+                    if (typeof value !== 'number') return '';
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+                };
+
+                // Computed properties to create simple string arrays like Colors
+                const brandNames = computed(() => {
+                    return filterOptions.value.brands.map(brand => brand.name);
+                });
+
+                const dealershipNames = computed(() => {
+                    return filterOptions.value.dealerships.map(dealership => `${dealership.name} - ${dealership.city}`);
+                });
+
+
+
+
+
+                // Load initial data when the component is mounted
+                onMounted(() => {
+                    loadFilterOptions();
+                    searchCars();
+                });
+
+                return {
+                    cars,
+                    loading,
+                    filters,
+                    filterOptions,
+                    brandNames,
+                    dealershipNames,
+                    pagination,
+                    searchCars,
+                    resetFilters,
+                    onPageChange,
+                    formatCurrency
+                };
+            }
+        });
+
+        // Register PrimeVue and its components
+        app.use(PrimeVue.Config, {
+            theme: { preset: PrimeUIX.Themes.Aura }
+        });
+
+        app.component('p-datatable', PrimeVue.DataTable);
+        app.component('p-column', PrimeVue.Column);
+        app.component('p-paginator', PrimeVue.Paginator);
+        app.component('p-multiselect', PrimeVue.MultiSelect);
+        app.component('p-inputnumber', PrimeVue.InputNumber);
+        app.component('p-button', PrimeVue.Button);
+        app.mount('#app');
+    </script>
+</body>
+
+</html>
