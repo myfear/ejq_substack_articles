@@ -1,0 +1,337 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, rgb(121, 86, 73) 0%, rgb(139, 69, 19) 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .header p {
+        font-size: 1rem;
+    }
+    
+    .operator-select {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .timeline {
+        height: 50px;
+    }
+    
+    .marble {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .marble {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .timeline {
+        height: 45px;
+    }
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+}
+
+.header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.controls {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.operator-select {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.operator-select label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #4a5568;
+}
+
+select {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: rgb(121, 86, 73);
+    box-shadow: 0 0 0 3px rgba(121, 86, 73, 0.1);
+}
+
+.input-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, rgb(121, 86, 73), rgb(139, 69, 19));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(121, 86, 73, 0.4);
+}
+
+.btn-secondary {
+    background: #f7fafc;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+    background: #edf2f7;
+    transform: translateY(-1px);
+    border-color: rgb(121, 86, 73);
+}
+
+.marble-diagram {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.stream {
+    margin: 30px 0;
+    position: relative;
+}
+
+.stream-label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #2d3748;
+}
+
+.timeline {
+    position: relative;
+    height: 60px;
+    background: linear-gradient(to right, #e2e8f0, #cbd5e0);
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, rgb(121, 86, 73), rgb(139, 69, 19));
+    transform: translateY(-50%);
+}
+
+.timeline::after {
+    content: '▶';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(121, 86, 73);
+    font-size: 1.2rem;
+}
+
+.marble {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.marble:hover {
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.marble.value-1 { background: linear-gradient(135deg, rgb(121, 86, 73), rgb(139, 69, 19)); }
+.marble.value-2 { background: linear-gradient(135deg, rgb(160, 82, 45), rgb(139, 69, 19)); }
+.marble.value-3 { background: linear-gradient(135deg, rgb(205, 133, 63), rgb(160, 82, 45)); }
+.marble.value-4 { background: linear-gradient(135deg, rgb(210, 105, 30), rgb(205, 133, 63)); }
+.marble.value-5 { background: linear-gradient(135deg, rgb(244, 164, 96), rgb(210, 105, 30)); }
+.marble.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.marble.complete { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+
+.marble.error::before {
+    content: '✕';
+}
+
+.marble.complete::before {
+    content: '|';
+    font-size: 1.5rem;
+}
+
+.operator-box {
+    background: linear-gradient(135deg, rgb(121, 86, 73), rgb(139, 69, 19));
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(121, 86, 73, 0.3);
+}
+
+.description {
+    background: #f8fafc;
+    border-left: 4px solid rgb(121, 86, 73);
+    padding: 20px;
+    border-radius: 0 10px 10px 0;
+    margin-top: 20px;
+}
+
+.description h3 {
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.description p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.code-example {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.animation-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, rgb(121, 86, 73), rgb(139, 69, 19));
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+@keyframes marbleMove {
+    from {
+        transform: translateY(-50%) translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(-50%) translateX(0);
+        opacity: 1;
+    }
+}
+
+.marble.animate {
+    animation: marbleMove 0.5s ease-out;
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
