@@ -1,0 +1,49 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.example.app:community-app >--------------------
+[INFO] Building community-app 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.6.1:tree (default-cli) @ community-app ---
+[INFO] com.example.app:community-app:jar:1.0-SNAPSHOT
+[INFO] \- org.springframework.boot:spring-boot-starter-web:jar:3.2.5:compile
+[INFO]    +- org.springframework.boot:spring-boot-starter:jar:3.2.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot:jar:3.2.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.5:compile
+[INFO]    |  +- org.springframework.boot:spring-boot-starter-logging:jar:3.2.5:compile
+[INFO]    |  |  +- ch.qos.logback:logback-classic:jar:1.4.14:compile
+[INFO]    |  |  |  +- ch.qos.logback:logback-core:jar:1.4.14:compile
+[INFO]    |  |  |  \- org.slf4j:slf4j-api:jar:2.0.13:compile
+[INFO]    |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.21.1:compile
+[INFO]    |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.21.1:compile
+[INFO]    |  |  \- org.slf4j:jul-to-slf4j:jar:2.0.13:compile
+[INFO]    |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
+[INFO]    |  +- org.springframework:spring-core:jar:6.1.6:compile
+[INFO]    |  |  \- org.springframework:spring-jcl:jar:6.1.6:compile
+[INFO]    |  \- org.yaml:snakeyaml:jar:2.2:compile
+[INFO]    +- org.springframework.boot:spring-boot-starter-json:jar:3.2.5:compile
+[INFO]    |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.4:compile
+[INFO]    |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.15.4:compile
+[INFO]    |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.15.4:compile
+[INFO]    |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
+[INFO]    |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
+[INFO]    |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.4:compile
+[INFO]    +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.5:compile
+[INFO]    |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.20:compile
+[INFO]    |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.20:compile
+[INFO]    |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.20:compile
+[INFO]    +- org.springframework:spring-web:jar:6.1.6:compile
+[INFO]    |  +- org.springframework:spring-beans:jar:6.1.6:compile
+[INFO]    |  \- io.micrometer:micrometer-observation:jar:1.12.5:compile
+[INFO]    |     \- io.micrometer:micrometer-commons:jar:1.12.5:compile
+[INFO]    \- org.springframework:spring-webmvc:jar:6.1.6:compile
+[INFO]       +- org.springframework:spring-aop:jar:6.1.6:compile
+[INFO]       +- org.springframework:spring-context:jar:6.1.6:compile
+[INFO]       \- org.springframework:spring-expression:jar:6.1.6:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.401 s
+[INFO] Finished at: 2025-08-16T13:56:13+02:00
+[INFO] ------------------------------------------------------------------------
