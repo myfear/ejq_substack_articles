@@ -1,7 +1,6 @@
 # Compiled class file
 *.class
 .quarkus/
-.mvn
 .vscode
 target/
 .gitignore
@@ -19,7 +18,6 @@ target/
 .dockerignore
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
