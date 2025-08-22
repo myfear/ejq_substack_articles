@@ -1,6 +1,8 @@
 # fleet-insure
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Fleet Insurance Premium Recalculation System with Quarkus, Panache, and PostgreSQL
+
+Link to substack article: <https://www.the-main-thread.com/p/quarkus-fleet-insurance-premium-recalculation-temporal-snapshots>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
