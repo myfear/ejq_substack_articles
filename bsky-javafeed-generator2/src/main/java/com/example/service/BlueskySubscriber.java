@@ -28,7 +28,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@WebSocketClient(path = "/subscribe")
+@WebSocketClient(path = "")
 public class BlueskySubscriber {
 
     @Inject
@@ -81,6 +81,7 @@ public class BlueskySubscriber {
     }
 
     @OnTextMessage
+    @Transactional
     public Multi<Void> stream(Multi<String> incoming) {
         return incoming
                 // Buffer small bursts. If your DB is slow, increase cautiously.
@@ -99,7 +100,7 @@ public class BlueskySubscriber {
                 .invoke(throwable -> LOG.errorf(throwable, "Error handling JSON message: %s", throwable.getMessage()));
     }
 
-    @Transactional
+    
     void processJetstreamEvent(String json) {
         try {
             // Parse JSON text into a tree for inspection
