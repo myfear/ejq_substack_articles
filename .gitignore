@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
 .quarkus/
+.cursor/
 .vscode
 target/
 .gitignore

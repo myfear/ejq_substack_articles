@@ -9,13 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
 
 import com.example.model.PostEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnError;
@@ -30,59 +30,120 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+/**
+ * BlueskySubscriber is a reactive service that connects to the Bluesky Jetstream WebSocket
+ * to receive real-time posts and filter them for Java-related content.
+ * 
+ * <p>This service implements the following functionality:</p>
+ * <ul>
+ *   <li>WebSocket connection management with automatic reconnection</li>
+ *   <li>Real-time filtering of posts for Java-related hashtags and content</li>
+ *   <li>Language detection and filtering (English variants only)</li>
+ *   <li>Tech context analysis to distinguish programming Java from geographic Java</li>
+ *   <li>Framework detection for Spring, Quarkus, and other Java technologies</li>
+ *   <li>Persistent storage of relevant posts to the database</li>
+ * </ul>
+ * 
+ * <p>The service connects to the Bluesky Jetstream firehose and processes incoming
+ * posts in real-time, applying multiple filters to ensure only relevant Java programming
+ * content is indexed.</p>
+ * 
+ * @author Bluesky Java Feed Generator
+ * @version 1.0
+ * @since 1.0
+ */
 @ApplicationScoped
 @WebSocketClient(path = "")
 public class BlueskySubscriber {
 
+    /**
+     * WebSocket connector for establishing and managing connections to the Bluesky Jetstream.
+     */
     @Inject
     WebSocketConnector<BlueskySubscriber> connector;
 
-    private static final Logger LOG = Logger.getLogger(BlueskySubscriber.class);
-
+    /**
+     * Configuration property for the Bluesky Jetstream WebSocket URI.
+     * Injected from application.properties.
+     */
     @ConfigProperty(name = "app.jetstream.uri")
     String firehoseUrl;
 
+    /**
+     * Jackson ObjectMapper for JSON parsing and processing.
+     */
     @Inject
     ObjectMapper objectMapper;
 
+    /**
+     * Lifecycle method called when the application starts.
+     * Establishes the initial WebSocket connection to the Bluesky Jetstream.
+     * 
+     * @param ev The startup event that triggered this method
+     */
     void onStart(@Observes StartupEvent ev) {
         try {
 
             String description = "Jetstream2 US-East (Official)";
 
-            LOG.infof("Attempting to connect to %s: %s", description, firehoseUrl);
+            Log.infof("Attempting to connect to %s: %s", description, firehoseUrl);
 
             connector.baseUri(URI.create(firehoseUrl))
                     .connectAndAwait();
 
-            LOG.info("Successfully connected to Jetstream WebSocket");
+            Log.info("Successfully connected to Jetstream WebSocket");
         } catch (Exception e) {
-            LOG.errorf(e, "Failed to connect to Jetstream WebSocket: %s", e.getMessage());
+            Log.errorf(e, "Failed to connect to Jetstream WebSocket: %s", e.getMessage());
             reconnectWithBackoff(1); // start at 1s
         }
     }
 
+    /**
+     * WebSocket event handler called when the connection is successfully opened.
+     * Logs the successful connection establishment.
+     * 
+     * @param conn The WebSocket client connection that was opened
+     */
     @OnOpen
     void opened(WebSocketClientConnection conn) {
         try {
-            LOG.info("Jetstream WebSocket opened");
+            Log.info("Jetstream WebSocket opened");
         } catch (Exception e) {
-            LOG.errorf(e, "Error in WebSocket open handler: %s", e.getMessage());
+            Log.errorf(e, "Error in WebSocket open handler: %s", e.getMessage());
         }
     }
 
+    /**
+     * WebSocket event handler called when the connection is closed.
+     * Initiates reconnection with exponential backoff.
+     * 
+     * @param conn The WebSocket client connection that was closed
+     */
     @OnClose
     void closed(WebSocketClientConnection conn) {
-        LOG.warn("WebSocket closed. Will attempt to reconnect.");
+        Log.warn("WebSocket closed. Will attempt to reconnect.");
         reconnectWithBackoff(1); // start at 1s
     }
 
+    /**
+     * WebSocket event handler called when an error occurs on the connection.
+     * Logs the error and initiates reconnection with exponential backoff.
+     * 
+     * @param conn The WebSocket client connection that encountered an error
+     * @param t The throwable that represents the error
+     */
     @OnError
     void errored(WebSocketClientConnection conn, Throwable t) {
-        LOG.warn("WebSocket error: " + t.getMessage() + " — will attempt to reconnect.", t);
+        Log.warn("WebSocket error: " + t.getMessage() + " — will attempt to reconnect.", t);
         reconnectWithBackoff(1);
     }
 
+    /**
+     * Implements exponential backoff reconnection strategy for the WebSocket connection.
+     * Uses jittered delays to prevent thundering herd problems during reconnection.
+     * 
+     * @param seconds The initial delay in seconds before attempting reconnection
+     */
     void reconnectWithBackoff(int seconds) {
         int delay = Math.min(seconds, 60); // cap at 60s
         // add jitter +/- 20%
@@ -94,18 +155,33 @@ public class BlueskySubscriber {
                         v -> {
                             try {
                                 connector.baseUri(URI.create(firehoseUrl)).connectAndAwait();
-                                LOG.info("Reconnected to Jetstream");
+                                Log.info("Reconnected to Jetstream");
                             } catch (Exception e) {
-                                LOG.warnf(e, "Reconnect failed; will retry with larger backoff");
+                                Log.warnf(e, "Reconnect failed; will retry with larger backoff");
                                 reconnectWithBackoff(delay * 2); // exponential
                             }
                         },
                         err -> {
-                            LOG.warn("Backoff timer failed: " + err.getMessage());
+                            Log.warn("Backoff timer failed: " + err.getMessage());
                             reconnectWithBackoff(delay * 2);
                         });
     }
 
+    /**
+     * WebSocket message handler that processes incoming JSON messages from the Bluesky Jetstream.
+     * Implements reactive stream processing with overflow protection and ordered processing.
+     * 
+     * <p>The method applies the following processing pipeline:</p>
+     * <ul>
+     *   <li>Buffers small bursts of messages (512 items)</li>
+     *   <li>Drops messages on overflow to prevent OOM</li>
+     *   <li>Processes messages sequentially to preserve order</li>
+     *   <li>Transforms each message to a database operation</li>
+     * </ul>
+     * 
+     * @param incoming A Multi stream of JSON strings from the WebSocket
+     * @return A Multi stream of Void items representing the processing results
+     */
     @OnTextMessage
     public Multi<Void> stream(Multi<String> incoming) {
         return incoming
@@ -117,6 +193,22 @@ public class BlueskySubscriber {
                 .onItem().transformToUniAndConcatenate(json -> processJetstreamEvent(json));
     }
 
+    /**
+     * Processes a single Jetstream event from the Bluesky firehose.
+     * Applies multiple filters to determine if the post should be indexed:
+     * <ul>
+     *   <li>Event type validation (commit events only)</li>
+     *   <li>Post creation validation (new posts only)</li>
+     *   <li>Language filtering (English variants only)</li>
+     *   <li>Java hashtag detection</li>
+     *   <li>Tech context analysis</li>
+     * </ul>
+     * 
+     * <p>If all filters pass, the post is persisted to the database with extracted metadata.</p>
+     * 
+     * @param json The JSON string representing the Jetstream event
+     * @return A Uni that completes when the processing is finished
+     */
     @WithTransaction
     Uni<Void> processJetstreamEvent(String json) {
         try {
@@ -140,7 +232,7 @@ public class BlueskySubscriber {
 
             // Check if the post has English language variants
             if (!hasEnglishLanguage(commit.path("record"))) {
-                LOG.tracef("Skipping non-English post: %s", text.substring(0, Math.min(50, text.length())));
+                Log.tracef("Skipping non-English post: %s", text.substring(0, Math.min(50, text.length())));
                 return Uni.createFrom().voidItem();
             }
 
@@ -151,7 +243,7 @@ public class BlueskySubscriber {
             // Distinguish tech vs. travel context for "#Java"
             if (text.isEmpty() || !hasJavaHashtag || !isTechRelatedPost(text)) {
                 // It's a #Java mention likely about Java (island/coffee), skip indexing
-                LOG.tracef("Skipping non-tech Java post: %s", text.substring(0, Math.min(50, text.length())));
+                Log.tracef("Skipping non-tech Java post: %s", text.substring(0, Math.min(50, text.length())));
                 return Uni.createFrom().voidItem();
             }
 
@@ -160,7 +252,7 @@ public class BlueskySubscriber {
             try {
                 createdAt = OffsetDateTime.parse(createdAtStr);
             } catch (DateTimeParseException e) {
-                LOG.warnf("Failed to parse creation date '%s' for post: %s", createdAtStr, e.getMessage());
+                Log.warnf("Failed to parse creation date '%s' for post: %s", createdAtStr, e.getMessage());
                 return Uni.createFrom().voidItem(); // Skip this post if we can't parse the date
             }
 
@@ -190,14 +282,14 @@ public class BlueskySubscriber {
             return post.persist()
                     .onItem().ignore().andContinueWithNull()
                     .onItem().invoke(() -> {
-                        LOG.tracef("Indexed post %s (hour %d, frameworks: %s)", atUri, hour, frameworks);
+                        Log.tracef("Indexed post %s (hour %d, frameworks: %s)", atUri, hour, frameworks);
                     })
                     .onFailure().invoke(failure -> {
-                        LOG.errorf(failure, "Failed to persist post %s to database: %s", atUri, failure.getMessage());
+                        Log.errorf(failure, "Failed to persist post %s to database: %s", atUri, failure.getMessage());
                     });
 
         } catch (Exception e) {
-            LOG.errorf(e, "Unexpected error processing Jetstream event: %s", e.getMessage());
+            Log.errorf(e, "Unexpected error processing Jetstream event: %s", e.getMessage());
             return Uni.createFrom().failure(e);
         }
     }
@@ -205,13 +297,25 @@ public class BlueskySubscriber {
     /**
      * Determines if a #Java post is tech-related or not.
      * Uses existing language detection methods for cleaner logic.
+     * 
+     * <p>This method applies multiple heuristics to distinguish between:</p>
+     * <ul>
+     *   <li><strong>Tech context:</strong> Programming, development, frameworks</li>
+     *   <li><strong>Travel context:</strong> Indonesia, coffee, geographic references</li>
+     * </ul>
+     * 
+     * <p>The method uses existing utility methods for Indonesian word detection
+     * and framework identification to make accurate determinations.</p>
+     * 
+     * @param text The post text to analyze
+     * @return true if the post is tech-related, false if it's travel/coffee related
      */
     private boolean isTechRelatedPost(String text) {
         if (text == null || text.trim().isEmpty()) {
             return false;
         }
 
-        LOG.tracef("check if post is tech-related: " + text);
+        Log.tracef("check if post is tech-related: " + text);
 
         String textLower = text.toLowerCase();
 
@@ -241,7 +345,21 @@ public class BlueskySubscriber {
         return true;
     }
 
-    // Find known Java-related frameworks or libraries mentioned in text
+    /**
+     * Identifies Java-related frameworks and libraries mentioned in the post text.
+     * Searches for common Java ecosystem technologies and returns them as a comma-separated string.
+     * 
+     * <p>Supported frameworks include:</p>
+     * <ul>
+     *   <li>Application servers: Quarkus, Spring, SpringBoot, Helidon</li>
+     *   <li>Persistence: Hibernate, Jakarta</li>
+     *   <li>Runtime: JDK, JVM</li>
+     *   <li>Standards: JavaEE</li>
+     * </ul>
+     * 
+     * @param text The post text to search for framework mentions
+     * @return Comma-separated string of found frameworks, or empty string if none found
+     */
     private String findFrameworks(String text) {
         try {
             String[] techTerms = { "Quarkus", "Spring", "SpringBoot", "Jakarta", "Hibernate", "JDK", "JVM", "Helidon",
@@ -256,12 +374,20 @@ public class BlueskySubscriber {
             }
             return found.toString();
         } catch (Exception e) {
-            LOG.errorf(e, "Error finding frameworks in text: %s", e.getMessage());
+            Log.errorf(e, "Error finding frameworks in text: %s", e.getMessage());
             return "";
         }
     }
 
-    // Extract all hashtags (e.g. #Java, #Quarkus) from text
+    /**
+     * Extracts all hashtags from the post text using regex pattern matching.
+     * 
+     * <p>This method finds hashtags that match the pattern #word and returns them
+     * as a comma-separated string. Common examples include #Java, #Quarkus, #Spring.</p>
+     * 
+     * @param text The post text to extract hashtags from
+     * @return Comma-separated string of found hashtags, or empty string if none found
+     */
     private String extractHashtags(String text) {
         try {
             Matcher m = Pattern.compile("#\\w+").matcher(text);
@@ -273,12 +399,21 @@ public class BlueskySubscriber {
             }
             return tags.toString();
         } catch (Exception e) {
-            LOG.errorf(e, "Error extracting hashtags from text: %s", e.getMessage());
+            Log.errorf(e, "Error extracting hashtags from text: %s", e.getMessage());
             return "";
         }
     }
 
-    // Extract all URLs from text (simple regex for http/https links)
+    /**
+     * Extracts all HTTP/HTTPS URLs from the post text using regex pattern matching.
+     * 
+     * <p>This method finds URLs that start with http:// or https:// and returns them
+     * as a comma-separated string. Useful for identifying linked resources, documentation,
+     * or code repositories mentioned in posts.</p>
+     * 
+     * @param text The post text to extract URLs from
+     * @return Comma-separated string of found URLs, or empty string if none found
+     */
     private String extractLinks(String text) {
         try {
             Matcher m = Pattern.compile("(https?://\\S+)").matcher(text);
@@ -290,7 +425,7 @@ public class BlueskySubscriber {
             }
             return links.toString();
         } catch (Exception e) {
-            LOG.errorf(e, "Error extracting links from text: %s", e.getMessage());
+            Log.errorf(e, "Error extracting links from text: %s", e.getMessage());
             return "";
         }
     }
@@ -298,6 +433,19 @@ public class BlueskySubscriber {
     /**
      * Checks if the post has English language variants in the langs array.
      * Supports ISO 639-1 language codes and extended language tags.
+     * 
+     * <p>This method examines the "langs" field in the post record to determine
+     * if the content is available in English. It supports various English variants:</p>
+     * <ul>
+     *   <li>Basic codes: "en"</li>
+     *   <li>Regional variants: "en-US", "en-GB", "en-CA", "en-AU"</li>
+     * </ul>
+     * 
+     * <p>For backward compatibility, posts without a "langs" field are assumed
+     * to be in English.</p>
+     * 
+     * @param record The JSON record node containing the post metadata
+     * @return true if the post has English language variants, false otherwise
      */
     private boolean hasEnglishLanguage(JsonNode record) {
         JsonNode langs = record.path("langs");
@@ -319,6 +467,13 @@ public class BlueskySubscriber {
     /**
      * Determines if a language code represents an English variant.
      * Supports: en, en-US, en-GB, en-CA, en-AU, etc.
+     * 
+     * <p>This method validates language codes according to ISO 639-1 standards
+     * and extended language tag formats. It recognizes both basic English codes
+     * and regional variants.</p>
+     * 
+     * @param languageCode The language code to validate
+     * @return true if the code represents an English variant, false otherwise
      */
     private boolean isEnglishVariant(String languageCode) {
         if (languageCode == null || languageCode.trim().isEmpty()) {
@@ -332,6 +487,19 @@ public class BlueskySubscriber {
     /**
      * Detects the primary language from the langs array or falls back to content
      * analysis.
+     * 
+     * <p>This method implements a two-tier language detection strategy:</p>
+     * <ol>
+     *   <li><strong>Primary:</strong> Uses the "langs" array from the post metadata</li>
+     *   <li><strong>Fallback:</strong> Analyzes text content for language indicators</li>
+     * </ol>
+     * 
+     * <p>The method prioritizes explicit language declarations over content analysis
+     * to ensure accurate language identification.</p>
+     * 
+     * @param record The JSON record node containing the post metadata
+     * @param text The post text content for fallback analysis
+     * @return The detected language code (e.g., "en", "id", "ja", "ko", "zh")
      */
     private String detectLanguage(JsonNode record, String text) {
         JsonNode langs = record.path("langs");
@@ -350,6 +518,22 @@ public class BlueskySubscriber {
 
     /**
      * Checks if the extracted hashtags contain Java-related content.
+     * 
+     * <p>This method validates whether the provided hashtags contain any
+     * Java-related programming hashtags. It searches for common Java ecosystem
+     * hashtags in a case-insensitive manner.</p>
+     * 
+     * <p>Supported hashtags include:</p>
+     * <ul>
+     *   <li>#java - General Java programming</li>
+     *   <li>#javadev - Java development</li>
+     *   <li>#javaprogramming - Java programming</li>
+     *   <li>#spring - Spring Framework</li>
+     *   <li>#quarkus - Quarkus framework</li>
+     * </ul>
+     * 
+     * @param hashtags Comma-separated string of hashtags to check
+     * @return true if Java-related hashtags are found, false otherwise
      */
     private boolean containsJavaRelatedHashtags(String hashtags) {
         if (hashtags == null || hashtags.trim().isEmpty()) {
@@ -369,6 +553,22 @@ public class BlueskySubscriber {
 
     /**
      * Basic language detection from text content using common patterns.
+     * 
+     * <p>This method implements heuristic-based language detection by analyzing
+     * text content for language-specific patterns, words, and characters.
+     * It serves as a fallback when explicit language metadata is unavailable.</p>
+     * 
+     * <p>Supported languages and detection methods:</p>
+     * <ul>
+     *   <li><strong>Indonesian:</strong> Common Indonesian words (sebuah, pulau, etc.)</li>
+     *   <li><strong>Japanese:</strong> Hiragana, Katakana, and Kanji characters</li>
+     *   <li><strong>Korean:</strong> Hangul characters</li>
+     *   <li><strong>Chinese:</strong> Simplified and Traditional Chinese characters</li>
+     *   <li><strong>English:</strong> Default fallback when no other indicators found</li>
+     * </ul>
+     * 
+     * @param text The text content to analyze for language indicators
+     * @return The detected language code (e.g., "en", "id", "ja", "ko", "zh")
      */
     private String detectLanguageFromText(String text) {
         if (text == null || text.trim().isEmpty()) {
@@ -395,6 +595,16 @@ public class BlueskySubscriber {
         return "en";
     }
 
+    /**
+     * Checks if the text contains common Indonesian words that indicate non-tech context.
+     * 
+     * <p>This method helps distinguish between Java programming content and
+     * content about Java (the Indonesian island). It searches for words commonly
+     * used in Indonesian language posts about travel, geography, or coffee.</p>
+     * 
+     * @param text The text to search for Indonesian words
+     * @return true if Indonesian words are found, false otherwise
+     */
     private boolean containsIndonesianWords(String text) {
         String[] indonesianWords = { "sebuah", "pulau", "indonesia", "jakarta" };
         for (String word : indonesianWords) {
@@ -405,14 +615,44 @@ public class BlueskySubscriber {
         return false;
     }
 
+    /**
+     * Detects Japanese characters in the text using Unicode ranges.
+     * 
+     * <p>This method searches for Japanese writing system characters including:</p>
+     * <ul>
+     *   <li>Hiragana: \u3040-\u309F</li>
+     *   <li>Katakana: \u30A0-\u30FF</li>
+     *   <li>Kanji: \u4E00-\u9FAF</li>
+     * </ul>
+     * 
+     * @param text The text to search for Japanese characters
+     * @return true if Japanese characters are found, false otherwise
+     */
     private boolean containsJapaneseCharacters(String text) {
         return text.matches(".*[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF].*");
     }
 
+    /**
+     * Detects Korean characters in the text using Unicode ranges.
+     * 
+     * <p>This method searches for Korean Hangul characters in the Unicode range \uAC00-\uD7AF.</p>
+     * 
+     * @param text The text to search for Korean characters
+     * @return true if Korean characters are found, false otherwise
+     */
     private boolean containsKoreanCharacters(String text) {
         return text.matches(".*[\\uAC00-\\uD7AF].*");
     }
 
+    /**
+     * Detects Chinese characters in the text using Unicode ranges.
+     * 
+     * <p>This method searches for Chinese characters (both Simplified and Traditional)
+     * in the Unicode range \u4E00-\u9FFF.</p>
+     * 
+     * @param text The text to search for Chinese characters
+     * @return true if Chinese characters are found, false otherwise
+     */
     private boolean containsChineseCharacters(String text) {
         return text.matches(".*[\\u4E00-\\u9FFF].*");
     }
