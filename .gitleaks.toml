@@ -6,4 +6,6 @@
     # Ignore all example certs
     '''(?:^|\/)jwt-case.*\.pem$''',
     '''(?:^|\/)granular-rbac-tutorial.*\.pem$'''
+    '''(?:^|\/)bsky-javafeed-generator2.*\.crt$'''
+    '''(?:^|\/)bsky-javafeed-generator2.*\.key$'''
     ]
