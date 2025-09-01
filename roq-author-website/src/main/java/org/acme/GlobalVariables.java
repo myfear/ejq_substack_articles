@@ -3,22 +3,22 @@ package org.acme;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import io.quarkus.qute.TemplateExtension;
+import io.quarkus.qute.TemplateGlobal;
 
-@TemplateExtension
-public class TimeExtensions {
+@TemplateGlobal
+public class GlobalVariables {
 
     /**
      * Return the current date formatted as yyyy-MM-dd
      */
-    static String date(Object any) {
+    static String date() {
         return LocalDate.now().format(DateTimeFormatter.ISO_DATE);
     }
 
     /**
      * Return the current year
      */
-    static int year(Object any) {
+    static int year() {
         return LocalDate.now().getYear();
     }
 }
