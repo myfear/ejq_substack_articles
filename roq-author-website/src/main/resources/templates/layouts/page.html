@@ -1,0 +1,19 @@
+---
+layout: base
+---
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">{page.title}</h1>
+      {#if page.description}
+        <p class="subtitle">{page.description}</p>
+      {/if}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    {#insert /}
+  </div>
+</section>

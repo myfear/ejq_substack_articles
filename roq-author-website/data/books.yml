@@ -1,0 +1,21 @@
+list:
+  - title: "Applied AI for Enterprise Java Development"
+    year: 2025
+    tagline: "Enter this clear-cut, no-nonsense guide to integrating generative AI into your Java enterprise ecosystem."
+    cover: "applied_ai_for_enterprise_java.jpeg"
+    buy: "https://www.oreilly.com/library/view/applied-ai-for/9781098174491/"
+  - title: "Modernizing Enterprise Java"
+    year: 2021
+    tagline: "This practical book helps developers examine long-established Java-based models and demonstrates how to bring these monolithic applications successfully into the future."
+    cover: "modernizing_enterprise_java.jpeg"
+    buy: "https://www.amazon.com/Modernizing-Enterprise-Java-Concise-Developers/dp/1098102142"
+  - title: "Modern Java EE Design Pattern"
+    year: 2016
+    tagline: "Bridge that gap by building microservice-based architectures on top of Java EE.."
+    cover: "modern_javaee_designpattern.png"
+    buy: "https://www.oreilly.com/library/view/modern-java-ee/9781492042266/"
+  - title: "Developing Reactive Microservices"
+    year: 2016
+    tagline: "People, resilience, and the cost of downtime."
+    cover: "developing_reactive_microservices.jpeg"
+    buy: "https://www.oreilly.com/library/view/developing-reactive-microservices/9781491975640/"

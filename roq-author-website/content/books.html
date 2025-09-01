@@ -1,0 +1,38 @@
+---
+title: Books
+layout: page
+description: Selected works and publications.
+---
+
+<div class="columns is-multiline is-variable is-books-grid">
+  {#for b in cdi:books.list}
+  <div class="column is-6-mobile is-4-tablet is-3-desktop">
+    <div class="card is-compact">
+      <div class="card-image">
+        <!-- 2:3-ish shape via Bulma helpers and our cover CSS -->
+        <figure class="image is-2by3 book-cover">
+          <img src="{site.image(b.cover ?: 'images/cover-default.png')}" alt="{b.title}">
+        </figure>
+      </div>
+      <div class="card-content">
+        <div class="media">
+          <div class="media-content">
+            <p class="title is-6">{b.title}</p>
+            <p class="subtitle is-7">{b.year}</p>
+          </div>
+        </div>
+
+        <div class="content">
+          {b.tagline}
+        </div>
+
+        {#if b.buy}
+          <a class="button is-link is-light is-fullwidth" href="{b.buy}" target="_blank" rel="noopener">
+            Buy
+          </a>
+        {/if}
+      </div>
+    </div>
+  </div>
+  {/for}
+</div>
