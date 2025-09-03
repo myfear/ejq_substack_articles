@@ -1,6 +1,10 @@
 # meme-service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+From JSON Chaos to AI-Powered Memes: A Quarkus + Jackson Adventure
+Learn how to clean messy JSON, validate inputs, and enrich responses with LangChain4j and a local Ollama model.
+
+Substack URL <https://www.the-main-thread.com/p/quarkus-json-jackson-langchain4j-meme-service>
+
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
