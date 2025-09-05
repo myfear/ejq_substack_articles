@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Renarde Task Manager</title>
+    <link rel="stylesheet" href="/_renarde/css/renarde.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .flash-error {
+            background-color: #fee;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .flash-success {
+            background-color: #f0fff4;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .add-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .add-form input:focus {
+            outline: none;
+            border-color: #3182ce;
+        }
+
+        .add-form button {
+            padding: 12px 24px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .add-form button:hover {
+            background-color: #2c5aa0;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            background: white;
+            margin-bottom: 8px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .task-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            background-color: #f7fafc;
+        }
+
+        .task-item.completed .task-description {
+            text-decoration: line-through;
+            color: #718096;
+        }
+
+        .toggle-button {
+            background: none;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle-button:hover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+
+        .toggle-button.checked {
+            background-color: #48bb78;
+            border-color: #48bb78;
+            color: white;
+        }
+
+        .task-description {
+            flex: 1;
+            font-size: 16px;
+            color: #2d3748;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Task Manager</h1>
+
+    {#if flash:error}
+    <div class="flash-message flash-error">{flash:error}</div>
+    {/if}
+
+    {#if flash:message}
+    <div class="flash-message flash-success">{flash:message}</div>
+    {/if}
+
+    <div class="add-form">
+        {#form uri:TaskController.add method='POST'}
+        <input type="text" name="task" placeholder="What needs to be done?" />
+        <button type="submit">Add Task</button>
+        {/form}
+    </div>
+
+    <ul class="task-list">
+        {#for task in tasks}
+        <li class="task-item {#if task.done}completed{/if}">
+            <form action="{uri:TaskController.toggle(task.id)}" method="get" style="display:inline">
+                <button type="submit" class="toggle-button {#if task.done}checked{/if}">
+                    {#if task.done}✓{#else}☐{/if}
+                </button>
+            </form>
+            <span class="task-description">{task.description}</span>
+        </li>
+        {#else}
+        <li class="empty-state">No tasks yet. Add one above to get started!</li>
+        {/for}
+    </ul>
+</body>
+
+</html>
