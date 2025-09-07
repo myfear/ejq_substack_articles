@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarkus Banner Studio</title>
+    <style>
+        :root {
+            --primary-color: #4695eb;
+            --primary-hover: #357abd;
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --border-radius: 8px;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: #f8f9fa;
+            margin: 0;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #5a67d8 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            margin: 0 0 1rem 0;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .note {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(70, 149, 235, 0.1);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(70, 149, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 500;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        pre {
+            background: #1a1a1a;
+            color: #e6e6e6;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            overflow: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border: 1px solid #333;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-header h3 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .preview-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 2rem 0;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            background: #fafafa;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .file-input-display:hover {
+            border-color: var(--primary-color);
+            background: rgba(70, 149, 235, 0.05);
+        }
+
+        .file-input-display.has-file {
+            border-color: var(--primary-color);
+            background: rgba(70, 149, 235, 0.1);
+        }
+
+        .file-input-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .file-input-text.has-file {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Quarkus Banner Studio</h1>
+            <p>Render width-safe ASCII banners with FIGlet fonts. Convert images to ASCII. Export as banner.txt.</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>📝 Text → ASCII</h2>
+                <form method="post" action="/render">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Text</label>
+                            <textarea name="text" rows="3" placeholder="Enter your text here...">{input.text ?: 'Hello Quarkus'}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Font</label>
+                            <select name="font">
+                                {#for f in fonts}
+                                <option value="{f}" {#if input.font == f}selected{/if}>{f}</option>
+                                {/for}
+                            </select>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="fit" name="fit" value="true" {input.fit ?: true ? 'checked' : '' } />
+                                <label for="fit">Auto-fit to width</label>
+                            </div>
+                            <label>Max width (columns)</label>
+                            <input type="number" name="maxWidth" value="{input.maxWidth ?: 80}" min="20" max="200" />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">🚀 Render ASCII</button>
+                    </div>
+                </form>
+
+                {#if result}
+                <div class="preview-header">
+                    <h3>✨ Preview</h3>
+                    <div class="preview-info">
+                        {result.font} • {result.width} cols{#if !result.fits} • (did not fit; used narrowest){/if}
+                    </div>
+                </div>
+                <pre>{result.ascii}</pre>
+                <div class="button-group">
+                    <form method="post" action="/export" style="display: inline;">
+                        <input type="hidden" name="ascii" value="{result.ascii}" />
+                        <button type="submit">💾 Download banner.txt</button>
+                    </form>
+                </div>
+                {/if}
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section">
+                <h2>🖼️ Image → ASCII</h2>
+                <div class="note">
+                    Upload PNG/JPG images. We scale to N columns, quantize colors (k-means), and map brightness to glyphs.
+                </div>
+
+                <form method="post" action="/image/convert" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Image file</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" name="file" accept="image/png,image/jpeg" required />
+                                <div class="file-input-display">
+                                    <div class="file-input-text">📁 Choose an image file</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Output width (columns)</label>
+                            <input type="number" name="cols" value="80" min="40" max="200" />
+                            <label>K-means clusters (K)</label>
+                            <input type="number" name="k" value="8" min="2" max="16" />
+                            <label>Max height (rows)</label>
+                            <input type="number" name="maxRows" value="60" min="20" max="200" />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">🎨 Convert to ASCII</button>
+                    </div>
+                </form>
+
+                {#if imageAscii}
+                <div class="preview-header">
+                    <h3>🖼️ Image Preview</h3>
+                </div>
+                <pre>{imageAscii}</pre>
+                <div class="button-group">
+                    <form method="post" action="/export" style="display: inline;">
+                        <input type="hidden" name="ascii" value="{imageAscii}" />
+                        <button type="submit">💾 Download banner.txt</button>
+                    </form>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced file input styling
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.querySelector('input[type="file"]');
+            const fileDisplay = document.querySelector('.file-input-display');
+            const fileText = document.querySelector('.file-input-text');
+
+            if (fileInput && fileDisplay && fileText) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        fileDisplay.classList.add('has-file');
+                        fileText.classList.add('has-file');
+                        fileText.textContent = `📄 ${file.name}`;
+                    } else {
+                        fileDisplay.classList.remove('has-file');
+                        fileText.classList.remove('has-file');
+                        fileText.textContent = '📁 Choose an image file';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
