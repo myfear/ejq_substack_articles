@@ -1,8 +1,10 @@
 # age-everywhere
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Mastering Java Date and Time with Quarkus: Build a Fun Birthday API Across Calendars and Planets
+Learn how to handle Java’s java.time API, work with world calendars, and compute planetary ages by turning a birthday into a Quarkus application.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+
+Substack article: <https://www.the-main-thread.com/p/java-date-time-quarkus-birthday-api-tutorial>
 
 ## Running the application in dev mode
 
