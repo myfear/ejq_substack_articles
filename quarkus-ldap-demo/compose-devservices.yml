@@ -1,0 +1,20 @@
+# compose-devservices.yml
+services:
+  openldap:
+    image: bitnami/openldap:latest
+    # Expose port to localhost for Quarkus to connect
+    ports:
+      - "1389:1389"
+    healthcheck:
+      test: ["CMD", "ldapsearch", "-x", "-H", "ldap://localhost:1389", "-b", "dc=quarkus,dc=io"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ROOT=dc=quarkus,dc=io
+      # Auto-load custom LDIFs from /ldifs at first start
+      - LDAP_CUSTOM_LDIF_DIR=/ldifs
+    volumes:
+      - ./ldifs:/ldifs:Z
