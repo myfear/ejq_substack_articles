@@ -8,7 +8,7 @@ This project demonstrates:
 - Rate limiting with the Quarkiverse Bucket4j extension.
 - Resilience patterns using MicroProfile Fault Tolerance.
 
-Full article on Substack <>
+Full article on Substack <https://www.the-main-thread.com/p/quarkus-api-performance-caching-rate-limiting-fault-tolerance>
 
 
 ## Running the application in dev mode
