@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Age Everywhere</title>
+</head>
+
+<body>
+    <h1>Age in Every Calendar</h1>
+    <form id="f">
+        <label>DOB: <input name="dob" value="1980-09-27"></label>
+        <label>Time zone: <input name="tz" value="Europe/Berlin"></label>
+        <button type="submit">Compute</button>
+    </form>
+    <div id="out" style="margin-top: 20px;"></div>
+    <script>
+        document.getElementById('f').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dob = e.target.dob.value;
+            const tz = e.target.tz.value;
+            const res = await fetch(`/age?dob={|${encodeURIComponent(dob)}|}&tz={|${encodeURIComponent(tz)}|}`);
+            const data = await res.json();
+            displayAgeData(data);
+        });
+
+        function displayAgeData(data) {
+            const out = document.getElementById('out');
+            out.innerHTML = `
+                <h2>Age Calculation Results</h2>
+                <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Input Date of Birth</strong></td>
+                        <td>$\{data.inputDob}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timezone</strong></td>
+                        <td>$\{data.timezone}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Epoch Seconds Lived</strong></td>
+                        <td>$\{data.epochSecondsLived.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Days Lived</strong></td>
+                        <td>$\{data.daysLived.toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ISO Period</strong></td>
+                        <td>$\{data.isoPeriod}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Human Period</strong></td>
+                        <td>$\{data.humanPeriod}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Age (Years Floor)</strong></td>
+                        <td>$\{data.ageYearsFloor}</td>
+                    </tr>
+                </table>
+
+                <h3>Planetary Ages</h3>
+                <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th>Planet</th>
+                        <th>Age (Years)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Mercury</strong></td>
+                        <td>$\{data.planets.onMercuryYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Venus</strong></td>
+                        <td>$\{data.planets.onVenusYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Earth</strong></td>
+                        <td>$\{data.planets.onEarthYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mars</strong></td>
+                        <td>$\{data.planets.onMarsYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Jupiter</strong></td>
+                        <td>$\{data.planets.onJupiterYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Saturn</strong></td>
+                        <td>$\{data.planets.onSaturnYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uranus</strong></td>
+                        <td>$\{data.planets.onUranusYears.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neptune</strong></td>
+                        <td>$\{data.planets.onNeptuneYears.toFixed(2)}</td>
+                    </tr>
+                </table>
+
+                <h3>Calendar Breakdown</h3>
+                <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th>Calendar</th>
+                        <th>Date</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ISO</strong></td>
+                        <td>$\{data.calendars.iso}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Japanese</strong></td>
+                        <td>$\{data.calendars.japanese}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Minguo (Taiwan)</strong></td>
+                        <td>$\{data.calendars.minguo}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Thai Buddhist</strong></td>
+                        <td>$\{data.calendars.thaiBuddhist}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hijrah (Islamic)</strong></td>
+                        <td>$\{data.calendars.hijrah}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Chinese</strong></td>
+                        <td>$\{data.calendars.chinese}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Note</strong></td>
+                        <td>$\{data.calendars.note}</td>
+                    </tr>
+                </table>
+
+                <h3>World Times</h3>
+                <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th>City</th>
+                        <th>Timezone</th>
+                        <th>Local Birth Time</th>
+                    </tr>
+                    $\{data.worldTimes.map(wt => `
+                        <tr>
+                            <td><strong>$\{wt.city}</strong></td>
+                            <td>$\{wt.zone}</td>
+                            <td>$\{wt.localBirthTime}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+        }
+    </script>
+</body>
+
+</html>
