@@ -1,6 +1,9 @@
 # quarkus-otp
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Java Security Demystified: Building TOTP & TAN Tokens with Quarkus
+A hands-on tutorial that shows how one-time passwords and transaction codes really work. Explained step by step in pure Java.
+
+Substack article: <https://www.the-main-thread.com/p/java-quarkus-totp-tan-security-tutorial>
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
