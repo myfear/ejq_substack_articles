@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{#insert title}Museum{/insert}</title>
+  <link rel="icon" href="data:,">
+  <style>
+    body { font-family: ui-sans-serif, system-ui; margin:0; background:#f7f8fb; }
+    .container { max-width: 480px; margin: 0 auto; padding: 12px; }
+    header { position: sticky; top:0; backdrop-filter: blur(8px); background: rgba(255,255,255,0.8); padding: 10px 12px; border-bottom: 1px solid #eee;}
+    h1 { font-size: 18px; margin: 0; }
+    .card { background:#fff; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin: 12px 0; overflow: hidden; }
+    .thumb { width: 100%; border-radius: 10px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .row > * { flex:1; }
+    .muted { color:#667085; font-size: 13px; }
+    footer { text-align:center; color:#98a2b3; padding:24px 0; font-size:12px; }
+    
+    /* Enhanced styling for artwork identification */
+    .result-card { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 16px;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+      display: none;
+    }
+    
+    .result-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .result-artist {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0 0 16px 0;
+      opacity: 0.9;
+    }
+    
+    .result-details {
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .result-detail-item {
+      margin-bottom: 12px;
+    }
+    
+    .result-detail-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .result-detail-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    
+    .result-detail-value {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .confidence-high { color: #4ade80; }
+    .confidence-medium { color: #fbbf24; }
+    .confidence-low { color: #f87171; }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #667085;
+    }
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e5e7eb;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+    
+    .form-group input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    
+    .form-group input[type="file"]:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    
+    .form-group input[type="text"],
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: white;
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+    
+    .btn:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Sentiment result styling */
+    .sentiment-result {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .sentiment-success {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sentiment-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .sentiment-content {
+      flex: 1;
+    }
+    
+    .sentiment-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .sentiment-label {
+      font-size: 14px;
+      opacity: 0.9;
+      text-transform: capitalize;
+    }
+    
+    .sentiment-label.positive {
+      color: #a7f3d0;
+    }
+    
+    .sentiment-label.negative {
+      color: #fecaca;
+    }
+    
+    .sentiment-label.neutral {
+      color: #d1d5db;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Chart styling */
+    canvas {
+      max-width: 100%;
+      height: auto !important;
+      max-height: 100px;
+    }
+    
+    #chartApp > div {
+      margin: 8px 0;
+      padding: 8px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+    
+    #chartApp h3 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: #374151;
+    }
+  </style>
+
+  <!-- Vue + PrimeVue CDN + theme + Chart.js -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/primevue@latest/primevue.min.js"></script>
+  <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header><h1>{#insert title}Museum{/insert}</h1></header>
+<div class="container">
+  {#insert body}{/insert}
+</div>
+<footer>Built with Quarkus + Qute + PrimeVue</footer>
+</body>
+</html>

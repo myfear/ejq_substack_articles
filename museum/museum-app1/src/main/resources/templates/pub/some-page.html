@@ -1,0 +1,31 @@
+{#let name=http:param('name', 'Qute')}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello {name}</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+        }
+        h1 {
+            color: #4695EB;
+            font-size: 6vw;
+        }
+
+        h1 b {
+            color: #be9100;
+        }
+
+        p {
+            font-size: 2vw;
+        }
+    </style>
+</head>
+<body>
+<h1>Hello <b>{name}</b></h1>
+
+<p>Create your Web page using Quarkus & Qute</p>
+</body>
+</html>
