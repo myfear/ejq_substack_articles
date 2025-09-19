@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{poll.title}</title>
+</head>
+
+<body>
+    <h1>{poll.title}</h1>
+
+    <h2>Vote</h2>
+    <ul>
+        {#for slot in poll.slots}
+        <li>
+            {slot.startTime}
+            <form action="/ui/polls/{poll.id}/slots/{slot.id}/vote" method="post">
+                <input type="text" name="participant" placeholder="Your name" required>
+                <button type="submit">Vote</button>
+            </form>
+        </li>
+        {/for}
+    </ul>
+
+    <h2>Results</h2>
+    <ul id="results">
+        {#for slot in poll.slots}
+        <li>
+            {slot.startTime} — {slot.votes.size} votes
+        </li>
+        {/for}
+    </ul>
+
+    <script>
+        const pollId = {poll.id};
+        const ws = new WebSocket(`ws://` + location.host + `/ws/polls/` + pollId);
+        ws.onmessage = () => location.reload();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>All Polls</title>
+</head>
+
+<body>
+    <h1>Available Polls</h1>
+    <ul>
+        {#for poll in polls}
+        <li><a href="/ui/polls/{poll.id}">{poll.title}</a></li>
+        {/for}
+    </ul>
+</body>
+
+</html>
