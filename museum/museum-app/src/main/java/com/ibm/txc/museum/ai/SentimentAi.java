@@ -8,14 +8,14 @@ import io.quarkiverse.langchain4j.RegisterAiService;
 @RegisterAiService
 public interface SentimentAi {
 
-    @SystemMessage("""
-            Classify selfie + text impression into:
-            very_negative, negative, neutral, positive, very_positive.
-            Only return the label.
-            """)
-    @UserMessage("""
-            Selfie: {{image}}
-            Impression: "{{impression}}"
-            """)
-    String classify(Image image, String impression);
+        @SystemMessage("""
+                        Classify selfie + text impression into:
+                        very_negative, negative, neutral, positive, very_positive.
+                        Only return the label.
+                        """)
+        @UserMessage("""
+                        Selfie: {{image}}
+                        Impression: "{{impression}}"
+                        """)
+        String classify(Image image, String impression);
 }

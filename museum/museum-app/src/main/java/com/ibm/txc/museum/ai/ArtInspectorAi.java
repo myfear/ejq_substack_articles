@@ -15,7 +15,7 @@ public interface ArtInspectorAi {
                         """)
         @UserMessage("""
                         Photo: {{image}}
-                        Use MCP tool getTimeContext to put into a time context. 
+                        Use MCP tool getTimeContext to put into a time context.
                         Use MCP tool getArtNews Latest updates about the artwork.
                         """)
         @McpToolBox("museum")

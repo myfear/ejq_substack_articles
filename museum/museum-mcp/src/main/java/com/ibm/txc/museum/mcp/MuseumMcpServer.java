@@ -30,7 +30,8 @@ public class MuseumMcpServer {
         try {
             HttpClient http = HttpClient.newHttpClient();
             // Use the more reliable MediaWiki API instead of REST API
-            String url = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles=" +
+            String url = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles="
+                    +
                     java.net.URLEncoder.encode(title, java.nio.charset.StandardCharsets.UTF_8);
             HttpResponse<String> resp = http.send(
                     HttpRequest.newBuilder(URI.create(url))
@@ -38,7 +39,7 @@ public class MuseumMcpServer {
                             .GET()
                             .build(),
                     HttpResponse.BodyHandlers.ofString());
-            
+
             if (resp.statusCode() == 200) {
                 return new News(resp.body());
             } else {
