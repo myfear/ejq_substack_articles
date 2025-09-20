@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Discovered Topics</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      margin: 2rem; 
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #3366cc;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .canvas-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    canvas { 
+      border: 1px solid #ddd; 
+      border-radius: 6px;
+      background: white;
+    }
+    .clusters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .cluster { 
+      padding: 1.5rem; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .cluster-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    .cluster-id {
+      background: #3366cc;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+    .keywords { 
+      color: #666; 
+      font-size: 0.9rem;
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .keyword {
+      background: #e8f0fe;
+      color: #1a73e8;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .articles {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .article {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .article:last-child {
+      border-bottom: none;
+    }
+    .article a {
+      color: #3366cc;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .article a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Substack Discovery</h1>
+      <p>AI-powered clustering of The Main Thread articles</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number" id="cluster-count">{clusters.size}</div>
+        <div class="stat-label">Clusters</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="article-count">{totalArticles}</div>
+        <div class="stat-label">Articles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="keyword-count">{totalKeywords}</div>
+        <div class="stat-label">Keywords</div>
+      </div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="plot" width="800" height="600"></canvas>
+    </div>
+
+    <div class="clusters" id="clusters">
+      {#for c in clusters}
+        <div class="cluster">
+          <div class="cluster-header">
+            <div class="cluster-id">Cluster {c.clusterId}</div>
+            <div class="keywords">
+              {#for keyword in c.keywords}
+                <span class="keyword">{keyword}</span>
+              {/for}
+            </div>
+          </div>
+          <div class="articles">
+            {#for a in c.articles}
+              <div class="article">
+                <a href="{a.url}" target="_blank">{a.url}</a>
+              </div>
+            {/for}
+          </div>
+        </div>
+      {/for}
+    </div>
+  </div>
+
+  <script src="/application.js"></script>
+</body>
+</html>
