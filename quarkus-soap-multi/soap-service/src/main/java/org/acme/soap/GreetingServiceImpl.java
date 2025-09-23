@@ -2,7 +2,7 @@ package org.acme.soap;
 
 import jakarta.jws.WebService;
 
-@WebService(endpointInterface = "org.acme.soap.GreetingService")
+@WebService
 public class GreetingServiceImpl implements GreetingService {
 
     @Override
