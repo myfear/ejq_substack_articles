@@ -1,14 +1,14 @@
 package org.acme.soap;
 
-import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
 
-@WebService(serviceName = "GreetingService")
+@WebService(endpointInterface = "org.acme.soap.GreetingService")
 public class GreetingServiceImpl implements GreetingService {
 
-    @WebMethod
     @Override
-    public String greet(String name) {
-        return "Hello " + name + ", from Quarkus SOAP!";
+    public GreetingResponse greet(GreetingRequest request) {
+        String name = request.getName();
+        String msg = "Hello " + name + ", from Quarkus SOAP!";
+        return new GreetingResponse(msg);
     }
 }

@@ -3,9 +3,9 @@ package org.acme.soap;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
 
-@WebService(name = "GreetingService", serviceName = "GreetingService")
+@WebService(targetNamespace = "http://soap.acme.org/", name = "GreetingService")
 public interface GreetingService {
 
     @WebMethod
-    String greet(String name);
+    GreetingResponse greet(GreetingRequest request);
 }

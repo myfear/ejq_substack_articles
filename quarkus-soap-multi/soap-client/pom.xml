@@ -52,8 +52,8 @@
             <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.acme</groupId>
-            <artifactId>soap-service</artifactId>
+            <groupId>org.acme.soap</groupId>
+            <artifactId>soap-contract</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
