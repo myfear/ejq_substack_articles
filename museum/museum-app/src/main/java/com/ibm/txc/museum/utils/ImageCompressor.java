@@ -19,10 +19,20 @@ public class ImageCompressor {
         // Load
         BufferedImage original = ImageIO.read(inputFile);
 
-        // Compute scale
+        // Check if image is already smaller than requested size
         int width = original.getWidth();
         int height = original.getHeight();
-        double scale = Math.min(1.0, (double) maxSize / Math.max(width, height));
+        int maxDimension = Math.max(width, height);
+        
+        if (maxDimension <= maxSize) {
+            // Image is already smaller than requested size, return original as base64
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(original, "jpg", baos);
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        }
+
+        // Compute scale
+        double scale = (double) maxSize / maxDimension;
         int newW = (int) (width * scale);
         int newH = (int) (height * scale);
 
