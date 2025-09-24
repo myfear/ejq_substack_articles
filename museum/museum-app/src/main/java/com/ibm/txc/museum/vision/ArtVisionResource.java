@@ -1,11 +1,9 @@
 package com.ibm.txc.museum.vision;
 
-import java.nio.file.Files;
-import java.util.Base64;
-
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import com.ibm.txc.museum.ai.ArtInspectorAi;
+import com.ibm.txc.museum.utils.ImageCompressor;
 
 import dev.langchain4j.data.image.Image;
 import io.quarkus.logging.Log;
@@ -30,9 +28,12 @@ public class ArtVisionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response describe(@FormParam("photo") FileUpload upload) {
         try {
-            byte[] bytes = Files.readAllBytes(upload.uploadedFile());
-            // Build a data URL for the LLM (do not persist)
-            String b64 = Base64.getEncoder().encodeToString(bytes);
+            
+            //Compress the image to save token and bandwidth
+            // or use the original image via:
+            //String b64 = Base64.getEncoder().encodeToString(bytes);
+            String b64 = ImageCompressor.condense(upload.uploadedFile().toFile(), 500, 0.5f);
+
             Image img = Image.builder()
                     .base64Data(b64)
                     .mimeType("image/jpeg")
