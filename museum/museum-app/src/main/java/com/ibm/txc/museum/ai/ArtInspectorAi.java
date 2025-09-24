@@ -11,7 +11,7 @@ public interface ArtInspectorAi {
 
         @SystemMessage("""
                         Identify artwork from a visitor photo.
-                        Return JSON with: title, artist, confidence, why, today.
+                        Return JSON with: title, artist, confidence, why, lates news, today.
                         """)
         @UserMessage("""
                         Photo: {{image}}

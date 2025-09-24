@@ -250,6 +250,45 @@
       margin: 0 0 8px 0;
       color: #374151;
     }
+
+    .preview-container {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .preview-img {
+      max-width: 100%;
+      border-radius: 8px;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 18px;
+      line-height: 26px;
+      text-align: center;
+      cursor: pointer;
+      display: none;
+      transition: background 0.2s ease, opacity 0.2s ease;
+      opacity: 0;
+    }
+    .remove-btn:hover {
+      background: rgba(239,68,68,0.85); /* red hover */
+    }
+    .remove-btn.show {
+      display: block;
+      opacity: 1;
+    }
+
+
   </style>
 
   <!-- Vue + PrimeVue CDN + theme + Chart.js -->

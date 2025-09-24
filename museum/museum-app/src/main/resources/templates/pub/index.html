@@ -1,194 +1,206 @@
 {#include _layout}
 {#title}Museum Assistant{/title}
 {#body}
-  <div class="card">
-    <h2 style="margin:0 0 6px 0;">Identify an artwork</h2>
-    <p class="muted">Take a photo or select from your library. We don't store your image.</p>
-    <form id="identifyForm" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="photo">Choose an image</label>
-        <input type="file" id="photo" name="photo" accept="image/*" capture="environment" required />
-      </div>
-      <button type="submit" class="btn" style="width: 100%;">Analyze Artwork</button>
-    </form>
-    
-    <!-- Loading state -->
-    <div id="loadingState" class="loading" style="display: none;">
-      <div class="spinner"></div>
-      <span>Analyzing your artwork...</span>
+<div class="card">
+  <h2 style="margin:0 0 6px 0;">Identify an artwork</h2>
+  <p class="muted">Take a photo or select from your library. We don't store your image.</p>
+  <form id="identifyForm" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="photo">Choose an image</label>
+      <input type="file" id="photo" name="photo" accept="image/*" capture="environment" required />
     </div>
-    
-    <!-- Beautiful result display -->
-    <div id="resultCard" class="result-card">
-      <div class="result-title" id="resultTitle"></div>
-      <div class="result-artist" id="resultArtist"></div>
-      <div class="result-details">
-        <div class="result-detail-item">
-          <div class="result-detail-label">Confidence</div>
-          <div class="result-detail-value" id="resultConfidence"></div>
-        </div>
-        <div class="result-detail-item">
-          <div class="result-detail-label">Description</div>
-          <div class="result-detail-value" id="resultDescription"></div>
-        </div>
-        <div class="result-detail-item">
-          <div class="result-detail-label">Analysis Date</div>
-          <div class="result-detail-value" id="resultDate"></div>
-        </div>
+    <!-- Preview for artwork photo -->
+    <div class="preview-container">
+      <img id="photoPreview" class="preview-img" />
+      <button type="button" id="removePhotoBtn" class="remove-btn">×</button>
+    </div>
+
+    <button type="submit" class="btn" style="width: 100%;">Analyze Artwork</button>
+  </form>
+
+  <!-- Loading state -->
+  <div id="loadingState" class="loading" style="display: none;">
+    <div class="spinner"></div>
+    <span>Analyzing your artwork...</span>
+  </div>
+
+  <!-- Beautiful result display -->
+  <div id="resultCard" class="result-card">
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-artist" id="resultArtist"></div>
+    <div class="result-details">
+      <div class="result-detail-item">
+        <div class="result-detail-label">Confidence</div>
+        <div class="result-detail-value" id="resultConfidence"></div>
+      </div>
+      <div class="result-detail-item">
+        <div class="result-detail-label">Description</div>
+        <div class="result-detail-value" id="resultDescription"></div>
+      </div>
+      <div class="result-detail-item">
+        <div class="result-detail-label">Analysis Date</div>
+        <div class="result-detail-value" id="resultDate"></div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="card">
-    <h2 style="margin:0 0 6px 0;">Share your impression</h2>
-    <p class="muted">
-      Pick an artwork, take a selfie, write a short impression, and consent to anonymous processing.
-    </p>
-    <form id="sentForm" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="code">Select Artwork</label>
-        <select id="code" name="code" required style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: white;">
-          {#for a in cdi:visionUi.list}
-            <option value="{a.code}">{a.code} – {a.title}</option>
-          {/for}
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="selfie">Take a Selfie</label>
-        <input type="file" id="selfie" name="selfie" accept="image/*" capture="user" required />
-      </div>
-      
-      <div class="form-group">
-        <label for="impression">Your Impression</label>
-        <input type="text" id="impression" name="impression" placeholder="In one sentence…" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;" />
-      </div>
-      
-      <div class="form-group">
-        <label style="display: flex; align-items: center; font-weight: normal;">
-          <input type="checkbox" name="consent" required style="margin-right: 8px;" />
-          I consent to anonymous processing of my data
-        </label>
-      </div>
-      
-      <button type="submit" class="btn" style="width: 100%;">Submit Impression</button>
-    </form>
-    <!-- Beautiful sentiment result display -->
-    <div id="sentResult" class="sentiment-result" style="display: none;">
-      <div class="sentiment-success">
-        <div class="sentiment-icon">✓</div>
-        <div class="sentiment-content">
-          <div class="sentiment-title">Impression Submitted Successfully!</div>
-          <div class="sentiment-label" id="sentimentLabel"></div>
-        </div>
+<div class="card">
+  <h2 style="margin:0 0 6px 0;">Share your impression</h2>
+  <p class="muted">
+    Pick an artwork, take a selfie, write a short impression, and consent to anonymous processing.
+  </p>
+  <form id="sentForm" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="code">Select Artwork</label>
+      <select id="code" name="code" required
+        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: white;">
+        {#for a in cdi:visionUi.list}
+        <option value="{a.code}">{a.code} – {a.title}</option>
+        {/for}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="selfie">Take a Selfie</label>
+      <input type="file" id="selfie" name="selfie" accept="image/*" capture="user" required />
+    </div>
+    <!-- Preview for selfie -->
+    <div class="preview-container">
+      <img id="selfiePreview" class="preview-img" />
+      <button type="button" id="removeSelfieBtn" class="remove-btn">×</button>
+    </div>
+    <div class="form-group">
+      <label for="impression">Your Impression</label>
+      <input type="text" id="impression" name="impression" placeholder="In one sentence…"
+        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;" />
+    </div>
+
+    <div class="form-group">
+      <label style="display: flex; align-items: center; font-weight: normal;">
+        <input type="checkbox" name="consent" required style="margin-right: 8px;" />
+        I consent to anonymous processing of my data
+      </label>
+    </div>
+
+    <button type="submit" class="btn" style="width: 100%;">Submit Impression</button>
+  </form>
+  <!-- Beautiful sentiment result display -->
+  <div id="sentResult" class="sentiment-result" style="display: none;">
+    <div class="sentiment-success">
+      <div class="sentiment-icon">✓</div>
+      <div class="sentiment-content">
+        <div class="sentiment-title">Impression Submitted Successfully!</div>
+        <div class="sentiment-label" id="sentimentLabel"></div>
       </div>
     </div>
   </div>
+</div>
 
-  <div id="charts" class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h2 style="margin:0;">Sentiment by artwork</h2>
-      <button onclick="loadCharts()" class="btn" style="padding: 8px 16px; font-size: 12px;">Refresh Charts</button>
-    </div>
-    <div id="chartApp">
-      <div v-for="(data, code) in chartDataByCode" :key="code" style="margin:12px 0;">
-        <h3 style="margin:0 0 6px 0;">{{ code }}</h3>
-        <canvas :id="'chart-' + code" width="400" height="100"></canvas>
-      </div>
+<div id="charts" class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <h2 style="margin:0;">Sentiment by artwork</h2>
+    <button onclick="loadCharts()" class="btn" style="padding: 8px 16px; font-size: 12px;">Refresh Charts</button>
+  </div>
+  <div id="chartApp">
+    <div v-for="(data, code) in chartDataByCode" :key="code" style="margin:12px 0;">
+      <h3 style="margin:0 0 6px 0;">{{ code }}</h3>
+      <canvas :id="'chart-' + code" width="400" height="100"></canvas>
     </div>
   </div>
+</div>
 
-  <script>
-    // Simple progressive enhancement: use fetch/XHR; no SPA routing.
+<script>
+  // Simple progressive enhancement: use fetch/XHR; no SPA routing.
 
-    // Identify form
-    document.getElementById('identifyForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      // Show loading state
-      const loadingState = document.getElementById('loadingState');
-      const resultCard = document.getElementById('resultCard');
-      loadingState.style.display = 'flex';
-      resultCard.style.display = 'none';
-      
-      try {
-        const fd = new FormData(e.target);
-        const res = await fetch('/api/vision/describe', { method:'POST', body: fd });
-        const jsonText = await res.text();
-        
-        // Parse the JSON response
-        const result = JSON.parse(jsonText);
-        
-        // Populate the beautiful result card
-        document.getElementById('resultTitle').textContent = result.title || 'Unknown Artwork';
-        document.getElementById('resultArtist').textContent = result.artist || 'Unknown Artist';
-        
-        // Style confidence based on value
-        const confidenceEl = document.getElementById('resultConfidence');
-        const confidence = result.confidence || 'unknown';
-        confidenceEl.textContent = confidence;
-        confidenceEl.className = 'result-detail-value confidence-' + confidence;
-        
-        document.getElementById('resultDescription').textContent = result.why || 'No description available';
-        document.getElementById('resultDate').textContent = result.today || new Date().toISOString().split('T')[0];
-        
-        // Hide loading and show result
-        loadingState.style.display = 'none';
-        resultCard.style.display = 'block';
-        
-        // Smooth scroll to result
-        resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
-      } catch (error) {
-        console.error('Error analyzing artwork:', error);
-        loadingState.innerHTML = '<div class="spinner"></div><span>Error analyzing artwork. Please try again.</span>';
-      }
-    });
+  // Identify form
+  document.getElementById('identifyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    // Sentiment form
-    document.getElementById('sentForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Show loading state
+    const loadingState = document.getElementById('loadingState');
+    const resultCard = document.getElementById('resultCard');
+    loadingState.style.display = 'flex';
+    resultCard.style.display = 'none';
+
+    try {
       const fd = new FormData(e.target);
-      if (!fd.get('consent')) { 
-        alert('Consent required'); 
-        return; 
-      }
-      
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Submitting...';
-      submitBtn.disabled = true;
-      
-      try {
-        const code = fd.get('code');
-        const res = await fetch('/api/sentiment/' + code, { method:'POST', body: fd });
-        const txt = await res.text();
-        
-        // Parse the JSON response
-        const result = JSON.parse(txt);
-        
-        const resultDiv = document.getElementById('sentResult');
-        const labelEl = document.getElementById('sentimentLabel');
-        
-        // Display beautiful result
-        labelEl.textContent = 'Sentiment: ' + result.label;
-        labelEl.className = 'sentiment-label ' + result.label;
-        resultDiv.style.display = 'block';
-        
-        // Reset form
-        e.target.reset();
-        
-        // Refresh charts after successful submission
-        setTimeout(() => {
-          if (chartApp && chartApp.fetchData) {
-            chartApp.fetchData();
-          }
-        }, 500);
-        
-      } catch (error) {
-        console.error('Error submitting sentiment:', error);
-        const resultDiv = document.getElementById('sentResult');
-        resultDiv.innerHTML = `
+      const res = await fetch('/api/vision/describe', { method: 'POST', body: fd });
+      const jsonText = await res.text();
+
+      // Parse the JSON response
+      const result = JSON.parse(jsonText);
+
+      // Populate the beautiful result card
+      document.getElementById('resultTitle').textContent = result.title || 'Unknown Artwork';
+      document.getElementById('resultArtist').textContent = result.artist || 'Unknown Artist';
+
+      // Style confidence based on value
+      const confidenceEl = document.getElementById('resultConfidence');
+      const confidence = result.confidence || 'unknown';
+      confidenceEl.textContent = confidence;
+      confidenceEl.className = 'result-detail-value confidence-' + confidence;
+
+      document.getElementById('resultDescription').textContent = result.why || 'No description available';
+      document.getElementById('resultDate').textContent = result.today || new Date().toISOString().split('T')[0];
+
+      // Hide loading and show result
+      loadingState.style.display = 'none';
+      resultCard.style.display = 'block';
+
+      // Smooth scroll to result
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    } catch (error) {
+      console.error('Error analyzing artwork:', error);
+      loadingState.innerHTML = '<div class="spinner"></div><span>Error analyzing artwork. Please try again.</span>';
+    }
+  });
+
+  // Sentiment form
+  document.getElementById('sentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    if (!fd.get('consent')) {
+      alert('Consent required');
+      return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+
+    try {
+      const code = fd.get('code');
+      const res = await fetch('/api/sentiment/' + code, { method: 'POST', body: fd });
+      const txt = await res.text();
+
+      // Parse the JSON response
+      const result = JSON.parse(txt);
+
+      const resultDiv = document.getElementById('sentResult');
+      const labelEl = document.getElementById('sentimentLabel');
+
+      // Display beautiful result
+      labelEl.textContent = 'Sentiment: ' + result.label;
+      labelEl.className = 'sentiment-label ' + result.label;
+      resultDiv.style.display = 'block';
+
+      // Reset form
+      e.target.reset();
+
+      // Refresh charts after successful submission
+      setTimeout(() => {
+        if (chartApp && chartApp.fetchData) {
+          chartApp.fetchData();
+        }
+      }, 500);
+
+    } catch (error) {
+      console.error('Error submitting sentiment:', error);
+      const resultDiv = document.getElementById('sentResult');
+      resultDiv.innerHTML = `
           <div class="sentiment-success">
             <div class="sentiment-icon" style="background: rgba(239, 68, 68, 0.2);">✗</div>
             <div class="sentiment-content">
@@ -197,189 +209,224 @@
             </div>
           </div>
         `;
-        resultDiv.style.display = 'block';
-        resultDiv.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-      } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
+      resultDiv.style.display = 'block';
+      resultDiv.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    } finally {
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  });
 
-    // Charts with PrimeVue Chart (Chart.js under the hood)
-    // PrimeVue CDN requires component registration
-    const { createApp } = Vue;
-    let chartApp = null;
-    const app = createApp({
-      data() {
-        return { 
-          chartDataByCode: {}, 
-          charts: {},
-          isUpdating: false,
-          opts: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            aspectRatio: 4,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  stepSize: 1
-                }
-              }
-            },
-            plugins: {
-              legend: {
-                display: false
+  // Charts with PrimeVue Chart (Chart.js under the hood)
+  // PrimeVue CDN requires component registration
+  const { createApp } = Vue;
+  let chartApp = null;
+  const app = createApp({
+    data() {
+      return {
+        chartDataByCode: {},
+        charts: {},
+        isUpdating: false,
+        opts: {
+          responsive: true,
+          maintainAspectRatio: false,
+          aspectRatio: 4,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
               }
             }
-          } 
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      };
+    },
+    methods: {
+      async fetchData() {
+        if (this.isUpdating) {
+          console.log('Chart update already in progress, skipping...');
+          return;
+        }
+
+        console.log('Fetching chart data...');
+        this.isUpdating = true;
+
+        try {
+          const res = await fetch('/api/analytics/summary');
+          const data = await res.json();
+          console.log('Chart data received:', data);
+          this.chartDataByCode = data;
+          console.log('Chart data updated:', this.chartDataByCode);
+
+          // Update charts after data is loaded
+          this.$nextTick(() => {
+            this.updateCharts();
+          });
+        } catch (error) {
+          console.error('Error fetching chart data:', error);
+          this.isUpdating = false;
+        }
+      },
+      toChartData(counts) {
+        const labels = ['very_negative', 'negative', 'neutral', 'positive', 'very_positive'];
+        return {
+          labels,
+          datasets: [{
+            label: 'Votes',
+            data: labels.map(l => counts[l] || 0),
+            backgroundColor: [
+              '#ef4444', // very_negative - red
+              '#f87171', // negative - light red
+              '#6b7280', // neutral - gray
+              '#10b981', // positive - green
+              '#059669'  // very_positive - dark green
+            ],
+            borderColor: [
+              '#dc2626',
+              '#ef4444',
+              '#4b5563',
+              '#059669',
+              '#047857'
+            ],
+            borderWidth: 1
+          }]
         };
       },
-      methods: {
-        async fetchData() {
-          if (this.isUpdating) {
-            console.log('Chart update already in progress, skipping...');
-            return;
-          }
-          
-          console.log('Fetching chart data...');
-          this.isUpdating = true;
-          
-          try {
-            const res = await fetch('/api/analytics/summary');
-            const data = await res.json();
-            console.log('Chart data received:', data);
-            this.chartDataByCode = data;
-            console.log('Chart data updated:', this.chartDataByCode);
-            
-            // Update charts after data is loaded
-            this.$nextTick(() => {
-              this.updateCharts();
-            });
-          } catch (error) {
-            console.error('Error fetching chart data:', error);
-            this.isUpdating = false;
-          }
-        },
-        toChartData(counts) {
-          const labels = ['very_negative','negative','neutral','positive','very_positive'];
-          return {
-            labels,
-            datasets: [{
-              label: 'Votes',
-              data: labels.map(l => counts[l] || 0),
-              backgroundColor: [
-                '#ef4444', // very_negative - red
-                '#f87171', // negative - light red
-                '#6b7280', // neutral - gray
-                '#10b981', // positive - green
-                '#059669'  // very_positive - dark green
-              ],
-              borderColor: [
-                '#dc2626',
-                '#ef4444',
-                '#4b5563',
-                '#059669',
-                '#047857'
-              ],
-              borderWidth: 1
-            }]
-          };
-        },
-        updateCharts() {
-          console.log('Updating charts...');
-          
-          // Set updating flag to prevent multiple simultaneous updates
-          this.isUpdating = true;
-          
-          try {
-            for (const [code, data] of Object.entries(this.chartDataByCode)) {
-              const canvasId = 'chart-' + code;
-              const canvas = document.getElementById(canvasId);
-              if (canvas) {
-                // Destroy existing chart if it exists
-                if (this.charts[code]) {
-                  this.charts[code].destroy();
-                  delete this.charts[code];
-                }
-                
-                // Create new chart
-                const ctx = canvas.getContext('2d');
-                this.charts[code] = new Chart(ctx, {
-                  type: 'bar',
-                  data: this.toChartData(data),
-                  options: this.opts
-                });
-                console.log('Chart created for', code);
-              }
-            }
-            console.log('Charts update completed');
-          } finally {
-            // Always reset the updating flag
-            this.isUpdating = false;
-          }
-        }
-      },
-      mounted() { 
-        this.fetchData(); 
-      }
-    });
-    
-    // Using Chart.js directly instead of PrimeVue
-    console.log('Chart.js available:', typeof Chart !== 'undefined');
-    chartApp = app.mount('#chartApp');
-    
-    // Don't call loadCharts automatically - charts are created in mounted()
+      updateCharts() {
+        console.log('Updating charts...');
 
-    let loadChartsTimeout = null;
-    let retryCount = 0;
-    const maxRetries = 5;
-    let isLoadChartsRunning = false;
-    
-    async function loadCharts(){ 
-      // Prevent multiple simultaneous calls
-      if (isLoadChartsRunning) {
-        console.log('loadCharts already running, skipping...');
-        return;
-      }
-      
-      console.log('Loading charts...');
-      isLoadChartsRunning = true;
-      
-      // Clear any existing timeout
-      if (loadChartsTimeout) {
-        clearTimeout(loadChartsTimeout);
-        loadChartsTimeout = null;
-      }
-      
-      try {
-        if (chartApp && chartApp.fetchData) {
-          console.log('Calling fetchData...');
-          await chartApp.fetchData();
-          console.log('Charts updated successfully');
-          retryCount = 0; // Reset retry count on success
-        } else {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            console.log('Chart app not ready yet, retrying... (' + retryCount + '/' + maxRetries + ')', { chartApp, hasFetchData: chartApp?.fetchData });
-            loadChartsTimeout = setTimeout(() => {
-              isLoadChartsRunning = false;
-              loadCharts();
-            }, 1000); // Increased timeout to 1 second
-            return; // Don't reset isLoadChartsRunning here
-          } else {
-            console.error('Max retries reached, giving up on chart loading');
+        // Set updating flag to prevent multiple simultaneous updates
+        this.isUpdating = true;
+
+        try {
+          for (const [code, data] of Object.entries(this.chartDataByCode)) {
+            const canvasId = 'chart-' + code;
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+              // Destroy existing chart if it exists
+              if (this.charts[code]) {
+                this.charts[code].destroy();
+                delete this.charts[code];
+              }
+
+              // Create new chart
+              const ctx = canvas.getContext('2d');
+              this.charts[code] = new Chart(ctx, {
+                type: 'bar',
+                data: this.toChartData(data),
+                options: this.opts
+              });
+              console.log('Chart created for', code);
+            }
           }
+          console.log('Charts update completed');
+        } finally {
+          // Always reset the updating flag
+          this.isUpdating = false;
         }
-      } catch (error) {
-        console.error('Error updating charts:', error);
-      } finally {
-        isLoadChartsRunning = false;
       }
+    },
+    mounted() {
+      this.fetchData();
     }
-    
-    // Make loadCharts globally accessible
-    window.loadCharts = loadCharts;
-  </script>
+  });
+
+  // Using Chart.js directly instead of PrimeVue
+  console.log('Chart.js available:', typeof Chart !== 'undefined');
+  chartApp = app.mount('#chartApp');
+
+  // Don't call loadCharts automatically - charts are created in mounted()
+
+  let loadChartsTimeout = null;
+  let retryCount = 0;
+  const maxRetries = 5;
+  let isLoadChartsRunning = false;
+
+  async function loadCharts() {
+    // Prevent multiple simultaneous calls
+    if (isLoadChartsRunning) {
+      console.log('loadCharts already running, skipping...');
+      return;
+    }
+
+    console.log('Loading charts...');
+    isLoadChartsRunning = true;
+
+    // Clear any existing timeout
+    if (loadChartsTimeout) {
+      clearTimeout(loadChartsTimeout);
+      loadChartsTimeout = null;
+    }
+
+    try {
+      if (chartApp && chartApp.fetchData) {
+        console.log('Calling fetchData...');
+        await chartApp.fetchData();
+        console.log('Charts updated successfully');
+        retryCount = 0; // Reset retry count on success
+      } else {
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log('Chart app not ready yet, retrying... (' + retryCount + '/' + maxRetries + ')', { chartApp, hasFetchData: chartApp?.fetchData });
+          loadChartsTimeout = setTimeout(() => {
+            isLoadChartsRunning = false;
+            loadCharts();
+          }, 1000); // Increased timeout to 1 second
+          return; // Don't reset isLoadChartsRunning here
+        } else {
+          console.error('Max retries reached, giving up on chart loading');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating charts:', error);
+    } finally {
+      isLoadChartsRunning = false;
+    }
+  }
+
+  // Make loadCharts globally accessible
+  window.loadCharts = loadCharts;
+
+  function addImagePreview(inputId, previewId, removeBtnId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const removeBtn = document.getElementById(removeBtnId);
+
+      input.addEventListener("change", function() {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            removeBtn.classList.add("show");
+          };
+          reader.readAsDataURL(this.files[0]);
+        } else {
+          clearPreview();
+        }
+      });
+
+      function clearPreview() {
+        preview.src = "";
+        preview.style.display = "none";
+        removeBtn.classList.remove("show");
+        input.value = ""; // reset input
+      }
+
+      removeBtn.addEventListener("click", clearPreview);
+    }
+
+    // Hook up previews
+    addImagePreview("photo", "photoPreview", "removePhotoBtn");
+    addImagePreview("selfie", "selfiePreview", "removeSelfieBtn");
+
+
+</script>
 {/body}
 {/include}
