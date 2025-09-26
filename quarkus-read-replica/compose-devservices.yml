@@ -1,0 +1,49 @@
+services:
+  postgres-primary:
+    image: postgres:17
+    container_name: postgres-primary
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-primary.sql:/docker-entrypoint-initdb.d/init-primary.sql
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - primary_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c hba_file=/etc/postgresql/pg_hba.conf
+    healthcheck:
+      test: pg_isready -U admin -d ecommerce
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  postgres-replica:
+    image: postgres:17
+    container_name: postgres-replica
+    environment:
+      POSTGRES_PASSWORD: replicator123
+      POSTGRES_USER: replicator
+      PGPASSWORD: replicator123
+    ports:
+      - "5433:5432"
+    volumes:
+      - replica_data:/var/lib/postgresql/data
+    depends_on:
+      postgres-primary
+    command: >
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres-primary --port=5432 --username=replicator; do
+        echo 'Waiting for primary to connect...'
+        sleep 1s
+      done; echo 'Backup done, starting replica...'; chown -R postgres:postgres /var/lib/postgresql/data; chmod 0700 /var/lib/postgresql/data; su postgres -c 'postgres'
+      "
+
+volumes:
+  primary_data:
+  replica_data:
