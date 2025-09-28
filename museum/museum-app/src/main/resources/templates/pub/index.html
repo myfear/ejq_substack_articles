@@ -45,6 +45,30 @@
   </div>
 </div>
 
+<!-- Featured Inventory Item -->
+<div id="featuredItemCard" class="card" style="display: none;">
+  <h2 style="margin:0 0 6px 0;">Featured Museum Store Item</h2>
+  <div class="featured-item">
+    <div class="featured-item-header">
+      <h3 id="featuredItemTitle" class="featured-item-title"></h3>
+      <div id="featuredItemPrice" class="featured-item-price"></div>
+    </div>
+    <div class="featured-item-details">
+      <div class="featured-item-detail">
+        <span class="featured-item-label">SKU:</span>
+        <span id="featuredItemSku" class="featured-item-value"></span>
+      </div>
+      <div class="featured-item-detail">
+        <span class="featured-item-label">Stock:</span>
+        <span id="featuredItemStock" class="featured-item-value"></span>
+      </div>
+    </div>
+    <div class="featured-item-description">
+      <p id="featuredItemDescription"></p>
+    </div>
+  </div>
+</div>
+
 <div class="card">
   <h2 style="margin:0 0 6px 0;">Share your impression</h2>
   <p class="muted">
@@ -143,6 +167,21 @@
 
       document.getElementById('resultDescription').textContent = result.why || 'No description available';
       document.getElementById('resultDate').textContent = result.today || new Date().toISOString().split('T')[0];
+
+      // Populate featured inventory item if available
+      const featuredItemCard = document.getElementById('featuredItemCard');
+      
+      if (result.featured_inventory_item) {
+        const item = result.featured_inventory_item;
+        document.getElementById('featuredItemTitle').textContent = item.title || 'Unknown Item';
+        document.getElementById('featuredItemPrice').textContent = '$' + (item.price || '0.00');
+        document.getElementById('featuredItemSku').textContent = item.sku || 'N/A';
+        document.getElementById('featuredItemStock').textContent = item.stock || 'N/A';
+        document.getElementById('featuredItemDescription').textContent = item.description || 'No description available';
+        featuredItemCard.style.display = 'block';
+      } else {
+        featuredItemCard.style.display = 'none';
+      }
 
       // Hide loading and show result
       loadingState.style.display = 'none';
