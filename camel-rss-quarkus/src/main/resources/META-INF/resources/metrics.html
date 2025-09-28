@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>RSS Metrics Viewer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color-scheme: light dark; }
+    body { margin: 24px; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    .muted { color: #777; margin-bottom: 16px; }
+    button { padding: 6px 10px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .card { flex: 1 1 420px; border: 1px solid #ddd; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #eee; text-align: left; }
+    th { font-weight: 600; cursor: pointer; }
+    .right { text-align: right; }
+    .wrap { word-break: break-word; }
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    input[type="search"] { padding: 6px 8px; border-radius: 8px; border: 1px solid #ccc; min-width: 220px; }
+    .badge { background: #eef; border: 1px solid #aaf; color: #224; padding: 1px 6px; border-radius: 999px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Quarkus RSS Metrics</h1>
+  <div class="muted">Reading <code>/q/metrics</code> and extracting <code>rss_items_total{author,month}</code> counters.</div>
+
+  <div class="toolbar">
+    <button id="refresh">Refresh</button>
+    <label><input id="auto" type="checkbox" /> Auto-refresh</label>
+    <span class="badge" id="status">idle</span>
+    <input id="filter" type="search" placeholder="Filter author (regex)…" />
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>By Author & Month</h2>
+      <table id="byAuthorMonth">
+        <thead>
+          <tr>
+            <th data-sort="author">Author</th>
+            <th data-sort="month">Month</th>
+            <th class="right" data-sort="value">Posts</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Totals by Author</h2>
+      <table id="byAuthor">
+        <thead>
+          <tr>
+            <th data-sort="author">Author</th>
+            <th class="right" data-sort="value">Total Posts</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Totals by Month</h2>
+      <table id="byMonth">
+        <thead>
+          <tr>
+            <th data-sort="month">Month</th>
+            <th class="right" data-sort="value">Total Posts</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const STATUS = document.getElementById('status');
+    const FILTER = document.getElementById('filter');
+    const AUTO = document.getElementById('auto');
+    const REFRESH = document.getElementById('refresh');
+
+    let sortState = {
+      byAuthorMonth: { key: 'month', asc: false },
+      byAuthor: { key: 'value', asc: false },
+      byMonth: { key: 'month', asc: false }
+    };
+
+    REFRESH.onclick = load;
+    AUTO.onchange = () => AUTO.checked ? startAuto() : stopAuto();
+    FILTER.oninput = renderCached;
+
+    let timer = null;
+    function startAuto() { stopAuto(); timer = setInterval(load, 5000); }
+    function stopAuto() { if (timer) clearInterval(timer); timer = null; }
+
+    // Add click-to-sort on all tables
+    for (const tableId of ['byAuthorMonth','byAuthor','byMonth']) {
+      const table = document.getElementById(tableId);
+      table.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.getAttribute('data-sort');
+          const state = sortState[tableId];
+          state.asc = state.key === key ? !state.asc : true;
+          state.key = key;
+          renderCached();
+        });
+      });
+    }
+
+    let cached = { rows: [], byAuthor: new Map(), byMonth: new Map() };
+
+    async function load() {
+      STATUS.textContent = 'loading…';
+      try {
+        const res = await fetch('/q/metrics', { headers: { 'Accept': 'text/plain' } });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        cached = parseMetrics(text);
+        renderCached();
+        STATUS.textContent = 'ok';
+      } catch (e) {
+        console.error(e);
+        STATUS.textContent = 'error';
+      }
+    }
+
+    // Parse Prometheus text exposition lines of rss_items_total{...} value
+    function parseMetrics(text) {
+      const lines = text.split('\n');
+      const rows = [];
+      const byAuthor = new Map();
+      const byMonth = new Map();
+
+      for (const line of lines) {
+        if (!line.startsWith('rss_items_total{')) continue;
+
+        // Extract label set and numeric value
+        const m = line.match(/^rss_items_total\{([^}]*)\}\s+([0-9.]+)\s*$/);
+        if (!m) continue;
+
+        const labelsStr = m[1];
+        const value = Number(m[2]);
+        // Parse labels key="value", handling commas in values
+        const labels = {};
+        // Split on commas not inside quotes
+        const parts = labelsStr.match(/([^=,]+)="((?:[^"\\]|\\.)*)"(?:,|$)/g) || [];
+        for (const part of parts) {
+          const [k,v] = part.split('=');
+          const key = k.trim();
+          // remove trailing comma from v-part if present, then unquote + unescape
+          const raw = v.trim().replace(/,$/, '');
+          labels[key] = JSON.parse(raw); // JSON trick to unescape \"
+        }
+
+        const author = labels.author || 'unknown';
+        const month = labels.month || 'unknown';
+
+        rows.push({ author, month, value });
+
+        byAuthor.set(author, (byAuthor.get(author) || 0) + value);
+        byMonth.set(month, (byMonth.get(month) || 0) + value);
+      }
+
+      return { rows, byAuthor, byMonth };
+    }
+
+    function renderCached() {
+      const filterTerm = FILTER.value.trim();
+      let regex = null;
+      if (filterTerm) {
+        try { regex = new RegExp(filterTerm, 'i'); } catch { /* ignore bad regex */ }
+      }
+
+      const filteredRows = cached.rows.filter(r => !regex || regex.test(r.author));
+
+      renderTable('byAuthorMonth', filteredRows, [
+        { key: 'author', fmt: x => `<span class="wrap">${escapeHtml(x)}</span>` },
+        { key: 'month', fmt: x => `<code>${escapeHtml(x)}</code>` },
+        { key: 'value', cls: 'right' }
+      ]);
+
+      // Aggregate again after filter for totals
+      const aggAuthor = new Map();
+      for (const r of filteredRows) aggAuthor.set(r.author, (aggAuthor.get(r.author) || 0) + r.value);
+      const listAuthor = [...aggAuthor.entries()].map(([author, value]) => ({ author, value }));
+
+      renderTable('byAuthor', listAuthor, [
+        { key: 'author', fmt: x => `<span class="wrap">${escapeHtml(x)}</span>` },
+        { key: 'value', cls: 'right' }
+      ]);
+
+      const aggMonth = new Map();
+      for (const r of filteredRows) aggMonth.set(r.month, (aggMonth.get(r.month) || 0) + r.value);
+      const listMonth = [...aggMonth.entries()].map(([month, value]) => ({ month, value }));
+
+      renderTable('byMonth', listMonth, [
+        { key: 'month', fmt: x => `<code>${escapeHtml(x)}</code>` },
+        { key: 'value', cls: 'right' }
+      ]);
+    }
+
+    function renderTable(id, items, cols) {
+      const tbody = document.querySelector(`#${id} tbody`);
+      const { key, asc } = sortState[id];
+      const sorted = [...items].sort((a,b) => {
+        const av = a[key], bv = b[key];
+        if (typeof av === 'number' && typeof bv === 'number') return asc ? av - bv : bv - av;
+        return asc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+      });
+
+      tbody.innerHTML = sorted.map(row => {
+        return `<tr>${
+          cols.map(c => {
+            const v = row[c.key];
+            const cls = c.cls ? ` class="${c.cls}"` : '';
+            const html = c.fmt ? c.fmt(v) : escapeHtml(String(v));
+            return `<td${cls}>${html}</td>`;
+          }).join('')
+        }</tr>`;
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // initial load
+    load();
+  </script>
+</body>
+</html>
