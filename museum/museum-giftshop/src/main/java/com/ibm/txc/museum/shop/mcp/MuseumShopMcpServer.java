@@ -23,7 +23,12 @@ public class MuseumShopMcpServer {
             return ToolResponse.error("Artwork name must be provided");
         }
 
-        Artwork artwork = Artwork.find("name = ?1", name).firstResult();
+        Artwork artwork = Artwork.find("LOWER(name) LIKE LOWER(?1)", "%" + name + "%").firstResult();
+        
+        if (artwork == null) {
+            return ToolResponse.error("No artwork found for name: " + name);
+        }
+        
         Log.info(artwork);
         ShopItem shopItem = ShopItem.find("id = ?1", artwork.id).firstResult();
         Log.info(shopItem);
