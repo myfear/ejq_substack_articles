@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.entity.Order;
+import com.example.tenant.ReadWrite;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -31,6 +32,7 @@ public class OrderRepository implements PanacheRepository<Order> {
     }
 
     // Write operations using Panache (primary database)
+    @ReadWrite
     @Transactional
     public Order save(Order order) {
         if (order.id == null) {
@@ -41,6 +43,7 @@ public class OrderRepository implements PanacheRepository<Order> {
         return order;
     }
 
+    @ReadWrite
     @Transactional
     public Order updateStatus(Long orderId, String newStatus) {
         Order order = findById(orderId);

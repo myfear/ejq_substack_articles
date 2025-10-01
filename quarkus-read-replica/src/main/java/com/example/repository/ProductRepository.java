@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.entity.Product;
+import com.example.tenant.ReadWrite;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,7 +16,7 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class ProductRepository implements PanacheRepository<Product> {
 
-    @PersistenceContext(unitName = "replica")
+    @PersistenceContext
     EntityManager replicaEntityManager;
 
     // Read operations using replica database
@@ -50,11 +51,13 @@ public class ProductRepository implements PanacheRepository<Product> {
         return product;
     }
 
+    @ReadWrite
     @Transactional
     public void deleteProduct(Long id) {
         deleteById(id);
     }
 
+    @ReadWrite
     @Transactional
     public Product updateStock(Long productId, Integer newStock) {
         Product product = findById(productId);
