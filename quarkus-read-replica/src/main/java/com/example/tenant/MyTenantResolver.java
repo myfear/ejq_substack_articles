@@ -2,6 +2,7 @@ package com.example.tenant;
 
 import io.quarkus.hibernate.orm.PersistenceUnitExtension;
 import io.quarkus.hibernate.orm.runtime.tenant.TenantResolver;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ResourceInfo;
@@ -20,12 +21,13 @@ public class MyTenantResolver implements TenantResolver {
 
     @Override
     public String resolveTenantId() {
-        if (resource != null) {
-            if (resource.getResourceMethod().isAnnotationPresent(ReadWrite.class)
-                    || resource.getResourceClass().isAnnotationPresent(ReadWrite.class)) {
-                return "read-write";
-            }
+        String tenant = getDefaultTenantId();
+        if (resource != null && (resource.getResourceMethod().isAnnotationPresent(ReadWrite.class)
+                || resource.getResourceClass().isAnnotationPresent(ReadWrite.class))) {
+            tenant = "read-write";
         }
-        return getDefaultTenantId();
+        Log.infof("Resolved tenant: %s for %s", tenant,
+                resource != null ? resource.getResourceMethod().getName() : "unknown");
+        return tenant;
     }
 }

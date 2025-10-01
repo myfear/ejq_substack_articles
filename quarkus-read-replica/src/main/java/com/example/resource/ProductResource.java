@@ -31,27 +31,27 @@ public class ProductResource {
 
     @GET
     public List<Product> getAllProducts() {
-        return productRepository.findAllForRead();
+        return productRepository.findAll().list();
     }
 
     @GET
     @Path("/{id}")
     public Response getProduct(@PathParam("id") Long id) {
-        return productRepository.findByIdForRead(id).map(product -> Response.ok(product).build())
+        return productRepository.findByIdOptional(id).map(product -> Response.ok(product).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @GET
     @Path("/category/{category}")
     public List<Product> getProductsByCategory(@PathParam("category") String category) {
-        return productRepository.findByCategoryForRead(category);
+        return productRepository.findByCategory(category);
     }
 
     @GET
     @Path("/price-range")
     public List<Product> getProductsByPriceRange(@QueryParam("min") BigDecimal minPrice,
             @QueryParam("max") BigDecimal maxPrice) {
-        return productRepository.findByPriceRangeForRead(minPrice, maxPrice);
+        return productRepository.findByPriceRange(minPrice, maxPrice);
     }
 
     @GET
@@ -62,12 +62,15 @@ public class ProductResource {
     }
 
     @ReadWrite
+    @Transactional
     @POST
     public Response createProduct(Product product) {
         Product created = productRepository.save(product);
         return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
+    @ReadWrite
+    @Transactional
     @PUT
     @Path("/{id}")
     public Response updateProduct(@PathParam("id") Long id, Product product) {
@@ -76,6 +79,8 @@ public class ProductResource {
         return Response.ok(updated).build();
     }
 
+    @ReadWrite
+    @Transactional
     @PUT
     @Path("/{id}/stock")
     public Response updateStock(@PathParam("id") Long id, @QueryParam("stock") Integer stock) {
@@ -86,6 +91,8 @@ public class ProductResource {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    @ReadWrite
+    @Transactional
     @DELETE
     @Path("/{id}")
     public Response deleteProduct(@PathParam("id") Long id) {
