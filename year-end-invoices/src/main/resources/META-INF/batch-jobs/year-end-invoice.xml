@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="year-end-invoice" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+
+    <properties>
+        <property name="chunkSize" value="#{jobParameters[&quot;chunkSize&quot;] ?: 100}" />
+        <property name="year" value="#{jobParameters[&quot;year&quot;]}" />
+        <property name="dryRun" value="#{jobParameters[&quot;dryRun&quot;] ?: &quot;false&quot;}" />
+        <property name="bundesland" value="#{jobParameters[&quot;bundesland&quot;] ?: &quot;&quot;}" />
+    </properties>
+
+    <step id="generate-invoices">
+        <chunk item-count="#{jobProperties[&quot;chunkSize&quot;]}">
+            <reader ref="com.acme.batch.PolicyPagingReader"/>
+            <processor ref="com.acme.batch.InvoiceProcessor"/>
+            <writer ref="com.acme.batch.InvoiceWriter"/>
+            <skippable-exception-classes>
+                <include class="jakarta.validation.ValidationException" />
+            </skippable-exception-classes>
+        </chunk>
+    </step>
+
+</job>

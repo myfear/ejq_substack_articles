@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<batch-artifacts xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+    <ref id="com.acme.batch.PolicyPagingReader" class="com.acme.batch.PolicyPagingReader"/>
+    <ref id="com.acme.batch.InvoiceProcessor" class="com.acme.batch.InvoiceProcessor"/>
+    <ref id="com.acme.batch.InvoiceWriter" class="com.acme.batch.InvoiceWriter"/>
+</batch-artifacts>
