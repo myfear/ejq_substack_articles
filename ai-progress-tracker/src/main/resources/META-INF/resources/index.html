@@ -1,0 +1,137 @@
+<!doctype html>
+<html data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LLM Progress Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🤖 AI Progress Tracker</h1>
+            <p>Ask questions and watch the AI work through each step in real-time</p>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <form id="f">
+                    <div class="grid">
+                        <div>
+                            <input id="q" type="text" placeholder="e.g. What does this service do? How does it work?"
+                                required />
+                        </div>
+                        <div>
+                            <button type="submit" role="button">Ask Question</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-container hidden" id="progressContainer">
+                <div class="progress-header">
+                    <h3>Progress</h3>
+                    <span id="pct">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fill"></div>
+                </div>
+            </div>
+
+            <div class="steps-container hidden" id="stepsContainer">
+                <h3>Steps</h3>
+                <ul class="steps-list" id="steps"></ul>
+            </div>
+
+            <div class="answer-container hidden" id="answerContainer">
+                <h3>Answer</h3>
+                <div class="answer-content" id="answer"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const f = document.getElementById('f');
+        const q = document.getElementById('q');
+        const fill = document.getElementById('fill');
+        const pct = document.getElementById('pct');
+        const steps = document.getElementById('steps');
+        const answer = document.getElementById('answer');
+        const progressContainer = document.getElementById('progressContainer');
+        const stepsContainer = document.getElementById('stepsContainer');
+        const answerContainer = document.getElementById('answerContainer');
+
+        function showElement(element) {
+            element.classList.remove('hidden');
+            element.classList.add('fade-in');
+        }
+
+        function hideElement(element) {
+            element.classList.add('hidden');
+            element.classList.remove('fade-in');
+        }
+
+        function resetUI() {
+            steps.innerHTML = '';
+            answer.textContent = '';
+            fill.style.width = '0%';
+            pct.textContent = '0%';
+
+            hideElement(progressContainer);
+            hideElement(stepsContainer);
+            hideElement(answerContainer);
+        }
+
+        f.onsubmit = (e) => {
+            e.preventDefault();
+            resetUI();
+
+            showElement(progressContainer);
+            showElement(stepsContainer);
+
+            const es = new EventSource(`/ai/ask/stream?q=${encodeURIComponent(q.value)}`);
+
+            es.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    // Add step to list
+                    const stepItem = document.createElement('li');
+                    stepItem.innerHTML = `
+                        <strong>${data.step}</strong>
+                        <div class="step-detail">${data.detail}</div>
+                    `;
+                    steps.appendChild(stepItem);
+
+                    // Update progress
+                    fill.style.width = data.percent + '%';
+                    pct.textContent = data.percent + '%';
+
+                    // Show answer when complete
+                    if (data.step === 'Answer' && data.detail) {
+                        answer.textContent = data.detail;
+                        showElement(answerContainer);
+                        es.close();
+                    }
+                } catch (err) {
+                    console.error('Error parsing JSON:', err, 'Data:', event.data);
+                    const errorItem = document.createElement('li');
+                    errorItem.innerHTML = `<div class="error-message">Error parsing response: ${err.message}</div>`;
+                    steps.appendChild(errorItem);
+                }
+            };
+
+            es.onerror = () => {
+                const errorItem = document.createElement('li');
+                errorItem.innerHTML = `<div class="error-message">Connection error occurred</div>`;
+                steps.appendChild(errorItem);
+                es.close();
+            };
+        };
+    </script>
+</body>
+
+</html>

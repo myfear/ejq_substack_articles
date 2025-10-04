@@ -1,0 +1,157 @@
+:root {
+    --progress-bar-height: 12px;
+    --progress-bar-radius: 6px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    margin-bottom: 0.5rem;
+    color: var(--pico-primary);
+}
+
+.header p {
+    color: var(--pico-muted-color);
+    font-size: 1.1rem;
+}
+
+.form-container {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-card-border-color);
+    border-radius: var(--pico-border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--pico-box-shadow);
+}
+
+.progress-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-card-border-color);
+    border-radius: var(--pico-border-radius);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: var(--progress-bar-height);
+    background: var(--pico-muted-border);
+    border-radius: var(--progress-bar-radius);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--pico-primary), var(--pico-primary-hover));
+    transition: width 0.3s ease;
+    border-radius: var(--progress-bar-radius);
+}
+
+.steps-container {
+    margin: 2rem 0;
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.steps-list li {
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-card-border-color);
+    border-radius: var(--pico-border-radius);
+    border-left: 4px solid var(--pico-primary);
+    transition: all 0.2s ease;
+}
+
+.steps-list li:hover {
+    transform: translateX(4px);
+    box-shadow: var(--pico-box-shadow);
+}
+
+.step-detail {
+    color: var(--pico-muted-color);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.answer-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-card-border-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-box-shadow);
+}
+
+.answer-content {
+    background: var(--pico-code-background-color);
+    padding: 1.5rem;
+    border-radius: var(--pico-border-radius);
+    white-space: pre-wrap;
+    font-family: var(--pico-font-family-monospace);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border: 1px solid var(--pico-muted-border);
+}
+
+.error-message {
+    color: var(--pico-del-color);
+    background: var(--pico-del-background-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--pico-border-radius);
+    border: 1px solid var(--pico-del-border-color);
+    margin: 0.5rem 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.loading {
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .form-container {
+        padding: 1.5rem;
+    }
+    
+    .progress-container {
+        padding: 1rem;
+    }
+}
