@@ -1,8 +1,10 @@
-# validator-demo
+# Master Hibernate Validator in Quarkus: 
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Build Rock-Solid Validation for Your REST APIs
+Learn how to add powerful, enterprise-grade validation to your Java applications: From simple annotations to custom business rules.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+Substack article: <https://www.the-main-thread.com/p/hibernate-validator-quarkus-rest-api-validation-tutorial>
+
 
 ## Running the application in dev mode
 
