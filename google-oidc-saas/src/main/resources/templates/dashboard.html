@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=”utf-8”/>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h2>Welcome {userName} (@{userEmail})</h2>
+  {#if userPicture}
+    <img src="{userPicture}" alt="avatar" width="64" height="64"/>
+  {/if}
+  <p>Tenant: {tenantDomain}</p>
+
+  <h3>Calendar</h3>
+  <p>
+    
+      <a href="/calendar/upcoming">Show my next events</a>
+    
+  </p>
+
+  <p><a href="/logout">Logout</a></p>
+</body>
+</html>

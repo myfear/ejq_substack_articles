@@ -1,0 +1,50 @@
+package com.acme.google;
+
+import org.jboss.logging.Logger;
+
+import io.quarkus.security.identity.CurrentIdentityAssociation;
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.HttpHeaders;
+
+@RequestScoped
+public class GoogleAccessTokenFilter implements ClientRequestFilter {
+
+    private static final Logger LOG = Logger.getLogger(GoogleAccessTokenFilter.class);
+
+    @Inject
+    CurrentIdentityAssociation identityAssociation;
+
+    @Override
+    public void filter(ClientRequestContext requestContext) {
+        try {
+            SecurityIdentity identity = identityAssociation.getIdentity();
+            if (identity != null) {
+                // Get the OAuth access token from the routing context
+                Object routingContext = identity.getAttribute("io.vertx.ext.web.RoutingContext");
+                if (routingContext != null) {
+                    try {
+                        java.lang.reflect.Method getMethod = routingContext.getClass().getMethod("get", String.class);
+                        String accessToken = (String) getMethod.invoke(routingContext, "access_token");
+                        if (accessToken != null) {
+                            requestContext.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+                        } else {
+                            LOG.warn("No access token found in RoutingContext");
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Error getting access token from RoutingContext", e);
+                    }
+                } else {
+                    LOG.warn("No RoutingContext found in security identity");
+                }
+            } else {
+                LOG.warn("No security identity available");
+            }
+        } catch (Exception e) {
+            LOG.error("Error getting access token", e);
+        }
+    }
+}
