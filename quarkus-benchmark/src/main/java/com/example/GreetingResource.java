@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.smallrye.common.annotation.NonBlocking;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -16,6 +17,7 @@ public class GreetingResource {
     @GET
     @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
+    @NonBlocking
     public String hello() {
         return "Hello from Quarkus!";
     }
@@ -23,6 +25,7 @@ public class GreetingResource {
     @GET
     @Path("/compute")
     @Produces(MediaType.APPLICATION_JSON)
+    @NonBlocking
     public ComputeResult compute(@QueryParam("iterations") Integer iterations) {
         int iter = iterations != null ? iterations : 1000;
 
