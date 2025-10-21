@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.example.leaderboard";
+option java_outer_classname = "LeaderboardProto";
+
+message SubmitScoreRequest {
+  string player = 1;
+  int32 score = 2;
+}
+
+message ScoreResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message LeaderboardEntry {
+  string player = 1;
+  int32 score = 2;
+}
+
+service LeaderboardService {
+  rpc submitScore(SubmitScoreRequest) returns (ScoreResponse);
+  rpc watchLeaderboard(google.protobuf.Empty) returns (stream LeaderboardEntry);
+}
