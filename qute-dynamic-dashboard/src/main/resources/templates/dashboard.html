@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Dashboard - {config.user.role}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-info {
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .widget {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .widget:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .widget h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.75rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat .label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat .value {
+            display: block;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .action-list, .log-entries, .approval-list, .report-list, .task-list {
+            list-style: none;
+        }
+        
+        .action-list li, .log-entries li, .approval-list li, .report-list li, .task-list li {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .action-list li:hover, .report-list li:hover {
+            background: #e9ecef;
+        }
+        
+        .action-list a, .report-list a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .health-indicator {
+            padding: 1rem;
+            background: #d4edda;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .status {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .status-healthy {
+            color: #28a745;
+        }
+        
+        .service-status {
+            list-style: none;
+        }
+        
+        .service-status li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .ok {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+        
+        .approval-list button {
+            background: #28a745;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            float: right;
+        }
+        
+        .approval-list button:hover {
+            background: #218838;
+        }
+        
+        .performance-chart p {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-list input[type="checkbox"] {
+            margin-right: 0.75rem;
+        }
+        
+        .task-list li {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Enterprise Dashboard</h1>
+        <div class="user-info">
+            Welcome, {config.user.username}
+            <span class="role-badge">{config.user.role}</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="dashboard-grid">
+            {! 🔥 THE MAGIC HAPPENS HERE - Dynamic Includes! !}
+            {#for widgetId in config.widgets}
+                {! 
+                    The _id parameter makes the include dynamic!
+                    widgetId is evaluated at runtime, allowing us to 
+                    include different templates based on user roles
+                !}
+                {#include _id=widgetId /}
+            {/for}
+        </div>
+    </div>
+</body>
+</html>
