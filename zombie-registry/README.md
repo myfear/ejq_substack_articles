@@ -1,6 +1,10 @@
 # zombie-registry
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Master Quarkus’s New SQL Import Trick: ZIP Your Database Like a Pro
+Substack article:
+<https://www.the-main-thread.com/p/quarkus-hibernate-sql-import-zip-tutorial>
+
+
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
