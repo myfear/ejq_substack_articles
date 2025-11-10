@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Progressive Image Streaming</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        img {
+            max-width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Progressive Image Streaming Demo</h1>
+    <img id="progressive" alt="streamed image">
+    <script>
+        const img = document.getElementById('progressive');
+        const chunks = [];
+        let currentBlobUrl = null;
+
+        fetch('/api/image/download.png')
+            .then(res => {
+                const reader = res.body.getReader();
+                
+                function read() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            // Final update with all chunks
+                            updateImage();
+                            return;
+                        }
+                        
+                        chunks.push(value);
+                        // Update image as chunks arrive
+                        updateImage();
+                        read();
+                    });
+                }
+                
+                function updateImage() {
+                    // Revoke previous blob URL to free memory
+                    if (currentBlobUrl) {
+                        URL.revokeObjectURL(currentBlobUrl);
+                    }
+                    
+                    // Create new blob from accumulated chunks
+                    const blob = new Blob(chunks, { type: 'image/png' });
+                    currentBlobUrl = URL.createObjectURL(blob);
+                    img.src = currentBlobUrl;
+                }
+                
+                read();
+            })
+            .catch(err => {
+                console.error('Error loading image:', err);
+            });
+    </script>
+</body>
+
+</html>
