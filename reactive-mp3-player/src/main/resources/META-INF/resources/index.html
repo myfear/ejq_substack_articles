@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reactive MP3 Player</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    
+    body {
+      font-family: 'Orbitron', 'Courier New', monospace;
+      background: linear-gradient(135deg, #2c1810 0%, #8b4513 50%, #654321 100%);
+      background-attachment: fixed;
+      color: #ffd700;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      font-size: 28px;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.5);
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    #player {
+      background: linear-gradient(145deg, #3d2817, #2a1a0f);
+      border: 4px solid #8b6914;
+      border-radius: 20px;
+      padding: 25px;
+      display: inline-block;
+      width: 400px;
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.8),
+        inset 0 2px 10px rgba(255,215,0,0.1),
+        0 0 20px rgba(255,215,0,0.2);
+      position: relative;
+    }
+    
+    #player::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
+      border-radius: 2px;
+    }
+    
+    #audio {
+      display: none;
+    }
+    
+    #trackInfo {
+      background: #1a0f08;
+      border: 2px inset #8b6914;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 15px 0;
+      min-height: 50px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 0 5px rgba(255,215,0,0.3);
+      font-family: 'Courier New', monospace;
+    }
+    
+    #trackTitle {
+      font-weight: bold;
+      font-size: 14px;
+      color: #ffd700;
+      text-shadow: 0 0 5px rgba(255,215,0,0.8);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    #trackArtist {
+      font-size: 11px;
+      color: #ffaa00;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .timeDisplay {
+      background: #0a0502;
+      border: 2px inset #654321;
+      border-radius: 6px;
+      padding: 8px 15px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      color: #00ff00;
+      text-shadow: 0 0 10px rgba(0,255,0,0.8);
+      letter-spacing: 2px;
+      display: inline-block;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.9);
+    }
+    
+    button {
+      margin: 5px;
+      border: 3px outset #8b6914;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 18px;
+      background: linear-gradient(145deg, #8b6914, #654321);
+      color: #ffd700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      transition: all 0.1s;
+      font-family: 'Orbitron', monospace;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    }
+    
+    button:active {
+      border-style: inset;
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    
+    button:hover {
+      background: linear-gradient(145deg, #a67c2a, #8b6914);
+      box-shadow: 0 0 15px rgba(255,215,0,0.4);
+    }
+    
+    #playpause {
+      font-size: 24px;
+      padding: 12px 20px;
+      background: linear-gradient(145deg, #ff8c00, #ff6b00);
+      border-color: #ffaa00;
+      box-shadow: 0 0 20px rgba(255,140,0,0.6);
+    }
+    
+    #playpause:hover {
+      background: linear-gradient(145deg, #ffaa00, #ff8c00);
+      box-shadow: 0 0 25px rgba(255,140,0,0.8);
+    }
+    
+    input[type=range] {
+      width: 100%;
+      margin: 15px 0;
+      height: 8px;
+      background: #1a0f08;
+      border: 2px inset #654321;
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(145deg, #ffd700, #ffaa00);
+      border: 2px outset #ffd700;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.5);
+    }
+    
+    input[type=range]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(145deg, #ffd700, #ffaa00);
+      border: 2px outset #ffd700;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.5);
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #1a0f08;
+      border: 2px inset #654321;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.9);
+    }
+    
+    ul::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ul::-webkit-scrollbar-track {
+      background: #1a0f08;
+    }
+    
+    ul::-webkit-scrollbar-thumb {
+      background: #8b6914;
+      border-radius: 4px;
+    }
+    
+    li {
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 1px solid rgba(139,105,20,0.3);
+      color: #ffd700;
+      font-size: 12px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    li:last-child {
+      border-bottom: none;
+    }
+    
+    li:hover {
+      background: rgba(255,215,0,0.15);
+      color: #ffaa00;
+      text-shadow: 0 0 5px rgba(255,215,0,0.5);
+      padding-left: 12px;
+    }
+    
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎵 RETRO MP3 PLAYER 🎵</h1>
+  <div id="player">
+    <audio id="audio" controls></audio>
+    <div id="trackInfo">
+      <div id="trackTitle">-- NO TRACK --</div>
+      <div id="trackArtist">-- SELECT A TRACK --</div>
+    </div>
+    <div class="timeDisplay">
+      <span id="currentTime">0:00</span> / <span id="duration">--:--</span>
+    </div>
+    <div class="controls-row">
+      <button id="prev">⏮ PREV</button>
+      <button id="skipBack">⏪ -30s</button>
+      <button id="playpause">▶ PLAY</button>
+      <button id="skipForward">+30s ⏩</button>
+      <button id="next">NEXT ⏭</button>
+    </div>
+    <div style="margin: 15px 0;">
+      <div style="color: #ffaa00; font-size: 11px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">VOLUME</div>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+    <div style="color: #ffaa00; font-size: 11px; margin: 15px 0 5px 0; text-transform: uppercase; letter-spacing: 1px;">PLAYLIST</div>
+    <ul id="playlist"></ul>
+  </div>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const playpause = document.getElementById('playpause');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const skipBack = document.getElementById('skipBack');
+    const skipForward = document.getElementById('skipForward');
+    const playlist = document.getElementById('playlist');
+    const volume = document.getElementById('volume');
+    const currentTimeDisplay = document.getElementById('currentTime');
+    const durationDisplay = document.getElementById('duration');
+    const trackTitle = document.getElementById('trackTitle');
+    const trackArtist = document.getElementById('trackArtist');
+
+    let tracks = [];
+    let currentIndex = 0;
+    let currentMetadata = null;
+
+    async function loadPlaylist() {
+      const res = await fetch('/api/music/list');
+      tracks = await res.json();
+      playlist.innerHTML = '';
+      tracks.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${String(i + 1).padStart(2, '0')}. ${t.replace('.mp3', '')}`;
+        li.onclick = () => playTrack(i);
+        playlist.appendChild(li);
+      });
+    }
+
+    async function playTrack(index) {
+      currentIndex = index;
+      const filename = tracks[index];
+      audio.src = `/api/music/stream/${encodeURIComponent(filename)}`;
+      
+      // Fetch and display metadata
+      try {
+        const metadataRes = await fetch(`/api/music/metadata/${encodeURIComponent(filename)}`);
+        currentMetadata = await metadataRes.json();
+        
+        // Display track info
+        trackTitle.textContent = (currentMetadata.title || filename.replace('.mp3', '')).toUpperCase();
+        trackArtist.textContent = (currentMetadata.artist || 'UNKNOWN ARTIST').toUpperCase();
+        
+        // Use metadata duration if available
+        if (currentMetadata.duration) {
+          durationDisplay.textContent = formatTime(currentMetadata.duration);
+        }
+      } catch (e) {
+        console.error('Failed to load metadata:', e);
+        trackTitle.textContent = filename.replace('.mp3', '').toUpperCase();
+        trackArtist.textContent = 'UNKNOWN ARTIST';
+      }
+      
+      // Play with error handling
+      audio.play().catch(err => {
+        // Ignore AbortError - it happens when pause is called during play
+        if (err.name !== 'AbortError') {
+          console.error('Play error:', err);
+        }
+      });
+    }
+
+    // Playback controls
+    playpause.onclick = () => {
+      if (audio.paused) {
+        playpause.textContent = '⏸ PAUSE';
+        audio.play().catch(err => {
+          // Ignore AbortError - it happens when pause is called during play
+          if (err.name !== 'AbortError') {
+            console.error('Play error:', err);
+          }
+        });
+      } else {
+        playpause.textContent = '▶ PLAY';
+        audio.pause();
+      }
+    };
+    
+    // Update play/pause button text based on audio state
+    audio.addEventListener('play', () => {
+      playpause.textContent = '⏸ PAUSE';
+    });
+    audio.addEventListener('pause', () => {
+      playpause.textContent = '▶ PLAY';
+    });
+    prev.onclick = () => playTrack((currentIndex - 1 + tracks.length) % tracks.length);
+    next.onclick = () => playTrack((currentIndex + 1) % tracks.length);
+    volume.oninput = () => audio.volume = volume.value;
+
+    // Skip 30 seconds back or forward
+    skipBack.onclick = () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 30);
+    };
+    skipForward.onclick = () => {
+      audio.currentTime = Math.min(audio.duration, audio.currentTime + 30);
+    };
+
+    // Time display
+    audio.addEventListener('timeupdate', () => {
+      currentTimeDisplay.textContent = formatTime(audio.currentTime);
+      // Use metadata duration if available, otherwise try audio.duration
+      if (currentMetadata && currentMetadata.duration) {
+        durationDisplay.textContent = formatTime(currentMetadata.duration);
+      } else if (isFinite(audio.duration) && !isNaN(audio.duration)) {
+        durationDisplay.textContent = formatTime(audio.duration);
+      } else {
+        durationDisplay.textContent = '--:--';
+      }
+    });
+    
+    // Also update duration when metadata is loaded (fallback)
+    audio.addEventListener('loadedmetadata', () => {
+      if (!currentMetadata || !currentMetadata.duration) {
+        if (isFinite(audio.duration) && !isNaN(audio.duration)) {
+          durationDisplay.textContent = formatTime(audio.duration);
+        }
+      }
+    });
+
+    // Auto-play next track
+    audio.addEventListener('ended', () => next.click());
+
+    function formatTime(sec) {
+      if (isNaN(sec) || !isFinite(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    loadPlaylist();
+  </script>
+</body>
+</html>
