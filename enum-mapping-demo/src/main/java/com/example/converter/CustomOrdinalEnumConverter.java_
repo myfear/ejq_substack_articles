@@ -1,0 +1,33 @@
+package com.example.converter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import jakarta.persistence.AttributeConverter;
+
+public abstract class CustomOrdinalEnumConverter<T extends Enum<T>>
+        implements AttributeConverter<T, Integer> {
+
+    private final Map<Integer, T> codeToEnum = new HashMap<>();
+    private final Class<T> enumType;
+
+    protected CustomOrdinalEnumConverter(Class<T> enumType) {
+        this.enumType = enumType;
+        for (T value : enumType.getEnumConstants()) {
+            Integer dbValue = convertToDatabaseColumn(value);
+            codeToEnum.put(dbValue, value);
+        }
+    }
+
+    @Override
+    public T convertToEntityAttribute(Integer dbValue) {
+        if (dbValue == null)
+            return null;
+        T enumValue = codeToEnum.get(dbValue);
+        if (enumValue == null) {
+            throw new IllegalArgumentException(
+                    "Unknown " + enumType.getSimpleName() + " code: " + dbValue);
+        }
+        return enumValue;
+    }
+}

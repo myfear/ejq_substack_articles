@@ -1,0 +1,18 @@
+package com.example.converter;
+
+import com.example.model.PostStatus;
+
+import jakarta.persistence.Converter;
+
+@Converter(autoApply = false)
+public class PostStatusConverter extends CustomOrdinalEnumConverter<PostStatus> {
+
+    public PostStatusConverter() {
+        super(PostStatus.class);
+    }
+
+    @Override
+    public Integer convertToDatabaseColumn(PostStatus status) {
+        return status != null ? status.getStatusCode() : null;
+    }
+}
