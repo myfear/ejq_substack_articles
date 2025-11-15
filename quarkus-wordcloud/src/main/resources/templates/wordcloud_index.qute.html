@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quarkus Word Cloud</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        textarea {
+            width: 36rem;
+            height: 16rem;
+        }
+
+        label {
+            display: block;
+            margin-top: .5rem;
+        }
+
+        input[type="number"] {
+            width: 6rem;
+        }
+
+        .preview {
+            border: 1px solid #ddd;
+            padding: .5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Word Cloud (EdWordle-style) </h1>
+
+    <div class="row">
+        <form id="form">
+            <label>Text</label>
+            <textarea name="text" placeholder="Paste text here"></textarea>
+
+            <div class="row" style="gap:1rem; margin-top:.5rem;">
+                <div>
+                    <label>Width <input type="number" name="w" value="900" /></label>
+                    <label>Height <input type="number" name="h" value="600" /></label>
+                    <label>Max Words <input type="number" name="max" value="60" /></label>
+                </div>
+                <div>
+                    <label>Min Font <input type="number" name="minFont" value="12" /></label>
+                    <label>Max Font <input type="number" name="maxFont" value="72" /></label>
+                    <label>Font <input type="text" name="font" value="IBM Plex Sans" /></label>
+                </div>
+                <div>
+                    <label><input type="checkbox" name="rotate" checked /> Allow Rotation</label>
+                    <label>Rotate Prob <input type="number" step="0.05" name="rotateProb" value="0.25" /></label>
+                    <label><input type="checkbox" name="rewordle" checked /> Local Re-Wordle</label>
+                </div>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <label>Seed <input type="number" name="seed" value="42" /></label>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <button type="button" id="refresh">Refresh Preview</button>
+            </div>
+        </form>
+
+        <div class="preview">
+            <img id="img" alt="Preview" width="450" />
+        </div>
+    </div>
+
+    <script>
+        const img = document.getElementById('img');
+        const form = document.getElementById('form');
+        function buildUrl() {
+            const fd = new FormData(form);
+            const params = new URLSearchParams();
+            for (const [k, v] of fd.entries()) {
+                if (k === 'text') continue;
+                if (k === 'rotate' || k === 'rewordle') {
+                    params.set(k, 'on' === v ? 'true' : v); // checkbox normalization
+                } else {
+                    params.set(k, v);
+                }
+            }
+            const text = encodeURIComponent(fd.get('text') || '');
+            return '/api/wordcloud.png?' + params.toString() + '&text=' + text + '&_=' + Date.now();
+        }
+        function refresh() { img.src = buildUrl(); }
+        document.getElementById('refresh').addEventListener('click', refresh);
+        refresh(); // initial
+    </script>
+</body>
+
+</html>
