@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quarkus Badge Playground</title>
+
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 880px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 { color: #4695EB; margin-bottom: 0.25rem; }
+        h2 { margin-top: 2rem; }
+
+        .row { margin-bottom: 1rem; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        #preview {
+            margin-top: 1.5rem;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img { margin-top: 1rem; }
+
+        button {
+            padding: 0.5rem 1rem;
+            margin-right: 0.75rem;
+            background-color: #4695EB;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2f78c1;
+        }
+
+        .preset {
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+
+        .preset-badge {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            background: #f9f9f9;
+            transition: background 0.2s;
+        }
+
+        .preset-badge:hover {
+            background: #ececec;
+        }
+    </style>
+
+    <script>
+        // Auto-update preview
+        function autoUpdate() {
+            const label = document.getElementById('label').value;
+            const value = document.getElementById('value').value;
+            const theme = document.getElementById('theme').value;
+
+            const newUrl = '/badge/dynamic.svg?label=' + encodeURIComponent(label) 
+                + '&value=' + encodeURIComponent(value) 
+                + '&theme=' + encodeURIComponent(theme) 
+                + '&ts=' + Date.now();
+
+            document.getElementById('badge-image').src = newUrl;
+            document.getElementById('badge-url').value = newUrl;
+        }
+
+        // Copy badge URL to clipboard
+        function copyUrl() {
+            const input = document.getElementById('badge-url');
+            navigator.clipboard.writeText(input.value).then(() => {
+                alert("Badge URL copied!");
+            });
+        }
+
+        // Force-download SVG
+        function downloadSvg() {
+            const url = document.getElementById('badge-url').value;
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "badge.svg";
+            a.click();
+        }
+
+        // Force-download PNG
+        function downloadPng() {
+            const url = document.getElementById('badge-url').value.replace("dynamic.svg", "dynamic.png");
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "badge.png";
+            a.click();
+        }
+
+        // Apply presets
+        function applyPreset(label, value, theme) {
+            document.getElementById('label').value = label;
+            document.getElementById('value').value = value;
+            document.getElementById('theme').value = theme;
+            autoUpdate();
+        }
+    </script>
+</head>
+
+<body>
+
+<h1>Quarkus Badge Playground</h1>
+<p>Create, preview, copy, and download your custom Quarkus badges.</p>
+
+<form oninput="autoUpdate()">
+    <div class="row">
+        <label for="label">Label</label>
+        <input id="label" name="label" value="{label}">
+    </div>
+
+    <div class="row">
+        <label for="value">Value</label>
+        <input id="value" name="value" value="{value}">
+    </div>
+
+    <div class="row">
+        <label for="theme">Theme</label>
+        <select id="theme" name="theme">
+            <option value="default" {#if theme == 'default'}selected{/if}>Default</option>
+            <option value="native"  {#if theme == 'native'}selected{/if}>Native</option>
+            <option value="ai"      {#if theme == 'ai'}selected{/if}>AI</option>
+            <option value="dark"    {#if theme == 'dark'}selected{/if}>Dark</option>
+        </select>
+    </div>
+</form>
+
+<h2>Presets</h2>
+<div class="preset">
+    <div class="preset-badge" onclick="applyPreset('Proudly built with', 'Quarkus', 'default')">
+        Proudly built with Quarkus
+    </div>
+
+    <div class="preset-badge" onclick="applyPreset('Runs', 'Native', 'native')">
+        Runs Native
+    </div>
+
+    <div class="preset-badge" onclick="applyPreset('AI', 'Ready', 'ai')">
+        AI Ready
+    </div>
+</div>
+
+<h2>Live Badge Preview</h2>
+<div id="preview">
+    <img id="badge-image" alt="Badge Preview" src="{badgeUrl}">
+</div>
+
+<h2>Actions</h2>
+
+<div class="row">
+    <label>Badge URL</label>
+    <input id="badge-url" value="{badgeUrl}">
+    <br/><br/>
+    <button type="button" onclick="copyUrl()">Copy URL</button>
+    <button type="button" onclick="downloadSvg()">Download SVG</button>
+    <button type="button" onclick="downloadPng()">Download PNG</button>
+</div>
+
+</body>
+</html>
