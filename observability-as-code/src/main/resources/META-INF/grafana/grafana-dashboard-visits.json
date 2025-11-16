@@ -1,0 +1,38 @@
+{
+    "title": "Visits Dashboard",
+    "tags": [
+        "Quarkus",
+        "Micrometer",
+        "Observability-as-Code"
+    ],
+    "panels": [
+        {
+            "type": "stat",
+            "title": "Total Visits",
+            "targets": [
+                {
+                    "expr": "app_visits_total"
+                }
+            ]
+        },
+        {
+            "type": "timeseries",
+            "title": "Visits Over Time",
+            "targets": [
+                {
+                    "expr": "rate(app_visits_total[1m])"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "count/s",
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            }
+        }
+    ],
+    "schemaVersion": 41,
+    "version": 1
+}

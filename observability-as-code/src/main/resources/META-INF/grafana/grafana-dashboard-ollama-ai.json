@@ -1,0 +1,336 @@
+{
+    "title": "Ollama AI Dashboard",
+    "tags": [
+        "Quarkus",
+        "LangChain4j",
+        "Ollama",
+        "AI",
+        "Micrometer"
+    ],
+    "panels": [
+        {
+            "type": "stat",
+            "title": "Total Input Tokens",
+            "targets": [
+                {
+                    "expr": "llm_token_input_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Input Tokens"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "decimals": 0,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "green"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+        },
+        {
+            "type": "stat",
+            "title": "Total Output Tokens",
+            "targets": [
+                {
+                    "expr": "llm_token_output_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Output Tokens"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "decimals": 0,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "blue"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+        },
+        {
+            "type": "stat",
+            "title": "Total Tokens",
+            "targets": [
+                {
+                    "expr": "llm_token_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Total Tokens"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "decimals": 0,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "purple"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+        },
+        {
+            "type": "stat",
+            "title": "Estimated Cost (USD)",
+            "targets": [
+                {
+                    "expr": "((llm_token_input_count_tokens_total{modelName=\"ollama-llama3\"}/1000000)*0.0005) + ((llm_token_output_count_tokens_total{modelName=\"ollama-llama3\"}/1000000)*0.0005)",
+                    "legendFormat": "Cost"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD",
+                    "decimals": 6,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "green"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+        },
+        {
+            "type": "timeseries",
+            "title": "Token Usage Over Time (Total)",
+            "targets": [
+                {
+                    "expr": "llm_token_input_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Input Tokens"
+                },
+                {
+                    "expr": "llm_token_output_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Output Tokens"
+                },
+                {
+                    "expr": "llm_token_count_tokens_total{modelName=\"ollama-llama3\"}",
+                    "legendFormat": "Total Tokens"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "decimals": 0,
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+        },
+        {
+            "type": "timeseries",
+            "title": "Token Rate (tokens/second)",
+            "targets": [
+                {
+                    "expr": "rate(llm_token_input_count_tokens_total{modelName=\"ollama-llama3\"}[1m])",
+                    "legendFormat": "Input Rate"
+                },
+                {
+                    "expr": "rate(llm_token_output_count_tokens_total{modelName=\"ollama-llama3\"}[1m])",
+                    "legendFormat": "Output Rate"
+                },
+                {
+                    "expr": "rate(llm_token_count_tokens_total{modelName=\"ollama-llama3\"}[1m])",
+                    "legendFormat": "Total Rate"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "tokens/s",
+                    "decimals": 2,
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+        },
+        {
+            "type": "stat",
+            "title": "Total AI Service Invocations",
+            "targets": [
+                {
+                    "expr": "langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\"}",
+                    "legendFormat": "Total Invocations"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short",
+                    "decimals": 0,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "blue"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 24}
+        },
+        {
+            "type": "stat",
+            "title": "Success Rate",
+            "targets": [
+                {
+                    "expr": "langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\",result=\"success\"} / langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\"} * 100",
+                    "legendFormat": "Success Rate"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "decimals": 1,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "green"},
+                            {"value": 95, "color": "yellow"},
+                            {"value": 90, "color": "red"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 24}
+        },
+        {
+            "type": "stat",
+            "title": "Average Execution Time",
+            "targets": [
+                {
+                    "expr": "langchain4j_aiservices_timed_seconds_sum{aiservice=\"ChatService\",method=\"ask\"} / langchain4j_aiservices_timed_seconds_count{aiservice=\"ChatService\",method=\"ask\"}",
+                    "legendFormat": "Avg Time"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s",
+                    "decimals": 3,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "green"},
+                            {"value": 5, "color": "yellow"},
+                            {"value": 10, "color": "red"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 12, "y": 24}
+        },
+        {
+            "type": "stat",
+            "title": "Max Execution Time",
+            "targets": [
+                {
+                    "expr": "langchain4j_aiservices_timed_seconds_max{aiservice=\"ChatService\",method=\"ask\"}",
+                    "legendFormat": "Max Time"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s",
+                    "decimals": 3,
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {"value": null, "color": "green"},
+                            {"value": 5, "color": "yellow"},
+                            {"value": 10, "color": "red"}
+                        ]
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 18, "y": 24}
+        },
+        {
+            "type": "timeseries",
+            "title": "AI Service Execution Time",
+            "targets": [
+                {
+                    "expr": "langchain4j_aiservices_timed_seconds_sum{aiservice=\"ChatService\",method=\"ask\"} / langchain4j_aiservices_timed_seconds_count{aiservice=\"ChatService\",method=\"ask\"}",
+                    "legendFormat": "Average Time"
+                },
+                {
+                    "expr": "langchain4j_aiservices_timed_seconds_max{aiservice=\"ChatService\",method=\"ask\"}",
+                    "legendFormat": "Max Time"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s",
+                    "decimals": 3,
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+        },
+        {
+            "type": "timeseries",
+            "title": "AI Service Invocation Rate",
+            "targets": [
+                {
+                    "expr": "rate(langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\"}[1m])",
+                    "legendFormat": "Invocation Rate"
+                },
+                {
+                    "expr": "rate(langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\",result=\"success\"}[1m])",
+                    "legendFormat": "Success Rate"
+                },
+                {
+                    "expr": "rate(langchain4j_aiservices_counted_total{aiservice=\"ChatService\",method=\"ask\",result=\"error\"}[1m])",
+                    "legendFormat": "Error Rate"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "reqps",
+                    "decimals": 2,
+                    "color": {
+                        "mode": "palette-classic"
+                    }
+                }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 40}
+        }
+    ],
+    "schemaVersion": 41,
+    "version": 2
+}
