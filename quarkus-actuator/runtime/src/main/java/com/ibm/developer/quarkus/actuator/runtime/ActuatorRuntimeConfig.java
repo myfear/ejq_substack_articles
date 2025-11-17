@@ -1,5 +1,7 @@
 package com.ibm.developer.quarkus.actuator.runtime;
 
+import java.util.Optional;
+
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
@@ -40,9 +42,25 @@ public interface ActuatorRuntimeConfig {
         boolean sslEnabled();
 
         /**
-         * Location of git.properties file.
+         * Git information configuration.
          */
-        @WithDefault("/git.properties")
-        String gitPropertiesLocation();
+        GitConfig git();
+
+        interface GitConfig {
+            /**
+             * Git branch name.
+             */
+            Optional<String> branch();
+
+            /**
+             * Git commit ID.
+             */
+            Optional<String> commitId();
+
+            /**
+             * Git commit time.
+             */
+            Optional<String> commitTime();
+        }
     }
 }

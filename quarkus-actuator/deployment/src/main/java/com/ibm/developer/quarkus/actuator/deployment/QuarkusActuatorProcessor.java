@@ -14,6 +14,7 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.StaticInitConfigBuilderBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
@@ -54,6 +55,23 @@ class QuarkusActuatorProcessor {
     void registerNativeResources(BuildProducer<NativeImageResourceBuildItem> resources) {
         log.debug("Registering native resource: git.properties");
         resources.produce(new NativeImageResourceBuildItem("git.properties"));
+    }
+
+    @BuildStep
+    void loadGitInfoIntoConfig(
+            BuildProducer<StaticInitConfigBuilderBuildItem> configBuilder,
+            ActuatorBuildTimeConfig buildTimeCfg) {
+
+        if (!buildTimeCfg.enabled() || !buildTimeCfg.infoEnabled()) {
+            log.debug("Skipping git info loading - actuator or info endpoint disabled");
+            return;
+        }
+
+        // Register GitInfoConfigBuilder which will read git.properties at build time
+        // Note: The class is in the runtime module but registered from deployment module
+        log.debug("Registering GitInfoConfigBuilder");
+        configBuilder.produce(new StaticInitConfigBuilderBuildItem(
+                com.ibm.developer.quarkus.actuator.runtime.GitInfoConfigBuilder.class));
     }
 
     @BuildStep
