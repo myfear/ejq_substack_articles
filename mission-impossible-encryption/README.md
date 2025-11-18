@@ -14,53 +14,34 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
-## Packaging and running the application
 
-The application can be packaged using:
+## Remaining Optimizations
 
-```shell script
-./mvnw package
-```
+### High-Priority Security
+- Add Jakarta Bean Validation (`@Valid`, `@NotNull`, `@NotBlank`, `@Email`) to all DTOs
+- Implement authentication/authorization (JWT/OAuth2/API keys)
+- Add input validation in `AgentResource.enroll()` (null checks, email format, duplicate code names)
+- Add null checks in `SpyMessageResource.encrypt()` for request and fields
+- Implement rate limiting to prevent DoS/brute force
+- Add error handling with custom exceptions and `@ExceptionMapper` (avoid leaking sensitive info)
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+### Missing Features
+- Add agent management endpoints: `GET /agent`, `GET /agent/{codeName}`, `PUT /agent/{codeName}/compromise`, `DELETE /agent/{codeName}`
+- Add persistence layer (database or file-based) to replace in-memory storage
+- Add OpenAPI/Swagger documentation (`quarkus-smallrye-openapi`)
+- Add health checks (`quarkus-smallrye-health`)
+- Add metrics/observability (`quarkus-micrometer-registry-prometheus`)
+- Implement audit logging for security events
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+### Code Quality
+- Fix test suite: replace placeholder test with real encryption/decryption/enrollment tests
+- Convert DTOs to use private fields with getters/setters (or Java records)
+- Add proper configuration in `application.properties` (logging, server settings, CORS)
 
-If you want to build an _über-jar_, execute the following command:
+### Performance
+- Make key generation async (`@Async` or reactive `Uni`)
+- Cache parsed `PGPPublicKey` objects to avoid re-parsing
+- Add message size limits to prevent DoS
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/mission-impossible-encryption-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+### Documentation
+- Update README with API documentation, usage examples, and architecture overview
