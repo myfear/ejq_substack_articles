@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #video {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        #video:hover {
+            transform: scale(1.02);
+        }
+
+        #video:active {
+            transform: scale(0.98);
+        }
+
+        #status {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .instructions {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .grid-section {
+            flex: 1;
+        }
+
+        .grid-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            aspect-ratio: 1;
+        }
+
+        .grid-cell {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .grid-cell.empty {
+            background: #f9f9f9;
+            border-style: dashed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .grid-cell img {
+            width: 100%;
+            height: auto;
+            flex: 1;
+            object-fit: cover;
+        }
+
+        .grid-cell .emotion {
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grid-cell .processing {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            background: #fff3cd;
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="video-section">
+            <video id="video" autoplay width="640" height="480"></video>
+            <div id="status">Connecting...</div>
+            <div class="instructions">Click on the video to capture and analyze</div>
+        </div>
+        <div class="grid-section">
+            <div class="grid-title">Emotion Grid</div>
+            <div class="grid" id="grid"></div>
+        </div>
+    </div>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        const video = document.getElementById("video");
+        const statusDiv = document.getElementById("status");
+        const grid = document.getElementById("grid");
+        const ws = new WebSocket("ws://localhost:8080/stream");
+
+        const GRID_SIZE = 4; // 2x2 grid
+        let nextIndex = 0;
+        const pendingImageRequests = []; // FIFO queue for images waiting for annotated image
+        const pendingEmotionRequests = []; // FIFO queue for images waiting for emotion
+
+        // Initialize grid with empty cells
+        for (let i = 0; i < GRID_SIZE; i++) {
+            const cell = document.createElement("div");
+            cell.className = "grid-cell empty";
+            cell.id = `cell-${i}`;
+            cell.textContent = "Empty";
+            grid.appendChild(cell);
+        }
+
+        ws.onopen = () => {
+            statusDiv.textContent = "Connected - Waiting for camera access...";
+            statusDiv.style.color = "#4CAF50";
+            console.log("WebSocket connected");
+        };
+
+        ws.onclose = () => {
+            statusDiv.textContent = "Disconnected";
+            statusDiv.style.color = "#f44336";
+            console.log("WebSocket disconnected");
+        };
+
+        ws.onerror = (error) => {
+            statusDiv.textContent = "Error: " + error;
+            statusDiv.style.color = "#f44336";
+            console.error("WebSocket error:", error);
+        };
+
+        // Ask for webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                statusDiv.textContent = "Ready - Click video to capture";
+                statusDiv.style.color = "#4CAF50";
+            })
+            .catch(error => {
+                statusDiv.textContent = "Camera error: " + error.message;
+                statusDiv.style.color = "#f44336";
+                console.error("Camera access error:", error);
+            });
+
+        // Capture image on video click
+        video.addEventListener("click", () => {
+            if (ws.readyState !== WebSocket.OPEN) {
+                statusDiv.textContent = "Not connected";
+                statusDiv.style.color = "#f44336";
+                return;
+            }
+
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, 640, 480);
+
+            canvas.toBlob(blob => {
+                if (blob) {
+                    // Create image data URL for display
+                    const imageUrl = canvas.toDataURL("image/jpeg");
+
+                    // Determine which cell to use (FIFO - replace oldest)
+                    const cellIndex = nextIndex % GRID_SIZE;
+                    nextIndex++;
+
+                    // Store image data
+                    const imageData = {
+                        cellIndex: cellIndex,
+                        imageUrl: imageUrl,
+                        timestamp: Date.now()
+                    };
+
+                    // Update grid cell with image and processing state
+                    updateCell(cellIndex, imageUrl, "Processing...", true);
+
+                    // Add to FIFO queue for annotated image
+                    pendingImageRequests.push(imageData);
+
+                    // Send to server
+                    ws.send(blob);
+                    console.log(`Sent image to cell ${cellIndex}, waiting for annotated image`);
+                }
+            }, "image/jpeg");
+        });
+
+        ws.onmessage = msg => {
+            if (msg.data instanceof Blob) {
+                // Binary message - annotated image with bounding box
+                console.log("Received annotated image (binary)");
+                const blob = msg.data;
+                const imageUrl = URL.createObjectURL(blob);
+
+                // Process the oldest pending image request (FIFO)
+                if (pendingImageRequests.length > 0) {
+                    const imageData = pendingImageRequests.shift();
+                    // Update cell with annotated image, still showing "Processing..."
+                    updateCell(imageData.cellIndex, imageUrl, "Processing...", true);
+
+                    // Add to emotion queue
+                    pendingEmotionRequests.push({
+                        cellIndex: imageData.cellIndex,
+                        imageUrl: imageUrl
+                    });
+                    console.log(`Updated cell ${imageData.cellIndex} with annotated image, waiting for emotion`);
+                } else {
+                    console.warn("Received annotated image but no pending image requests");
+                }
+            } else {
+                // Text message - emotion result
+                const emotion = msg.data.trim();
+                console.log("Emotion received:", emotion);
+
+                // Process the oldest pending emotion request (FIFO)
+                if (pendingEmotionRequests.length > 0) {
+                    const imageData = pendingEmotionRequests.shift();
+                    updateCell(imageData.cellIndex, imageData.imageUrl, emotion, false);
+                    console.log(`Updated cell ${imageData.cellIndex} with emotion: ${emotion}`);
+                } else {
+                    console.warn("Received emotion but no pending emotion requests");
+                }
+            }
+        };
+
+        function updateCell(index, imageUrl, emotion, isProcessing) {
+            const cell = document.getElementById(`cell-${index}`);
+            cell.className = "grid-cell";
+            cell.innerHTML = "";
+
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = "Captured image";
+            cell.appendChild(img);
+
+            const emotionDiv = document.createElement("div");
+            if (isProcessing) {
+                emotionDiv.className = "processing";
+                emotionDiv.textContent = emotion;
+            } else {
+                emotionDiv.className = "emotion";
+                emotionDiv.textContent = emotion || "Unknown";
+            }
+            cell.appendChild(emotionDiv);
+        }
+    </script>
+
+</body>
+
+</html>
