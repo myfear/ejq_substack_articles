@@ -58,7 +58,8 @@ public class JPAChatMemory implements ChatMemory {
         List<ChatMessage> updatedMessages = new ArrayList<>(currentMessages);
         updatedMessages.add(message);
 
-        // Update the store with all messages (store all, windowing happens on retrieval)
+        // Update the store with all messages (store all, windowing happens on
+        // retrieval)
         chatMemoryStore.updateMessages(id, updatedMessages);
     }
 
@@ -66,7 +67,7 @@ public class JPAChatMemory implements ChatMemory {
     public List<ChatMessage> messages() {
         // Fetch all messages from the store
         List<ChatMessage> allMessages = chatMemoryStore.getMessages(id);
-        
+
         if (allMessages.isEmpty()) {
             return allMessages;
         }
@@ -74,7 +75,7 @@ public class JPAChatMemory implements ChatMemory {
         // Find the SystemMessage (usually the first one)
         SystemMessage systemMessage = null;
         List<ChatMessage> nonSystemMessages = new ArrayList<>();
-        
+
         for (ChatMessage message : allMessages) {
             if (message.type() == ChatMessageType.SYSTEM) {
                 if (systemMessage == null) {
@@ -87,12 +88,11 @@ public class JPAChatMemory implements ChatMemory {
 
         // Select the Recent N messages (Sliding Window)
         int messagesToTake = Math.min(maxMessages, nonSystemMessages.size());
-        List<ChatMessage> recentMessages = nonSystemMessages.isEmpty() 
-            ? new ArrayList<>() 
-            : nonSystemMessages.subList(
-                Math.max(0, nonSystemMessages.size() - messagesToTake),
-                nonSystemMessages.size()
-            );
+        List<ChatMessage> recentMessages = nonSystemMessages.isEmpty()
+                ? new ArrayList<>()
+                : nonSystemMessages.subList(
+                        Math.max(0, nonSystemMessages.size() - messagesToTake),
+                        nonSystemMessages.size());
 
         // Combine: [System Message] + [Last N Messages]
         List<ChatMessage> result = new ArrayList<>();
@@ -100,7 +100,7 @@ public class JPAChatMemory implements ChatMemory {
             result.add(systemMessage);
         }
         result.addAll(recentMessages);
-        
+
         return result;
     }
 
@@ -117,7 +117,7 @@ public class JPAChatMemory implements ChatMemory {
         private Object id;
         private ChatMemoryStore chatMemoryStore;
         private Integer maxMessages; // Sliding window size, read from config if not set
-        
+
         /**
          * Gets the maxMessages value, reading from configuration if not explicitly set.
          * 
@@ -183,4 +183,3 @@ public class JPAChatMemory implements ChatMemory {
         }
     }
 }
-

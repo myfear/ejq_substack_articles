@@ -16,4 +16,3 @@ public interface JPAMemoryBot {
         """)
     String chat(@MemoryId String memoryId, @UserMessage String message);
 }
-

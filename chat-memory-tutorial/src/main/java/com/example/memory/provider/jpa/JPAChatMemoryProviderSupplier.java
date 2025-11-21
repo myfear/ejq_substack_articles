@@ -48,4 +48,3 @@ public class JPAChatMemoryProviderSupplier implements Supplier<ChatMemoryProvide
         };
     }
 }
-

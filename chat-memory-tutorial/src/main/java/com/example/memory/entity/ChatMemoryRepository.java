@@ -29,4 +29,3 @@ public class ChatMemoryRepository implements PanacheRepository<ChatMessageEntity
         delete("memoryId", memoryId);
     }
 }
-
