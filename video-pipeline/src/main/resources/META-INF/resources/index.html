@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quarkus Webcam Stream</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            border: 2px solid #333;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+            background-color: #000;
+            max-width: 90%;
+            height: auto;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #startBtn {
+            background-color: #4caf50;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        #stopBtn {
+            background-color: #f44336;
+        }
+
+        #stopBtn:hover:not(:disabled) {
+            background-color: #da190b;
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 10px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        #captureVideo {
+            display: none;
+        }
+
+        #captureCanvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Webcam Video Stream</h1>
+
+    <canvas id="videoCanvas" width="640" height="480"></canvas>
+    <video id="captureVideo" autoplay playsinline></video>
+    <canvas id="captureCanvas"></canvas>
+
+    <div class="controls">
+        <button id="startBtn" onclick="startStream()">▶ Start Stream</button>
+        <button id="stopBtn" onclick="stopStream()" disabled>⏹ Stop Stream</button>
+    </div>
+    <div id="status">Ready to connect</div>
+
+    <script>
+        const canvas = document.getElementById('videoCanvas');
+        const ctx = canvas.getContext('2d');
+        const captureVideo = document.getElementById('captureVideo');
+        const captureCanvas = document.getElementById('captureCanvas');
+        const captureCtx = captureCanvas.getContext('2d');
+        const status = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        
+        let ws = null;
+        let mediaStream = null;
+        let streamInterval = null;
+        let isStreaming = false;
+
+        async function startStream() {
+            try {
+                // Request webcam access
+                status.innerText = "Requesting webcam access...";
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+
+                // Connect to WebSocket
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                ws = new WebSocket(`${protocol}//${window.location.host}/stream/video`);
+                ws.binaryType = "arraybuffer";
+
+                ws.onopen = () => {
+                    status.innerText = "Connected. Starting stream...";
+                    ws.send("START");
+                    isStreaming = true;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+
+                    // Set up video element for capturing
+                    captureVideo.srcObject = mediaStream;
+                    captureVideo.play();
+
+                    // Wait for video to be ready, then start capturing
+                    captureVideo.addEventListener('loadedmetadata', () => {
+                        captureCanvas.width = captureVideo.videoWidth || 640;
+                        captureCanvas.height = captureVideo.videoHeight || 480;
+                        canvas.width = captureVideo.videoWidth || 640;
+                        canvas.height = captureVideo.videoHeight || 480;
+
+                        // Capture frames from webcam and send to server
+                        streamInterval = setInterval(() => {
+                            if (!isStreaming || captureVideo.readyState !== captureVideo.HAVE_ENOUGH_DATA) {
+                                return;
+                            }
+
+                            // Draw webcam frame to hidden capture canvas
+                            captureCtx.drawImage(captureVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+
+                            // Convert capture canvas to JPEG and send to server
+                            captureCanvas.toBlob((blob) => {
+                                if (blob && ws && ws.readyState === WebSocket.OPEN) {
+                                    blob.arrayBuffer().then(buffer => {
+                                        ws.send(buffer);
+                                    });
+                                }
+                            }, 'image/jpeg', 0.85);
+                        }, 33); // ~30 FPS
+                    }, { once: true });
+                };
+
+                ws.onmessage = (event) => {
+                    // Handle Text Messages (Control signals)
+                    if (typeof event.data === 'string') {
+                        if (event.data === "STREAM_STARTED") {
+                            status.innerText = "Streaming...";
+                        } else if (event.data === "STREAM_STOPPED") {
+                            status.innerText = "Stream stopped";
+                        }
+                        return;
+                    }
+
+                    // Handle Binary Messages (Processed Video Frames from server)
+                    const blob = new Blob([event.data], { type: "image/jpeg" });
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+
+                    img.onload = () => {
+                        // Draw processed frame to visible canvas
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        URL.revokeObjectURL(url); // Clean up memory
+                    };
+
+                    img.src = url;
+                };
+
+                ws.onerror = (err) => {
+                    console.error("WebSocket error:", err);
+                    status.innerText = "Error occurred";
+                    stopStream();
+                };
+
+                ws.onclose = () => {
+                    console.log("WebSocket connection closed");
+                    if (isStreaming) {
+                        status.innerText = "Disconnected";
+                        stopStream();
+                    }
+                };
+
+            } catch (error) {
+                console.error("Error accessing webcam:", error);
+                status.innerText = "Error: " + error.message;
+                stopStream();
+            }
+        }
+
+        function stopStream() {
+            isStreaming = false;
+
+            // Stop frame capture
+            if (streamInterval) {
+                clearInterval(streamInterval);
+                streamInterval = null;
+            }
+
+            // Stop webcam
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+
+            // Clean up video element
+            if (captureVideo) {
+                captureVideo.srcObject = null;
+            }
+
+            // Close WebSocket
+            if (ws) {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send("STOP");
+                }
+                ws.close();
+                ws = null;
+            }
+
+            // Update UI
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            status.innerText = "Stream stopped. Ready to connect.";
+        }
+    </script>
+</body>
+
+</html>
