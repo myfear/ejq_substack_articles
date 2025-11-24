@@ -1,0 +1,90 @@
+name: Monorepo Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # JOB 1: Detect which projects changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      # This output matches the JSON list generated in the step below
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      # A flag to tell the next job if there is anything to build
+      has-changes: ${{ steps.set-matrix.outputs.has-changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # distinct commits are needed for diffing
+
+      - name: Identify changed projects
+        id: set-matrix
+        run: |
+          # 1. Get list of changed files
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Compare against the target branch
+            BASE_SHA="origin/${{ github.base_ref }}"
+          else
+            # Compare against the previous commit
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          echo "Diffing against $BASE_SHA"
+          
+          # 2. Find changed directories that contain a pom.xml
+          # We look at the first directory component (./ProjectName/...)
+          CHANGED_PROJECTS=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u | while read dir; do
+            if [[ -f "$dir/pom.xml" ]]; then
+              echo "\"$dir\""
+            fi
+          done | paste -sd, -)
+
+          # 3. Set the output
+          if [ -z "$CHANGED_PROJECTS" ]; then
+            echo "No Java projects changed."
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+          else
+            # Format as JSON array: ["project-a", "project-b"]
+            JSON_MATRIX="[$CHANGED_PROJECTS]"
+            echo "Found changes in: $JSON_MATRIX"
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "matrix=$JSON_MATRIX" >> $GITHUB_OUTPUT
+          fi
+
+  # JOB 2: Build the specific projects found above
+  build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+    
+    name: Build ${{ matrix.project }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        working-directory: ${{ matrix.project }}
+        run: |
+          # Use wrapper if it exists, otherwise use system maven
+          if [ -f "mvnw" ]; then
+            chmod +x mvnw
+            ./mvnw package -DskipTests=false
+          else
+            mvn package -DskipTests=false
+          fi
