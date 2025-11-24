@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Polaroid Collage</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f0f0;
+        }
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8e8e8;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-list {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .file-item {
+            position: relative;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        .file-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .file-item .remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .file-item .name {
+            padding: 8px;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background: #764ba2;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #createBtn {
+            background: #28a745;
+            font-size: 18px;
+            padding: 15px 40px;
+        }
+        #createBtn:hover:not(:disabled) {
+            background: #218838;
+        }
+        .result-area {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        .result-area img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Create Polaroid Collage</h1>
+        
+        <div class="upload-area" id="uploadArea">
+            <p style="font-size: 18px; margin-bottom: 10px;">📁 Click to select images or drag and drop</p>
+            <p style="color: #666; font-size: 14px;">Supports PNG and JPG files</p>
+            <input type="file" id="fileInput" multiple accept="image/png,image/jpeg,image/jpg">
+        </div>
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="controls">
+            <button id="clearBtn" onclick="clearFiles()" disabled>Clear All</button>
+            <button id="createBtn" onclick="createCollage()" disabled>Create Collage</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Creating your collage...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result-area" id="resultArea">
+            <h2>Your Collage</h2>
+            <img id="resultImage" alt="Collage result">
+            <div style="margin-top: 15px;">
+                <button onclick="downloadCollage()">Download Collage</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const createBtn = document.getElementById('createBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const loading = document.getElementById('loading');
+        const resultArea = document.getElementById('resultArea');
+        const resultImage = document.getElementById('resultImage');
+        const errorDiv = document.getElementById('error');
+        
+        let selectedFiles = [];
+        let collageBlob = null;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') && 
+                    (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+                    if (!selectedFiles.find(f => f.name === file.name && f.size === file.size)) {
+                        selectedFiles.push(file);
+                        displayFile(file);
+                    }
+                }
+            });
+            updateButtons();
+        }
+
+        function displayFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.dataset.fileName = file.name;
+                
+                fileItem.innerHTML = `
+                    <img src="${e.target.result}" alt="${file.name}">
+                    <button class="remove" onclick="removeFile('${file.name}', ${file.size})">×</button>
+                    <div class="name">${file.name}</div>
+                `;
+                
+                fileList.appendChild(fileItem);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeFile(fileName, fileSize) {
+            selectedFiles = selectedFiles.filter(f => !(f.name === fileName && f.size === fileSize));
+            const fileItem = document.querySelector(`[data-file-name="${fileName}"]`);
+            if (fileItem) {
+                fileItem.remove();
+            }
+            updateButtons();
+        }
+
+        function clearFiles() {
+            selectedFiles = [];
+            fileList.innerHTML = '';
+            resultArea.style.display = 'none';
+            collageBlob = null;
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const hasFiles = selectedFiles.length > 0;
+            createBtn.disabled = !hasFiles;
+            clearBtn.disabled = !hasFiles;
+        }
+
+        async function createCollage() {
+            if (selectedFiles.length === 0) return;
+
+            loading.style.display = 'block';
+            resultArea.style.display = 'none';
+            errorDiv.style.display = 'none';
+            createBtn.disabled = true;
+
+            const formData = new FormData();
+            selectedFiles.forEach((file, index) => {
+                formData.append('images', file);
+            });
+
+            try {
+                const response = await fetch('/polaroid/collage', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Failed to create collage');
+                }
+
+                collageBlob = await response.blob();
+                const url = URL.createObjectURL(collageBlob);
+                resultImage.src = url;
+                resultArea.style.display = 'block';
+                
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                createBtn.disabled = false;
+            }
+        }
+
+        function downloadCollage() {
+            if (!collageBlob) return;
+            
+            const url = URL.createObjectURL(collageBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'polaroid_collage.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
