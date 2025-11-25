@@ -165,11 +165,53 @@ jobs:
           
           if [ -z "$Q_VER" ]; then Q_VER="-"; fi
 
+          # Parse test results from Surefire reports
+          SUREFIRE_DIR="${{ matrix.project.path }}/target/surefire-reports"
+          TESTS_TOTAL=0
+          TESTS_ERRORS=0
+          TESTS_FAILURES=0
+          TESTS_SKIPPED=0
+          
+          if [ -d "$SUREFIRE_DIR" ]; then
+            # Parse all TEST-*.xml files in surefire-reports
+            for xml_file in "$SUREFIRE_DIR"/TEST-*.xml; do
+              if [ -f "$xml_file" ]; then
+                # Extract attributes from <testsuite> tag
+                # Format: <testsuite name="..." tests="X" errors="Y" failures="Z" skipped="W" ...>
+                TOTAL=$(grep -oP '(?<=<testsuite\s).*?(?=>)' "$xml_file" | grep -oP '(?<=tests=")[0-9]+' | head -1)
+                ERRORS=$(grep -oP '(?<=<testsuite\s).*?(?=>)' "$xml_file" | grep -oP '(?<=errors=")[0-9]+' | head -1)
+                FAILURES=$(grep -oP '(?<=<testsuite\s).*?(?=>)' "$xml_file" | grep -oP '(?<=failures=")[0-9]+' | head -1)
+                SKIPPED=$(grep -oP '(?<=<testsuite\s).*?(?=>)' "$xml_file" | grep -oP '(?<=skipped=")[0-9]+' | head -1)
+                
+                # Accumulate totals
+                TESTS_TOTAL=$((TESTS_TOTAL + ${TOTAL:-0}))
+                TESTS_ERRORS=$((TESTS_ERRORS + ${ERRORS:-0}))
+                TESTS_FAILURES=$((TESTS_FAILURES + ${FAILURES:-0}))
+                TESTS_SKIPPED=$((TESTS_SKIPPED + ${SKIPPED:-0}))
+              fi
+            done
+          fi
+          
+          # Calculate passed tests
+          TESTS_PASSED=$((TESTS_TOTAL - TESTS_ERRORS - TESTS_FAILURES - TESTS_SKIPPED))
+
           # Write JSON 
           echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\"}" > "$SAFE_NAME.json"
 
-          # 4. Write Version and Java version to a sidecar JSON file
-          echo "{ \"quarkus\": \"$Q_VER\", \"java\": \"${{ matrix.project.java }}\" }" > "$SAFE_NAME-metadata.json"
+          # Write Version, Java version, and test results to a sidecar JSON file
+          cat > "$SAFE_NAME-metadata.json" <<EOF
+          {
+            "quarkus": "$Q_VER",
+            "java": "${{ matrix.project.java }}",
+            "tests": {
+              "total": $TESTS_TOTAL,
+              "passed": $TESTS_PASSED,
+              "failed": $TESTS_FAILURES,
+              "errors": $TESTS_ERRORS,
+              "skipped": $TESTS_SKIPPED
+            }
+          }
+          EOF
 
       - name: Upload Badge Artifact
         uses: actions/upload-artifact@v4
@@ -258,9 +300,9 @@ jobs:
         run: |
           cd main-repo
           
-          # 1. Create the 4-Column Header
-          echo "| Project | Java | Quarkus | Build Status |" > ../badge_table.md
-          echo "| :--- | :---: | :---: | :--- |" >> ../badge_table.md
+          # 1. Create the 5-Column Header
+          echo "| Project | Java | Quarkus | Tests | Build Status |" > ../badge_table.md
+          echo "| :--- | :---: | :---: | :---: | :--- |" >> ../badge_table.md
           
           # Iterate over JSON files in the badges branch to build rows
           # We use the badges branch as the source of truth for what projects exist
@@ -274,23 +316,58 @@ jobs:
             # remove .json extension
             PROJECT_NAME="${file%.json}"
 
-            # Read Version and Java version from sidecar JSON file
+            # Read Version, Java version, and test results from sidecar JSON file
             METADATA_FILE="${PROJECT_NAME}-metadata.json"
             if [ -f "$METADATA_FILE" ]; then
               # Use jq if available, otherwise use grep/sed fallback
               if command -v jq &> /dev/null; then
                 Q_VERSION=$(jq -r '.quarkus // "-"' "$METADATA_FILE")
                 JAVA_VERSION=$(jq -r '.java // "-"' "$METADATA_FILE")
+                TESTS_TOTAL=$(jq -r '.tests.total // 0' "$METADATA_FILE")
+                TESTS_PASSED=$(jq -r '.tests.passed // 0' "$METADATA_FILE")
+                TESTS_FAILED=$(jq -r '.tests.failed // 0' "$METADATA_FILE")
+                TESTS_ERRORS=$(jq -r '.tests.errors // 0' "$METADATA_FILE")
+                TESTS_SKIPPED=$(jq -r '.tests.skipped // 0' "$METADATA_FILE")
               else
                 # Fallback: use grep/sed to extract values
                 Q_VERSION=$(grep -oP '(?<="quarkus":\s*")[^"]*' "$METADATA_FILE" || echo "-")
                 JAVA_VERSION=$(grep -oP '(?<="java":\s*")[^"]*' "$METADATA_FILE" || echo "-")
+                TESTS_TOTAL=$(grep -oP '(?<="total":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
+                TESTS_PASSED=$(grep -oP '(?<="passed":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
+                TESTS_FAILED=$(grep -oP '(?<="failed":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
+                TESTS_ERRORS=$(grep -oP '(?<="errors":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
+                TESTS_SKIPPED=$(grep -oP '(?<="skipped":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
                 if [ -z "$Q_VERSION" ] || [ "$Q_VERSION" == "null" ]; then Q_VERSION="-"; fi
                 if [ -z "$JAVA_VERSION" ] || [ "$JAVA_VERSION" == "null" ]; then JAVA_VERSION="-"; fi
               fi
             else
               Q_VERSION="-"
               JAVA_VERSION="-"
+              TESTS_TOTAL=0
+              TESTS_PASSED=0
+              TESTS_FAILED=0
+              TESTS_ERRORS=0
+              TESTS_SKIPPED=0
+            fi
+            
+            # Format test results
+            if [ "$TESTS_TOTAL" -eq 0 ]; then
+              TEST_DISPLAY="-"
+            else
+              # Build test status string with emojis
+              TEST_PROBLEMS=$((TESTS_FAILED + TESTS_ERRORS))
+              if [ "$TEST_PROBLEMS" -eq 0 ]; then
+                # All passed
+                TEST_DISPLAY="✅ ${TESTS_PASSED}/${TESTS_TOTAL}"
+              else
+                # Some failures
+                TEST_DISPLAY="❌ ${TESTS_PASSED}/${TESTS_TOTAL}"
+              fi
+              
+              # Add skipped count if any
+              if [ "$TESTS_SKIPPED" -gt 0 ]; then
+                TEST_DISPLAY="${TEST_DISPLAY} (⏭️ ${TESTS_SKIPPED})"
+              fi
             fi
             
             # Generate the Shield URL
@@ -298,7 +375,7 @@ jobs:
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
             # Append row to table
-            echo "| **$PROJECT_NAME** | $JAVA_VERSION | $Q_VERSION | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+            echo "| **$PROJECT_NAME** | $JAVA_VERSION | $Q_VERSION | $TEST_DISPLAY | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
           done
           
           cd ../main-repo
