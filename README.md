@@ -22,7 +22,12 @@ Each folder in this repository matches an article from the Substack and includes
 ## Build Status
 
 <!-- BUILD_BADGES_START -->
-
+| Project | Status |
+| :--- | :--- |
+| **age-everywhere** | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
+| **ai-design-critic** | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
+| **ai-detector** | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
+| **ai-document-assistant** | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
