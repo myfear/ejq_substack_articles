@@ -5,58 +5,68 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write # Required to push badges to the branch
 
 jobs:
-  # JOB 1: Detect which projects changed
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      # This output matches the JSON list generated in the step below
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      # A flag to tell the next job if there is anything to build
       has-changes: ${{ steps.set-matrix.outputs.has-changes }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # distinct commits are needed for diffing
-
-      - name: Identify changed projects
+          fetch-depth: 0
+      
+      # ... (This section remains identical to the previous "Java Version" solution) ...
+      - name: Identify projects and Java versions
         id: set-matrix
         run: |
-          # 1. Get list of changed files
+          DEFAULT_JAVA="21"
+          EXCLUDES="bsky-javafeed-generator openapi-ollama-doc-generator"
+          
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            # Compare against the target branch
             BASE_SHA="origin/${{ github.base_ref }}"
           else
-            # Compare against the previous commit
             BASE_SHA="${{ github.event.before }}"
           fi
 
-          echo "Diffing against $BASE_SHA"
-          
-          # 2. Find changed directories that contain a pom.xml
-          # We look at the first directory component (./ProjectName/...)
-          CHANGED_PROJECTS=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u | while read dir; do
-            if [[ -f "$dir/pom.xml" ]]; then
-              echo "\"$dir\""
-            fi
-          done | paste -sd, -)
+          touch matrix_data.json
 
-          # 3. Set the output
-          if [ -z "$CHANGED_PROJECTS" ]; then
-            echo "No Java projects changed."
-            echo "has-changes=false" >> $GITHUB_OUTPUT
-            echo "matrix=[]" >> $GITHUB_OUTPUT
+          # If this is a manual run (workflow_dispatch), finding ALL projects
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+             FIND_CMD=$(find . -maxdepth 2 -name "pom.xml" -not -path '*/target/*' | xargs dirname | sed 's|^\./||' | sort -u)
           else
-            # Format as JSON array: ["project-a", "project-b"]
-            JSON_MATRIX="[$CHANGED_PROJECTS]"
-            echo "Found changes in: $JSON_MATRIX"
-            echo "has-changes=true" >> $GITHUB_OUTPUT
-            echo "matrix=$JSON_MATRIX" >> $GITHUB_OUTPUT
+             FIND_CMD=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u)
           fi
 
-  # JOB 2: Build the specific projects found above
+          echo "$FIND_CMD" | while read dir; do
+            if [[ -f "$dir/pom.xml" ]]; then
+              if [[ " $EXCLUDES " =~ " $dir " ]]; then continue; fi
+              
+              # Version detection logic
+              JAVA_VERSION=$(grep -oP '(?<=<maven.compiler.release>).*?(?=</maven.compiler.release>)' "$dir/pom.xml" | head -1)
+              if [ -z "$JAVA_VERSION" ]; then JAVA_VERSION=$DEFAULT_JAVA; fi
+              if [ "$JAVA_VERSION" == "1.8" ]; then JAVA_VERSION="8"; fi
+              if [[ "$JAVA_VERSION" == *'$'* ]]; then JAVA_VERSION=$DEFAULT_JAVA; fi
+
+              echo "{\"path\": \"$dir\", \"java\": \"$JAVA_VERSION\"}" >> matrix_data.json
+            fi
+          done
+
+          if [ -s matrix_data.json ]; then
+            JSON_MATRIX="[$(paste -sd, matrix_data.json)]"
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "matrix=$JSON_MATRIX" >> $GITHUB_OUTPUT
+          else
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+          fi
+
   build:
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
@@ -66,25 +76,92 @@ jobs:
       matrix:
         project: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
     
-    name: Build ${{ matrix.project }}
+    name: ${{ matrix.project.path }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ matrix.project.java }}
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: ${{ matrix.project.java }}
           distribution: 'temurin'
           cache: 'maven'
 
+      # Run Maven and capture the result, don't exit immediately on failure
       - name: Build with Maven
-        working-directory: ${{ matrix.project }}
+        id: build
+        working-directory: ${{ matrix.project.path }}
+        continue-on-error: true
         run: |
-          # Use wrapper if it exists, otherwise use system maven
-          if [ -f "mvnw" ]; then
-            chmod +x mvnw
-            ./mvnw package -DskipTests=false
+          if [ -f "mvnw" ]; then chmod +x mvnw; CMD="./mvnw"; else CMD="mvn"; fi
+          $CMD package -DskipTests=false
+
+      # Generate JSON for Shields.io based on the previous step's outcome
+      - name: Generate Badge JSON
+        run: |
+          # Sanitize path for filename (replace / with -)
+          SAFE_NAME=$(echo "${{ matrix.project.path }}" | sed 's/\//-/g')
+          
+          if [ "${{ steps.build.outcome }}" == "success" ]; then
+            COLOR="green"
+            STATUS="passing"
           else
-            mvn package -DskipTests=false
+            COLOR="red"
+            STATUS="failing"
+          fi
+          
+          # Shields.io Endpoint Format
+          echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\" }" > "$SAFE_NAME.json"
+
+      # Upload the JSON file as an artifact
+      - name: Upload Badge Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: badge-${{ strategy.job-index }} # Unique name per job
+          path: "*.json"
+          retention-days: 1
+
+      # Now actually fail the job if Maven failed (so the Action turns red)
+      - name: Check Build Status
+        if: steps.build.outcome != 'success'
+        run: exit 1
+
+  # NEW JOB: Collects all artifacts and pushes to the 'badges' branch
+  update-badges:
+    needs: build
+    if: always() # Run even if builds fail
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout badges branch
+        uses: actions/checkout@v4
+        with:
+          ref: badges # Check out the orphan branch directly
+          path: badges-branch
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: temp-artifacts
+
+      - name: Move and Commit Badges
+        run: |
+          mkdir -p badges-branch
+          
+          # Flatten artifacts: move all .json files from temp subfolders to root of badges branch
+          find temp-artifacts -name "*.json" -exec cp {} badges-branch/ \;
+          
+          cd badges-branch
+          
+          # Setup Git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Commit and Push
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes in badges."
+          else
+            git commit -m "Update build badges"
+            git push origin badges
           fi

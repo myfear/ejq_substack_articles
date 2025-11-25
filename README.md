@@ -19,6 +19,15 @@ Each folder in this repository matches an article from the Substack and includes
 - ⚙️ Quarkus configurations and Dev Services integration
 - 📦 Maven projects you can run locally with Podman, Ollama, PostgreSQL, etc.
 
+## Build Status
+
+| Project | Status | Description |
+| :--- | :--- | :--- |
+| **age-everywhere** | ![Build Status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) | Calendar and Time |
+| **ai-design-critic** | ![Build Status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) | Vision Model |
+| **ai-detector** | ![Build Status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) | AI writing detector |
+
+
 ## 📚 Project Overview
 
 Below are the example projects included in this repository, organized by topic. Each project folder is linked for easy access, and where available, a link to the corresponding Substack article is provided:
