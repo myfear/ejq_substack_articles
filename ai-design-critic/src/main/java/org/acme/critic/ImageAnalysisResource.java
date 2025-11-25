@@ -25,14 +25,45 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * REST resource for image composition analysis and golden ratio overlay generation.
+ * <p>
+ * This resource provides endpoints for:
+ * <ul>
+ *   <li>Analyzing image composition using AI-powered critique</li>
+ *   <li>Generating golden ratio grid overlays on images</li>
+ * </ul>
+ */
 @Path("/critic")
 public class ImageAnalysisResource {
 
+    /**
+     * The golden ratio (phi), approximately 1.618.
+     * Used for calculating golden ratio proportions in image composition analysis.
+     */
     public static final double PHI = 1.61803398875;
 
+    /**
+     * AI-powered composition critic service for analyzing image composition.
+     */
     @Inject
     CompositionCritic critic;
 
+    /**
+     * Analyzes the composition of an uploaded image using AI critique.
+     * <p>
+     * This endpoint accepts an image file (PNG or JPEG) and returns a JSON response
+     * containing composition analysis and critique from the AI model.
+     *
+     * @param file the uploaded image file (must be PNG or JPEG format)
+     * @return a Response containing:
+     *         <ul>
+     *           <li>200 OK with JSON critique data on success</li>
+     *           <li>400 BAD_REQUEST if the file format is not supported</li>
+     *           <li>500 INTERNAL_SERVER_ERROR if no file is uploaded or processing fails</li>
+     *         </ul>
+     * @throws IOException if an I/O error occurs while reading the file
+     */
     @POST
     @Path("/extract")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -76,6 +107,16 @@ public class ImageAnalysisResource {
 
     }
 
+    /**
+     * Creates a golden ratio grid overlay on an uploaded image.
+     * <p>
+     * This endpoint accepts an image file and returns the same image with
+     * golden ratio grid lines drawn over it, useful for composition analysis.
+     *
+     * @param file the uploaded image file to overlay with golden ratio grid
+     * @return a Response containing the modified image as PNG with golden ratio overlay
+     * @throws IOException if an I/O error occurs while reading or processing the file
+     */
     @POST
     @Path("/overlay")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -94,8 +135,16 @@ public class ImageAnalysisResource {
 
     }
 
+    /**
+     * Input model for file upload operations.
+     * <p>
+     * This class is used for binding multipart form data containing file uploads.
+     */
     public static class FileUploadInput {
 
+        /**
+         * List of uploaded files from the multipart form.
+         */
         @FormParam("file")
         public List<FileUpload> file;
 
