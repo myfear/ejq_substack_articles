@@ -279,7 +279,7 @@ jobs:
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
             # Append row to table
-            echo "| **$PROJECT_NAME** | \`$VERSION\` | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+            echo "| **$PROJECT_NAME** | $VERSION | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
           done
           
           cd ../main-repo
