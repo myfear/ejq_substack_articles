@@ -6,11 +6,20 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      build_all:
+        description: 'Force build all projects?'
+        required: true
+        default: true
+        type: boolean
 
 permissions:
-  contents: write # Required to push badges to the branch
+  contents: write # Required to push badges to the orphan branch
 
 jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: Detect which projects need building and which Java version
+  # ------------------------------------------------------------------
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -21,14 +30,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      # ... (This section remains identical to the previous "Java Version" solution) ...
+
       - name: Identify projects and Java versions
         id: set-matrix
         run: |
+          # --- Configuration ---
           DEFAULT_JAVA="21"
-          EXCLUDES="bsky-javafeed-generator openapi-ollama-doc-generator"
-          
+          # Space-separated list of folders to ignore
+          EXCLUDES="video-pipeline"
+          # ---------------------
+
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             BASE_SHA="origin/${{ github.base_ref }}"
           else
@@ -37,36 +48,68 @@ jobs:
 
           touch matrix_data.json
 
-          # If this is a manual run (workflow_dispatch), finding ALL projects
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          # Logic: If manual trigger (and true), find ALL projects. Otherwise, find CHANGED projects.
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ inputs.build_all }}" == "true" ]; then
+             echo "Manual trigger: Scanning all projects..."
+             # Find all poms, exclude target folders, get directory names
              FIND_CMD=$(find . -maxdepth 2 -name "pom.xml" -not -path '*/target/*' | xargs dirname | sed 's|^\./||' | sort -u)
           else
+             echo "Diffing against $BASE_SHA"
              FIND_CMD=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u)
           fi
 
+          # Process the list of directories
           echo "$FIND_CMD" | while read dir; do
-            if [[ -f "$dir/pom.xml" ]]; then
-              if [[ " $EXCLUDES " =~ " $dir " ]]; then continue; fi
+            # Only process if it looks like a directory with a pom.xml
+            if [[ -d "$dir" ]] && [[ -f "$dir/pom.xml" ]]; then
               
-              # Version detection logic
+              # Check Exclusions
+              if [[ " $EXCLUDES " =~ " $dir " ]]; then
+                echo "Skipping $dir (Explicitly Excluded)" >&2
+                continue
+              fi
+              
+              # --- Java Version Detection ---
+              # Priority 1: maven.compiler.release
               JAVA_VERSION=$(grep -oP '(?<=<maven.compiler.release>).*?(?=</maven.compiler.release>)' "$dir/pom.xml" | head -1)
-              if [ -z "$JAVA_VERSION" ]; then JAVA_VERSION=$DEFAULT_JAVA; fi
-              if [ "$JAVA_VERSION" == "1.8" ]; then JAVA_VERSION="8"; fi
-              if [[ "$JAVA_VERSION" == *'$'* ]]; then JAVA_VERSION=$DEFAULT_JAVA; fi
+              
+              # Priority 2: java.version
+              if [ -z "$JAVA_VERSION" ]; then
+                JAVA_VERSION=$(grep -oP '(?<=<java.version>).*?(?=</java.version>)' "$dir/pom.xml" | head -1)
+              fi
 
+              # Priority 3: maven.compiler.source
+              if [ -z "$JAVA_VERSION" ]; then
+                JAVA_VERSION=$(grep -oP '(?<=<maven.compiler.source>).*?(?=</maven.compiler.source>)' "$dir/pom.xml" | head -1)
+              fi
+
+              # Fallback: Default or if variable found
+              if [ -z "$JAVA_VERSION" ] || [[ "$JAVA_VERSION" == *'$'* ]]; then
+                JAVA_VERSION=$DEFAULT_JAVA
+              fi
+              
+              # Normalize 1.8 -> 8
+              if [ "$JAVA_VERSION" == "1.8" ]; then JAVA_VERSION="8"; fi
+
+              echo "Found: $dir (Java $JAVA_VERSION)" >&2
               echo "{\"path\": \"$dir\", \"java\": \"$JAVA_VERSION\"}" >> matrix_data.json
             fi
           done
 
+          # Output the JSON matrix
           if [ -s matrix_data.json ]; then
             JSON_MATRIX="[$(paste -sd, matrix_data.json)]"
             echo "has-changes=true" >> $GITHUB_OUTPUT
             echo "matrix=$JSON_MATRIX" >> $GITHUB_OUTPUT
           else
+            echo "No buildable projects found."
             echo "has-changes=false" >> $GITHUB_OUTPUT
             echo "matrix=[]" >> $GITHUB_OUTPUT
           fi
 
+  # ------------------------------------------------------------------
+  # JOB 2: Build projects in parallel
+  # ------------------------------------------------------------------
   build:
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true'
@@ -76,7 +119,7 @@ jobs:
       matrix:
         project: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
     
-    name: ${{ matrix.project.path }}
+    name: ${{ matrix.project.path }} (JDK ${{ matrix.project.java }})
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,7 +131,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Run Maven and capture the result, don't exit immediately on failure
+      # Build, but don't crash the job immediately on failure (so we can write the Red badge)
       - name: Build with Maven
         id: build
         working-directory: ${{ matrix.project.path }}
@@ -97,10 +140,9 @@ jobs:
           if [ -f "mvnw" ]; then chmod +x mvnw; CMD="./mvnw"; else CMD="mvn"; fi
           $CMD package -DskipTests=false
 
-      # Generate JSON for Shields.io based on the previous step's outcome
+      # Create the JSON file for Shields.io
       - name: Generate Badge JSON
         run: |
-          # Sanitize path for filename (replace / with -)
           SAFE_NAME=$(echo "${{ matrix.project.path }}" | sed 's/\//-/g')
           
           if [ "${{ steps.build.outcome }}" == "success" ]; then
@@ -111,57 +153,66 @@ jobs:
             STATUS="failing"
           fi
           
-          # Shields.io Endpoint Format
           echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\" }" > "$SAFE_NAME.json"
 
-      # Upload the JSON file as an artifact
       - name: Upload Badge Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: badge-${{ strategy.job-index }} # Unique name per job
+          name: badge-${{ strategy.job-index }}
           path: "*.json"
           retention-days: 1
 
-      # Now actually fail the job if Maven failed (so the Action turns red)
+      # Fail the job if the build actually failed
       - name: Check Build Status
         if: steps.build.outcome != 'success'
         run: exit 1
 
-  # NEW JOB: Collects all artifacts and pushes to the 'badges' branch
+  # ------------------------------------------------------------------
+  # JOB 3: Aggregate badges and push to orphan branch
+  # ------------------------------------------------------------------
   update-badges:
-    needs: build
-    if: always() # Run even if builds fail
+    needs: [detect-changes, build]
+    # Only run if there were changes, AND run even if builds failed (provided the workflow wasn't cancelled manually)
+    if: needs.detect-changes.outputs.has-changes == 'true' && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout badges branch
         uses: actions/checkout@v4
         with:
-          ref: badges # Check out the orphan branch directly
+          ref: badges
           path: badges-branch
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: badge-*
           path: temp-artifacts
+          merge-multiple: true
 
       - name: Move and Commit Badges
         run: |
+          # Create directories to ensure find commands don't crash if empty
+          mkdir -p temp-artifacts
           mkdir -p badges-branch
           
-          # Flatten artifacts: move all .json files from temp subfolders to root of badges branch
-          find temp-artifacts -name "*.json" -exec cp {} badges-branch/ \;
-          
-          cd badges-branch
-          
-          # Setup Git
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Commit and Push
-          git add .
-          if git diff --staged --quiet; then
-            echo "No changes in badges."
+          # Only proceed if we actually found JSON files
+          if [ -n "$(find temp-artifacts -name '*.json' -print -quit)" ]; then
+            echo "Found badge artifacts. Updating..."
+            
+            # Copy all json files to the badges branch root
+            find temp-artifacts -name "*.json" -exec cp {} badges-branch/ \;
+            
+            cd badges-branch
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            git add .
+            if git diff --staged --quiet; then
+              echo "No changes in badges."
+            else
+              git commit -m "Update build badges [skip ci]"
+              git push origin badges
+            fi
           else
-            git commit -m "Update build badges"
-            git push origin badges
+            echo "No artifacts found (maybe all builds were skipped or failed early)."
           fi
