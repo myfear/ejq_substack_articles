@@ -159,15 +159,19 @@ jobs:
           # Default to "-" if not found
           if [ -z "$Q_VER" ]; then Q_VER="-"; fi
 
-          # Write JSON with an EXTRA field "quarkusVersion"
-          # We keep label as "build" as you requested
-          echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\", \"quarkusVersion\": \"$Q_VER\" }" > "$SAFE_NAME.json"
+          # Write JSON 
+          echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\"}" > "$SAFE_NAME.json"
+
+          # 4. Write Version to a sidecar text file
+          echo "$Q_VER" > "$SAFE_NAME.txt"
 
       - name: Upload Badge Artifact
         uses: actions/upload-artifact@v4
         with:
           name: badge-${{ strategy.job-index }}
-          path: "*.json"
+          path: |
+            *.json
+            *.txt
           retention-days: 1
 
       # Fail the job if the build actually failed
@@ -207,8 +211,9 @@ jobs:
           if [ -n "$(find temp-artifacts -name '*.json' -print -quit)" ]; then
             echo "Found badge artifacts. Updating..."
             
-            # Copy all json files to the badges branch root
+            # Copy JSON (Badges) and TXT (Versions)
             find temp-artifacts -name "*.json" -exec cp {} badges-branch/ \;
+            find temp-artifacts -name "*.txt" -exec cp {} badges-branch/ \;
             
             cd badges-branch
             git config user.name "github-actions[bot]"
@@ -262,15 +267,19 @@ jobs:
             # remove .json extension
             PROJECT_NAME="${file%.json}"
 
-            # Use jq to extract the custom 'quarkusVersion' field we added earlier
-            VERSION=$(jq -r '.quarkusVersion // "-"' "$file")
+            # Read Version from sidecar TXT file
+            if [ -f "$PROJECT_NAME.txt" ]; then
+              VERSION=$(cat "$PROJECT_NAME.txt")
+            else
+              VERSION="-"
+            fi
             
             # Generate the Shield URL
             # Note: We must use the raw.githubusercontent URL for the JSON endpoint
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
             # Append row to table
-            echo "| **$PROJECT_NAME** | $VERSION | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+            echo "| **$PROJECT_NAME** | \`$VERSION\` | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
           done
           
           cd ../main-repo
