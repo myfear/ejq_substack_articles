@@ -34,6 +34,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **ai-memory** | - | - | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
 | **archunit-bce** | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
 | **banner-studio** | 21 | 3.29.4 | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
+| **fleet-insure** | 21 | 3.29.4 | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
