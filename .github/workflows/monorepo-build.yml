@@ -216,3 +216,87 @@ jobs:
           else
             echo "No artifacts found (maybe all builds were skipped or failed early)."
           fi
+
+  # ------------------------------------------------------------------
+  # JOB 4: Update README with badge table
+  # ------------------------------------------------------------------
+  update-readme:
+    needs: update-badges
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          ref: main # We are editing the main README
+          path: main-repo
+
+      - name: Checkout Badges Branch
+        uses: actions/checkout@v4
+        with:
+          ref: badges # We need to see what JSON files exist
+          path: badges-repo
+
+      - name: Generate New Badge Table
+        run: |
+          cd main-repo
+          
+          # Start the table
+          echo "| Project | Status |" > ../badge_table.md
+          echo "| :--- | :--- |" >> ../badge_table.md
+          
+          # Iterate over JSON files in the badges branch to build rows
+          # We use the badges branch as the source of truth for what projects exist
+          cd ../badges-repo
+          for file in *.json; do
+            if [ "$file" == "*.json" ]; then continue; fi # Handle empty case
+            
+            # remove .json extension
+            PROJECT_NAME="${file%.json}"
+            
+            # Generate the Shield URL
+            # Note: We must use the raw.githubusercontent URL for the JSON endpoint
+            SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
+            
+            # Append row to table
+            echo "| **$PROJECT_NAME** | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+          done
+          
+          cd ../main-repo
+
+      - name: Inject Table into README
+        run: |
+          cd main-repo
+          
+          # Define markers
+          START_MARKER="<!-- BUILD_BADGES_START -->"
+          END_MARKER="<!-- BUILD_BADGES_END -->"
+          FILE="README.md"
+          
+          # 1. Create a temporary file with the content BEFORE the start marker
+          sed -n "1,/$START_MARKER/p" "$FILE" > "$FILE.tmp"
+          
+          # 2. Append the new generated table
+          cat ../badge_table.md >> "$FILE.tmp"
+          
+          # 3. Append the content AFTER the end marker
+          # We use sed to find the end marker, then print from there to end of file
+          sed -n "/$END_MARKER/,\$p" "$FILE" >> "$FILE.tmp"
+          
+          # 4. Overwrite original file
+          mv "$FILE.tmp" "$FILE"
+
+      - name: Commit and Push README
+        run: |
+          cd main-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Only commit if the README actually changed
+          if git diff --quiet README.md; then
+            echo "README is up to date."
+          else
+            git add README.md
+            git commit -m "docs: Auto-update build status badges"
+            git push origin main
+          fi
