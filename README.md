@@ -35,6 +35,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **archunit-bce** | - | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
 | **banner-studio** | 21 | 3.29.4 | - | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
 | **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
+| **resource-reader** | 17 | 3.22.1 | - | ![resource-reader](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/resource-reader.json) |
 | **timezone-storage-demo** | 21 | 3.29.4 | - | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
 | **url-shortener** | 21 | 3.23.3 | ✅ 3/3 | ![url-shortener](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/url-shortener.json) |
 | **validator-demo** | 21 | 3.29.4 | ✅ 35/35 | ![validator-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/validator-demo.json) |
