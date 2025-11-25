@@ -22,6 +22,8 @@ Each folder in this repository matches an article from the Substack and includes
 ## Build Status
 
 <!-- BUILD_BADGES_START -->
+| Project | Quarkus | Build Status |
+| :--- | :---: | :--- |
 | **age-everywhere** | `-` | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
 | **ai-design-critic** | `-` | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
 | **ai-detector** | `-` | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
@@ -30,6 +32,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **ai-email-simulator** | `-` | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
 | **ai-error-handler-pii** | `-` | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
 | **ai-memory** | `-` | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
+| **archunit-bce** | `-` | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
