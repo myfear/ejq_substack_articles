@@ -129,7 +129,15 @@ jobs:
         with:
           java-version: ${{ matrix.project.java }}
           distribution: 'temurin'
-          cache: 'maven'
+      
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ matrix.project.path }}-${{ hashFiles(format('{0}/pom.xml', matrix.project.path)) }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ matrix.project.path }}-
+            ${{ runner.os }}-maven-
 
       # Build, but don't crash the job immediately on failure (so we can write the Red badge)
       - name: Build with Maven
