@@ -19,6 +19,16 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST resource for bootstrapping demo data in the fleet insurance system.
+ * <p>
+ * This resource provides an endpoint to initialize the system with sample data,
+ * including reinsurance layers, fleet policies, vehicles, and historical premium snapshots.
+ * It is primarily used for demonstration and testing purposes.
+ * </p>
+ *
+ * @author Fleet Insurance System
+ */
 @Path("/bootstrap")
 @Produces(MediaType.APPLICATION_JSON)
 public class BootstrapResource {
@@ -30,6 +40,28 @@ public class BootstrapResource {
     @Inject
     PremiumCalculator calculator;
 
+    /**
+     * Creates a complete demo fleet policy with associated data.
+     * <p>
+     * This method performs the following operations:
+     * <ul>
+     *   <li>Creates three reinsurance layers (Layer A, B, C) if none exist</li>
+     *   <li>Creates a new fleet policy with a coverage limit of $1,000,000</li>
+     *   <li>Adds 10 vehicles to the policy with randomized risk scores (60-89)</li>
+     *   <li>Generates historical premium snapshots for the past 6 months</li>
+     * </ul>
+     * </p>
+     * <p>
+     * The policy is created with:
+     * <ul>
+     *   <li>Effective date: 6 months ago (first day of that month)</li>
+     *   <li>Expiration date: 1 year from effective date</li>
+     *   <li>Rate lock period: 3 months from effective date</li>
+     * </ul>
+     * </p>
+     *
+     * @return the created {@link FleetPolicy} with all associated vehicles and snapshots
+     */
     @POST
     @Transactional
     public FleetPolicy create() {
@@ -74,6 +106,13 @@ public class BootstrapResource {
         return p;
     }
 
+    /**
+     * Creates and persists a reinsurance layer with the specified bounds.
+     *
+     * @param name the name of the reinsurance layer (e.g., "Layer A")
+     * @param low  the lower bound of the layer as a string representation of a decimal value
+     * @param high the upper bound of the layer as a string representation of a decimal value
+     */
     private void layer(String name, String low, String high) {
         ReinsuranceLayer l = new ReinsuranceLayer();
         l.name = name;
