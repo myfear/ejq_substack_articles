@@ -28,6 +28,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **ai-design-critic** | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
 | **ai-detector** | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
 | **ai-document-assistant** | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
+| **ai-dungeon-master** | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
