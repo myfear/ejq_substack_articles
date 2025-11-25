@@ -11,3 +11,5 @@ INSERT INTO zombies (id, type, speed_level, intelligence_level, last_spotted_zon
 (8, 'Horde Leader', 6, 5, 'City Center', 'RUN!!!'),
 (9, 'Bloater', 2, 1, 'Gas Station', 'MEDIUM'),
 (10, 'Fresh Turn', 4, 2, 'Residential Area', 'MEDIUM');
+
+SELECT setval('zombies_SEQ', COALESCE((SELECT MAX(id) FROM zombies), 1));

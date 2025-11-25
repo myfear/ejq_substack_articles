@@ -9,3 +9,5 @@ INSERT INTO supply_caches (id, location_name, latitude, longitude, food_units, w
 (6, 'Overrun Walmart', 34.0445, -118.2334, 300, 200, 30, 100, true),
 (7, 'Underground Bunker 7', 34.0712, -118.2645, 5000, 8000, 1000, 50000, false),
 (8, 'Gas N Go', 34.0489, -118.2267, 50, 100, 5, 500, true);
+
+SELECT setval('supply_caches_SEQ', COALESCE((SELECT MAX(id) FROM supply_caches), 1));

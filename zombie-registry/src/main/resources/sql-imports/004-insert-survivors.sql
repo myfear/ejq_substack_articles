@@ -11,3 +11,5 @@ INSERT INTO survivors (id, name, zombie_kills, skillSet, days_survived, has_been
 (8, 'Tank Thompson', 312, 'WARRIOR', 967, false, '2025-10-26'),
 (9, 'Nurse Nightingale', 67, 'MEDIC', 789, false, '2025-10-26'),
 (10, 'Crazy Eddie', 445, 'WARRIOR', 1001, false, '2025-10-26');
+
+SELECT setval('survivors_SEQ', COALESCE((SELECT MAX(id) FROM survivors), 1));
