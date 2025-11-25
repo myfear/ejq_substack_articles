@@ -2,7 +2,6 @@ package com.ibm.developer.quarkus.actuator.runtime.infoprovider;
 
 import java.util.Map;
 
-public interface GitInfoProvider {
-
-    Map<String, Object> getGitInfo();
+public interface BuildInfoProvider {
+    Map<String, Object> getBuildInfo();
 }

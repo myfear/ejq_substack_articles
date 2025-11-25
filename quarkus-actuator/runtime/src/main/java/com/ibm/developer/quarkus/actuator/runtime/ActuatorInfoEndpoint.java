@@ -1,20 +1,18 @@
 package com.ibm.developer.quarkus.actuator.runtime;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.eclipse.microprofile.config.ConfigProvider;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.developer.quarkus.actuator.runtime.infoprovider.BuildInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.GitInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.JavaInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.MachineInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.SslInfoProvider;
-
 import io.quarkus.arc.Arc;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
 
@@ -51,23 +49,11 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
             }
 
             // Build section
-            String artifact = ConfigProvider.getConfig()
-                    .getOptionalValue("quarkus.application.name", String.class)
-                    .orElse("application");
-            String version = ConfigProvider.getConfig()
-                    .getOptionalValue("quarkus.application.version", String.class)
-                    .orElse("unknown");
-            String group = ConfigProvider.getConfig()
-                    .getOptionalValue("quarkus.application.group", String.class)
-                    .orElse(null);
-
-            Map<String, Object> build = new LinkedHashMap<>();
-            build.put("artifact", artifact);
-            build.put("version", version);
-            if (group != null && !group.isEmpty()) {
-                build.put("group", group);
+            // As an alternate approach, most of this information is also available via ConfigProvider.getConfig().getOptionalValue("quarkus.application.name", String.class).orElse("application");
+            BuildInfoProvider buildProvider = Arc.container().instance(BuildInfoProvider.class).get();
+            if (buildProvider != null) {
+                out.put("build", buildProvider.getBuildInfo());
             }
-            out.put("build", build);
 
             // Get MachineInfoProvider for OS and process information
             MachineInfoProvider machineProvider = Arc.container().instance(MachineInfoProvider.class).get();
