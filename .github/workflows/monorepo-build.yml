@@ -168,8 +168,8 @@ jobs:
           # Write JSON 
           echo "{ \"schemaVersion\": 1, \"label\": \"build\", \"message\": \"$STATUS\", \"color\": \"$COLOR\"}" > "$SAFE_NAME.json"
 
-          # 4. Write Version to a sidecar text file
-          echo "$Q_VER" > "$SAFE_NAME.txt"
+          # 4. Write Version and Java version to a sidecar JSON file
+          echo "{ \"quarkus\": \"$Q_VER\", \"java\": \"${{ matrix.project.java }}\" }" > "$SAFE_NAME-metadata.json"
 
       - name: Upload Badge Artifact
         uses: actions/upload-artifact@v4
@@ -177,7 +177,6 @@ jobs:
           name: badge-${{ strategy.job-index }}
           path: |
             *.json
-            *.txt
           retention-days: 1
 
       # Fail the job if the build actually failed
@@ -217,9 +216,8 @@ jobs:
           if [ -n "$(find temp-artifacts -name '*.json' -print -quit)" ]; then
             echo "Found badge artifacts. Updating..."
             
-            # Copy JSON (Badges) and TXT (Versions)
+            # Copy JSON (Badges and Metadata)
             find temp-artifacts -name "*.json" -exec cp {} badges-branch/ \;
-            find temp-artifacts -name "*.txt" -exec cp {} badges-branch/ \;
             
             cd badges-branch
             git config user.name "github-actions[bot]"
@@ -260,9 +258,9 @@ jobs:
         run: |
           cd main-repo
           
-          # 1. Create the 3-Column Header
-          echo "| Project | Quarkus | Build Status |" > ../badge_table.md
-          echo "| :--- | :---: | :--- |" >> ../badge_table.md
+          # 1. Create the 4-Column Header
+          echo "| Project | Java | Quarkus | Build Status |" > ../badge_table.md
+          echo "| :--- | :---: | :---: | :--- |" >> ../badge_table.md
           
           # Iterate over JSON files in the badges branch to build rows
           # We use the badges branch as the source of truth for what projects exist
@@ -270,14 +268,29 @@ jobs:
           for file in *.json; do
             if [ "$file" == "*.json" ]; then continue; fi # Handle empty case
             
+            # Skip metadata files (they end with -metadata.json)
+            if [[ "$file" == *"-metadata.json" ]]; then continue; fi
+            
             # remove .json extension
             PROJECT_NAME="${file%.json}"
 
-            # Read Version from sidecar TXT file
-            if [ -f "$PROJECT_NAME.txt" ]; then
-              VERSION=$(cat "$PROJECT_NAME.txt")
+            # Read Version and Java version from sidecar JSON file
+            METADATA_FILE="${PROJECT_NAME}-metadata.json"
+            if [ -f "$METADATA_FILE" ]; then
+              # Use jq if available, otherwise use grep/sed fallback
+              if command -v jq &> /dev/null; then
+                Q_VERSION=$(jq -r '.quarkus // "-"' "$METADATA_FILE")
+                JAVA_VERSION=$(jq -r '.java // "-"' "$METADATA_FILE")
+              else
+                # Fallback: use grep/sed to extract values
+                Q_VERSION=$(grep -oP '(?<="quarkus":\s*")[^"]*' "$METADATA_FILE" || echo "-")
+                JAVA_VERSION=$(grep -oP '(?<="java":\s*")[^"]*' "$METADATA_FILE" || echo "-")
+                if [ -z "$Q_VERSION" ] || [ "$Q_VERSION" == "null" ]; then Q_VERSION="-"; fi
+                if [ -z "$JAVA_VERSION" ] || [ "$JAVA_VERSION" == "null" ]; then JAVA_VERSION="-"; fi
+              fi
             else
-              VERSION="-"
+              Q_VERSION="-"
+              JAVA_VERSION="-"
             fi
             
             # Generate the Shield URL
@@ -285,7 +298,7 @@ jobs:
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
             # Append row to table
-            echo "| **$PROJECT_NAME** | $VERSION | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+            echo "| **$PROJECT_NAME** | $JAVA_VERSION | $Q_VERSION | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
           done
           
           cd ../main-repo
