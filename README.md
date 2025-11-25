@@ -22,21 +22,22 @@ Each folder in this repository matches an article from the Substack and includes
 ## Build Status
 
 <!-- BUILD_BADGES_START -->
-| Project | Java | Quarkus | Build Status |
-| :--- | :---: | :---: | :--- |
-| **age-everywhere** | - | - | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
-| **ai-design-critic** | - | - | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
-| **ai-detector** | - | - | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
-| **ai-document-assistant** | - | - | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
-| **ai-dungeon-master** | - | - | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
-| **ai-email-simulator** | - | - | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
-| **ai-error-handler-pii** | - | - | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
-| **ai-memory** | - | - | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
-| **archunit-bce** | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
-| **banner-studio** | 21 | 3.29.4 | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
-| **fleet-insure** | 21 | 3.29.4 | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
-| **timezone-storage-demo** | 21 | 3.29.4 | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
-| **zombie-registry** | 21 | 3.29.4 | ![zombie-registry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/zombie-registry.json) |
+| Project | Java | Quarkus | Tests | Build Status |
+| :--- | :---: | :---: | :---: | :--- |
+| **age-everywhere** | - | - | - | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
+| **ai-design-critic** | - | - | - | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
+| **ai-detector** | - | - | - | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
+| **ai-document-assistant** | - | - | - | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
+| **ai-dungeon-master** | - | - | - | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
+| **ai-email-simulator** | - | - | - | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
+| **ai-error-handler-pii** | - | - | - | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
+| **ai-memory** | - | - | - | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
+| **archunit-bce** | - | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
+| **banner-studio** | 21 | 3.29.4 | - | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
+| **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
+| **timezone-storage-demo** | 21 | 3.29.4 | - | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
+| **url-shortener** | 21 | 3.23.3 | - | ![url-shortener](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/url-shortener.json) |
+| **zombie-registry** | 21 | 3.29.4 | - | ![zombie-registry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/zombie-registry.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
