@@ -7,19 +7,65 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * RESTful resource for managing dungeon master game interactions.
+ * <p>
+ * This resource provides endpoints for starting a new game and processing player actions
+ * in an AI-driven dungeon master game. It maintains game state including player information
+ * and conversation memory throughout the game session.
+ * </p>
+ * <p>
+ * The resource is application-scoped, meaning a single instance is shared across all requests,
+ * which allows state to be maintained across multiple interactions within the same game session.
+ * </p>
+ *
+ * @see GameMaster
+ * @see Player
+ * @see GameResponse
+ */
 @Path("/dungeon")
 @ApplicationScoped 
 public class DungeonMasterResource {
 
+    /**
+     * The game master instance that handles AI-driven narrative generation
+     * and game mechanics through conversational interactions.
+     */
     @Inject
     GameMaster gameMaster;
     
+    /**
+     * Provider for managing the current player context across different
+     * parts of the application, particularly for tool functions.
+     */
     @Inject
     PlayerProvider playerProvider;
 
+    /**
+     * The current player instance containing character stats, inventory,
+     * and other player-specific state information.
+     */
     private Player player = new Player();
+    
+    /**
+     * Memory buffer that stores the conversation history between the player
+     * and the dungeon master, including all actions and narrative responses.
+     */
     private final StringBuilder memory = new StringBuilder();
 
+    /**
+     * Starts a new dungeon master game session.
+     * <p>
+     * This endpoint initializes a fresh game by:
+     * <ul>
+     *   <li>Resetting the player to default starting state</li>
+     *   <li>Clearing all previous conversation memory</li>
+     *   <li>Generating an engaging starting scenario in a fantasy tavern</li>
+     * </ul>
+     * </p>
+     *
+     * @return a {@link GameResponse} containing the initial narrative and player state
+     */
     @POST
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +80,21 @@ public class DungeonMasterResource {
         return new GameResponse(narrative, this.player);
     }
 
+    /**
+     * Processes a player action and generates the corresponding narrative response.
+     * <p>
+     * This endpoint handles player actions by:
+     * <ul>
+     *   <li>Providing the current player status to the game master</li>
+     *   <li>Including previous conversation history for context</li>
+     *   <li>Generating an appropriate narrative response based on the action</li>
+     *   <li>Updating the conversation memory with both the action and response</li>
+     * </ul>
+     * </p>
+     *
+     * @param action the player's action or choice as a string
+     * @return a {@link GameResponse} containing the narrative response and updated player state
+     */
     @POST
     @Path("/action")
     @Produces(MediaType.APPLICATION_JSON)
