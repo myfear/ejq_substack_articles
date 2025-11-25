@@ -153,10 +153,16 @@ jobs:
             COLOR="red"
           fi
 
-          # Extract Quarkus Version
-          Q_VER=$(grep -oP '(?<=<quarkus.platform.version>).*?(?=</quarkus.platform.version>)' pom.xml | head -1)
+          # FIX: Use the full path to the pom.xml
+          POM_PATH="${{ matrix.project.path }}/pom.xml"
           
-          # Default to "-" if not found
+          # Check if file exists to be safe
+          if [ -f "$POM_PATH" ]; then
+            Q_VER=$(grep -oP '(?<=<quarkus.platform.version>).*?(?=</quarkus.platform.version>)' "$POM_PATH" | head -1)
+          else
+            Q_VER=""
+          fi
+          
           if [ -z "$Q_VER" ]; then Q_VER="-"; fi
 
           # Write JSON 
