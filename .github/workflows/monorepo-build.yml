@@ -255,8 +255,8 @@ jobs:
           cd main-repo
           
           # 1. Create the 3-Column Header
-          echo "| Project | Quarkus | Build Status |" > table.md
-          echo "| :--- | :---: | :--- |" >> table.md
+          echo "| Project | Quarkus | Build Status |" > ../badge_table.md
+          echo "| :--- | :---: | :--- |" >> ../badge_table.md
           
           # Iterate over JSON files in the badges branch to build rows
           # We use the badges branch as the source of truth for what projects exist
