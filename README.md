@@ -29,6 +29,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **ai-detector** | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
 | **ai-document-assistant** | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
 | **ai-dungeon-master** | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
+| **ai-email-simulator** | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
