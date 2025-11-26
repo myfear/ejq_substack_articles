@@ -1,12 +1,25 @@
 package com.ibm.developer.quarkus.actuator.deployment;
 
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.jboss.jandex.IndexView;
+import org.jboss.logging.Logger;
+
 import com.ibm.developer.quarkus.actuator.runtime.ActuatorRecorder;
-import com.ibm.developer.quarkus.actuator.runtime.InfoRecorder;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.BuildInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.GitInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.JavaInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.MachineInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.SslInfoProvider;
+
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.bootstrap.model.ApplicationModel;
@@ -23,18 +36,6 @@ import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.jboss.jandex.IndexView;
-import org.jboss.logging.Logger;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 class QuarkusActuatorProcessor {
 
@@ -49,7 +50,7 @@ class QuarkusActuatorProcessor {
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
     void registerBuildTimeBeans(CurateOutcomeBuildItem curateOutcomeBuildItem,
-                                BuildProducer<SyntheticBeanBuildItem> beanProducer, InfoRecorder recorder,
+                                BuildProducer<SyntheticBeanBuildItem> beanProducer, ActuatorRecorder recorder,
                                 CombinedIndexBuildItem combinedIndex) {
 
 

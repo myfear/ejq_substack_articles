@@ -2,15 +2,16 @@ package com.ibm.developer.quarkus.actuator.runtime.infoprovider;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class MachineInfoProvider extends AbstractInfoProvider {
+public class MachineInfoProvider {
 
     public Map<String, Object> getOsInfo() {
-        Map<String, Object> os = newMap();
+        Map<String, Object> os = new HashMap<>();
         os.put("name", System.getProperty("os.name"));
         os.put("version", System.getProperty("os.version"));
         os.put("arch", System.getProperty("os.arch"));
@@ -18,8 +19,8 @@ public class MachineInfoProvider extends AbstractInfoProvider {
     }
 
     public Map<String, Object> getProcessInfo() {
-        Map<String, Object> process = newMap();
-        
+        Map<String, Object> process = new HashMap<>();
+
         // PID
         RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
         String processName = runtimeBean.getName();
@@ -31,7 +32,7 @@ public class MachineInfoProvider extends AbstractInfoProvider {
         } catch (NumberFormatException e) {
             // Ignore
         }
-        
+
         // Try ProcessHandle API (Java 9+)
         try {
             ProcessHandle currentProcess = ProcessHandle.current();
@@ -39,11 +40,11 @@ public class MachineInfoProvider extends AbstractInfoProvider {
         } catch (Exception e) {
             // Fall back to RuntimeMXBean approach
         }
-        
+
         if (pid > 0) {
             process.put("pid", pid);
         }
-        
+
         // Parent PID using ProcessHandle API (Java 9+)
         try {
             ProcessHandle currentProcess = ProcessHandle.current();
@@ -62,17 +63,16 @@ public class MachineInfoProvider extends AbstractInfoProvider {
                 }
             }
         }
-        
+
         // Owner
         String userName = System.getProperty("user.name");
         if (userName != null) {
             process.put("owner", userName);
         }
-        
+
         // CPUs
         process.put("cpus", Runtime.getRuntime().availableProcessors());
-        
+
         return process;
     }
 }
-

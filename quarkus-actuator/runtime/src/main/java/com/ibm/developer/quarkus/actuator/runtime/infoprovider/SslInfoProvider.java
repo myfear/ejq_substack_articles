@@ -9,16 +9,21 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jboss.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SslInfoProvider extends AbstractInfoProvider {
+public class SslInfoProvider {
+
+    protected final Logger log = Logger.getLogger(getClass());
 
     public Map<String, Object> getSslInfo() {
-        Map<String, Object> ssl = newMap();
+        Map<String, Object> ssl = new HashMap<>();
         List<Map<String, Object>> bundles = new ArrayList<>();
 
         try {
@@ -68,7 +73,7 @@ public class SslInfoProvider extends AbstractInfoProvider {
     }
 
     private Map<String, Object> createBundleFromKeystore(KeyStore keystore, String bundleName) {
-        Map<String, Object> bundle = newMap();
+        Map<String, Object> bundle = new HashMap<>();
         bundle.put("name", bundleName);
         List<Map<String, Object>> certificateChains = new ArrayList<>();
 
@@ -103,15 +108,15 @@ public class SslInfoProvider extends AbstractInfoProvider {
     }
 
     private Map<String, Object> createCertificateChain(String alias, Certificate[] chain) {
-        Map<String, Object> chainMap = newMap();
+        Map<String, Object> chainMap = new HashMap<>();
         chainMap.put("alias", alias);
         List<Map<String, Object>> certificates = new ArrayList<>();
 
         for (Certificate cert : chain) {
             if (cert instanceof X509Certificate) {
                 X509Certificate x509Cert = (X509Certificate) cert;
-                Map<String, Object> certMap = newMap();
-                
+                Map<String, Object> certMap = new HashMap<>();
+
                 certMap.put("version", "V" + x509Cert.getVersion());
                 certMap.put("issuer", x509Cert.getIssuerX500Principal().getName());
                 certMap.put("subject", x509Cert.getSubjectX500Principal().getName());
@@ -119,7 +124,7 @@ public class SslInfoProvider extends AbstractInfoProvider {
                 certMap.put("signatureAlgorithmName", x509Cert.getSigAlgName());
 
                 // Validity
-                Map<String, Object> validity = newMap();
+                Map<String, Object> validity = new HashMap<>();
                 try {
                     x509Cert.checkValidity();
                     validity.put("status", "VALID");
@@ -131,7 +136,8 @@ public class SslInfoProvider extends AbstractInfoProvider {
                 // Format dates
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
                         .withZone(ZoneOffset.UTC);
-                certMap.put("validityStarts", formatter.format(Instant.ofEpochMilli(x509Cert.getNotBefore().getTime())));
+                certMap.put("validityStarts",
+                        formatter.format(Instant.ofEpochMilli(x509Cert.getNotBefore().getTime())));
                 certMap.put("validityEnds", formatter.format(Instant.ofEpochMilli(x509Cert.getNotAfter().getTime())));
 
                 certificates.add(certMap);
@@ -142,4 +148,3 @@ public class SslInfoProvider extends AbstractInfoProvider {
         return chainMap;
     }
 }
-

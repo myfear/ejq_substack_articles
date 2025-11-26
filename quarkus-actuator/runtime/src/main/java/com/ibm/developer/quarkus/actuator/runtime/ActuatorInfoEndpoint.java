@@ -1,18 +1,19 @@
 package com.ibm.developer.quarkus.actuator.runtime;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.BuildInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.GitInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.JavaInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.MachineInfoProvider;
 import com.ibm.developer.quarkus.actuator.runtime.infoprovider.SslInfoProvider;
-import io.quarkus.arc.Arc;
+
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import jakarta.enterprise.inject.spi.CDI;
 
 public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
 
@@ -33,7 +34,7 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
 
             // Git section
             if (config.info().gitEnabled()) {
-                GitInfoProvider git = Arc.container().instance(GitInfoProvider.class).get();
+                GitInfoProvider git = CDI.current().select(GitInfoProvider.class).get();
                 if (git != null) {
                     Map<String, Object> g = git.getGitInfo();
                     if (!g.isEmpty()) {
@@ -49,14 +50,16 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
             }
 
             // Build section
-            // As an alternate approach, most of this information is also available via ConfigProvider.getConfig().getOptionalValue("quarkus.application.name", String.class).orElse("application");
-            BuildInfoProvider buildProvider = Arc.container().instance(BuildInfoProvider.class).get();
+            // As an alternate approach, most of this information is also available via
+            // ConfigProvider.getConfig().getOptionalValue("quarkus.application.name",
+            // String.class).orElse("application");
+            BuildInfoProvider buildProvider = CDI.current().select(BuildInfoProvider.class).get();
             if (buildProvider != null) {
                 out.put("build", buildProvider.getBuildInfo());
             }
 
             // Get MachineInfoProvider for OS and process information
-            MachineInfoProvider machineProvider = Arc.container().instance(MachineInfoProvider.class).get();
+            MachineInfoProvider machineProvider = CDI.current().select(MachineInfoProvider.class).get();
 
             // OS section
             if (machineProvider != null) {
@@ -72,7 +75,7 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
             }
 
             // Get JavaInfoProvider for Java info
-            JavaInfoProvider javaProvider = Arc.container().instance(JavaInfoProvider.class).get();
+            JavaInfoProvider javaProvider = CDI.current().select(JavaInfoProvider.class).get();
 
             // Java section
             if (config.info().javaEnabled()) {
@@ -87,7 +90,7 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
 
             // SSL section
             if (config.info().sslEnabled()) {
-                SslInfoProvider sslProvider = Arc.container().instance(SslInfoProvider.class).get();
+                SslInfoProvider sslProvider = CDI.current().select(SslInfoProvider.class).get();
                 if (sslProvider != null) {
                     Map<String, Object> ssl = sslProvider.getSslInfo();
                     if (!ssl.isEmpty()) {
@@ -99,7 +102,7 @@ public class ActuatorInfoEndpoint implements Handler<RoutingContext> {
                 }
             }
 
-            ObjectMapper objectMapper = Arc.container().instance(ObjectMapper.class).get();
+            ObjectMapper objectMapper = CDI.current().select(ObjectMapper.class).get();
             HttpServerResponse response = routingContext.response();
             response.putHeader("Content-Type", "application/vnd.quarkus.actuator.v3+json");
             response.end(objectMapper.writeValueAsString(out));
