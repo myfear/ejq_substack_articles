@@ -37,7 +37,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
 | **metadata-stripper** | 21 | 3.29.4 | ✅ 4/4 | ![metadata-stripper](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/metadata-stripper.json) |
 | **quarkus-actuator** | 21 | - | - | ![quarkus-actuator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/quarkus-actuator.json) |
-| **recursive-comments** | 21 | 3.29.4 | - | ![recursive-comments](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/recursive-comments.json) |
+| **recursive-comments** | 21 | 3.29.4 | ✅ 6/6 | ![recursive-comments](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/recursive-comments.json) |
 | **resource-reader** | 17 | 3.22.1 | - | ![resource-reader](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/resource-reader.json) |
 | **stateless-api** | 21 | 3.29.4 | - | ![stateless-api](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/stateless-api.json) |
 | **timezone-storage-demo** | 21 | 3.29.4 | - | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
