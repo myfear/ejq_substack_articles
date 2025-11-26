@@ -1,6 +1,6 @@
 {
   "quarkus": "-",
-  "java": "17",
+  "java": "21",
   "tests": {
     "total": 0,
     "passed": 0,
