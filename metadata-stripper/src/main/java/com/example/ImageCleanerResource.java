@@ -52,6 +52,20 @@ public class ImageCleanerResource {
         // Log metadata before stripping
         logMetadata("BEFORE", originalBytes, filename);
 
+        // Validate that the file is actually an image by trying to read it
+        BufferedImage image;
+        try {
+            image = ImageIO.read(new ByteArrayInputStream(originalBytes));
+            if (image == null) {
+                throw new IOException("File is not a valid image format");
+            }
+            log.debugf("Read image: %dx%d", image.getWidth(), image.getHeight());
+        } catch (IOException e) {
+            log.errorf(e, "Failed to read image from file '%s': %s", filename, e.getMessage());
+            throw new WebApplicationException("Failed to read image: " + e.getMessage(),
+                    Response.Status.BAD_REQUEST);
+        }
+
         // Check if image has metadata - if not, return original without processing
         if (!hasMetadata(originalBytes)) {
             log.debugf("No metadata found in file '%s', returning original image", filename);
@@ -59,20 +73,6 @@ public class ImageCleanerResource {
             return Response.ok(originalBytes, MediaType.valueOf("image/jpeg"))
                     .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
                     .build();
-        }
-
-        // Read image (ImageIO automatically excludes metadata)
-        BufferedImage image;
-        try {
-            image = ImageIO.read(new ByteArrayInputStream(originalBytes));
-            if (image == null) {
-                throw new IOException("Failed to read image");
-            }
-            log.debugf("Read image: %dx%d", image.getWidth(), image.getHeight());
-        } catch (IOException e) {
-            log.errorf(e, "Failed to read image from file '%s': %s", filename, e.getMessage());
-            throw new WebApplicationException("Failed to read image: " + e.getMessage(),
-                    Response.Status.INTERNAL_SERVER_ERROR);
         }
 
         // Write image as JPEG (no metadata)
@@ -104,6 +104,12 @@ public class ImageCleanerResource {
             log.infof("Metadata %s stripping for file '%s': %s", stage, filename, metadata);
         } catch (IOException e) {
             log.warnf("Failed to read metadata %s stripping for file '%s': %s", stage, filename, e.getMessage());
+        } catch (Exception e) {
+            // Catch any other exceptions (like IllegalArgumentException) that might be
+            // thrown
+            // by the underlying imaging library when it can't parse the format
+            log.debugf("Could not parse metadata %s stripping for file '%s' (this is expected for cleaned images): %s",
+                    stage, filename, e.getMessage());
         }
     }
 
@@ -115,6 +121,12 @@ public class ImageCleanerResource {
         } catch (IOException e) {
             log.debugf(e, "Failed to check metadata, assuming metadata exists: %s", e.getMessage());
             return true;
+        } catch (Exception e) {
+            // If we can't parse the image at all (e.g., IllegalArgumentException from
+            // imaging library),
+            // assume it has no metadata
+            log.debugf("Could not parse image format, assuming no metadata: %s", e.getMessage());
+            return false;
         }
     }
 }
