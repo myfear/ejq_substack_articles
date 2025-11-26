@@ -57,12 +57,12 @@
             <artifactId>jakarta.data-api</artifactId>
         </dependency>
         <!-- For some reason, Maven requires the annotation processor as a dependency here instead
-        of in the compiler plugin dependencies -->
+        of in the compiler plugin dependencies 
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-processor</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -99,9 +99,16 @@
                 <configuration>
                     <parameters>true</parameters>
                     <annotationProcessorPathsUseDepMgmt>true</annotationProcessorPathsUseDepMgmt>
-                    <annotationProcessors>
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath>
+                            <groupId>org.hibernate.orm</groupId>
+                            <artifactId>hibernate-processor</artifactId>
+                            <version>${hibernate.version}</version>
+                        </annotationProcessorPath>
+                    </annotationProcessorPaths>
+                   <annotationProcessors>
                         <annotationProcessor>org.hibernate.processor.HibernateProcessor</annotationProcessor>
-                    </annotationProcessors>
+                    </annotationProcessors> 
                 </configuration>
             </plugin>
             <plugin>
