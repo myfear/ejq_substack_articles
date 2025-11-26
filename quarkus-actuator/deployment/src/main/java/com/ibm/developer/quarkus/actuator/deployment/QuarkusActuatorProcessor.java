@@ -123,7 +123,7 @@ class QuarkusActuatorProcessor {
         }
 
         // Extract the relevant git properties
-        Map<String, String> gitProperties = new HashMap<>();
+        Map<String, Object> gitProperties = new HashMap<>();
         if (!props.isEmpty()) {
             String branch = props.getProperty("git.branch");
             String commitId = props.getProperty("git.commit.id.abbrev");
