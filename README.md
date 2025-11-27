@@ -32,7 +32,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **ai-email-simulator** | - | - | - | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
 | **ai-error-handler-pii** | - | - | - | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
 | **ai-memory** | - | - | - | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
-| **api-adapter-demo** | 21 | 3.30.1 | ✅ 4/4 | ![api-adapter-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/api-adapter-demo.json) |
+| **[api-adapter-demo](https://www.the-main-thread.com/p/quarkus-stripe-api-versioning-adapter-java-tutorial)** | 21 | 3.30.1 | ✅ 4/4 | ![api-adapter-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/api-adapter-demo.json) |
 | **archunit-bce** | - | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
 | **banner-studio** | 21 | 3.29.4 | - | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
 | **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
