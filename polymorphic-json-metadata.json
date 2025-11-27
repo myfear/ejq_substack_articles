@@ -1,0 +1,11 @@
+{
+  "quarkus": "3.29.0",
+  "java": "21",
+  "tests": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
