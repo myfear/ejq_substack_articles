@@ -36,7 +36,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **banner-studio** | 21 | 3.29.4 | - | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
 | **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
 | **metadata-stripper** | 21 | 3.29.4 | ✅ 4/4 | ![metadata-stripper](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/metadata-stripper.json) |
-| **polymorphic-json** | 21 | 3.29.0 | ✅ 2/2 | ![polymorphic-json](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/polymorphic-json.json) |
+| **[polymorphic-json](https://www.the-main-thread.com/p/quarkus-jakarta-data-polymorphic-json)** | 21 | 3.29.0 | ✅ 2/2 | ![polymorphic-json](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/polymorphic-json.json) |
 | **quarkus-actuator** | 21 | - | - | ![quarkus-actuator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/quarkus-actuator.json) |
 | **recursive-comments** | 21 | 3.29.4 | ✅ 6/6 | ![recursive-comments](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/recursive-comments.json) |
 | **resource-reader** | 17 | 3.22.1 | - | ![resource-reader](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/resource-reader.json) |
