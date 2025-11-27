@@ -1,6 +1,7 @@
 {
   "quarkus": "3.29.0",
   "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-jakarta-data-polymorphic-json",
   "tests": {
     "total": 2,
     "passed": 2,
