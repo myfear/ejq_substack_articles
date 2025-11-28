@@ -47,6 +47,7 @@ Each folder in this repository matches an article from the Substack and includes
 | **timezone-storage-demo** | 21 | 3.29.4 | - | (Article, Repository) | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
 | **url-shortener** | 21 | 3.23.3 | ✅ 3/3 | (Article, Repository) | ![url-shortener](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/url-shortener.json) |
 | **validator-demo** | 21 | 3.29.4 | ✅ 35/35 | (Article, Repository) | ![validator-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/validator-demo.json) |
+| **wishlist-app** | 21 | 3.30.1 | ❌ 0/1 | ([Article](https://www.the-main-thread.com/p/quarkus-holiday-wishlist-tutorial-hibernate-soft-delete), [Repository](https://github.com/myfear/ejq_substack_articles/tree/main/wishlist-app)) | ![wishlist-app](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/wishlist-app.json) |
 | **zombie-registry** | 21 | 3.29.4 | - | (Article, Repository) | ![zombie-registry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/zombie-registry.json) |
 <!-- BUILD_BADGES_END -->
 
