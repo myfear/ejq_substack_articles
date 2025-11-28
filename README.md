@@ -22,30 +22,31 @@ Each folder in this repository matches an article from the Substack and includes
 ## Build Status
 
 <!-- BUILD_BADGES_START -->
-| Project | Java | Quarkus | Tests | Build Status |
-| :--- | :---: | :---: | :---: | :--- |
-| **age-everywhere** | - | - | - | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
-| **ai-design-critic** | - | - | - | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
-| **ai-detector** | - | - | - | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
-| **ai-document-assistant** | - | - | - | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
-| **ai-dungeon-master** | - | - | - | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
-| **ai-email-simulator** | - | - | - | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
-| **ai-error-handler-pii** | - | - | - | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
-| **ai-memory** | - | - | - | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
-| **[api-adapter-demo](https://www.the-main-thread.com/p/quarkus-stripe-api-versioning-adapter-java-tutorial)** | 21 | 3.30.1 | ✅ 4/4 | ![api-adapter-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/api-adapter-demo.json) |
-| **archunit-bce** | - | - | - | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
-| **banner-studio** | 21 | 3.29.4 | - | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
-| **fleet-insure** | 21 | 3.29.4 | - | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
-| **metadata-stripper** | 21 | 3.29.4 | ✅ 4/4 | ![metadata-stripper](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/metadata-stripper.json) |
-| **[polymorphic-json](https://www.the-main-thread.com/p/quarkus-jakarta-data-polymorphic-json)** | 21 | 3.29.0 | ✅ 2/2 | ![polymorphic-json](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/polymorphic-json.json) |
-| **quarkus-actuator** | 21 | - | - | ![quarkus-actuator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/quarkus-actuator.json) |
-| **recursive-comments** | 21 | 3.29.4 | ✅ 6/6 | ![recursive-comments](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/recursive-comments.json) |
-| **resource-reader** | 17 | 3.22.1 | - | ![resource-reader](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/resource-reader.json) |
-| **stateless-api** | 21 | 3.29.4 | - | ![stateless-api](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/stateless-api.json) |
-| **timezone-storage-demo** | 21 | 3.29.4 | - | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
-| **url-shortener** | 21 | 3.23.3 | ✅ 3/3 | ![url-shortener](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/url-shortener.json) |
-| **validator-demo** | 21 | 3.29.4 | ✅ 35/35 | ![validator-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/validator-demo.json) |
-| **zombie-registry** | 21 | 3.29.4 | - | ![zombie-registry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/zombie-registry.json) |
+| Project | Java | Quarkus | Tests | Links | Build Status |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **age-everywhere** | - | - | - | (Article, Repository) | ![age-everywhere](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/age-everywhere.json) |
+| **ai-design-critic** | - | - | - | (Article, Repository) | ![ai-design-critic](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-design-critic.json) |
+| **ai-detector** | - | - | - | (Article, Repository) | ![ai-detector](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-detector.json) |
+| **ai-document-assistant** | - | - | - | (Article, Repository) | ![ai-document-assistant](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-document-assistant.json) |
+| **ai-dungeon-master** | - | - | - | (Article, Repository) | ![ai-dungeon-master](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-dungeon-master.json) |
+| **ai-email-simulator** | - | - | - | (Article, Repository) | ![ai-email-simulator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-email-simulator.json) |
+| **ai-error-handler-pii** | - | - | - | (Article, Repository) | ![ai-error-handler-pii](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-error-handler-pii.json) |
+| **ai-memory** | - | - | - | (Article, Repository) | ![ai-memory](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/ai-memory.json) |
+| **api-adapter-demo** | 21 | 3.30.1 | ✅ 4/4 | ([Article](https://www.the-main-thread.com/p/quarkus-stripe-api-versioning-adapter-java-tutorial), Repository) | ![api-adapter-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/api-adapter-demo.json) |
+| **archunit-bce** | - | - | - | (Article, Repository) | ![archunit-bce](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/archunit-bce.json) |
+| **banner-studio** | 21 | 3.29.4 | - | (Article, Repository) | ![banner-studio](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/banner-studio.json) |
+| **fleet-insure** | 21 | 3.29.4 | - | (Article, Repository) | ![fleet-insure](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/fleet-insure.json) |
+| **metadata-stripper** | 21 | 3.29.4 | ✅ 4/4 | (Article, Repository) | ![metadata-stripper](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/metadata-stripper.json) |
+| **polymorphic-json** | 21 | 3.29.0 | ✅ 2/2 | ([Article](https://www.the-main-thread.com/p/quarkus-jakarta-data-polymorphic-json), Repository) | ![polymorphic-json](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/polymorphic-json.json) |
+| **quarkus-actuator** | 21 | - | - | (Article, Repository) | ![quarkus-actuator](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/quarkus-actuator.json) |
+| **recursive-comments** | 21 | 3.29.4 | ✅ 6/6 | (Article, Repository) | ![recursive-comments](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/recursive-comments.json) |
+| **resource-reader** | 17 | 3.22.1 | - | (Article, Repository) | ![resource-reader](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/resource-reader.json) |
+| **shapeshifter-api** | 21 | 3.30.1 | ✅ 4/4 | ([Article](https://www.the-main-thread.com/p/quarkus-zero-dto-polymorphic-api-tutorial), [Repository](https://github.com/myfear/ejq_substack_articles/tree/main/shapeshifter-api)) | ![shapeshifter-api](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/shapeshifter-api.json) |
+| **stateless-api** | 21 | 3.29.4 | - | (Article, Repository) | ![stateless-api](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/stateless-api.json) |
+| **timezone-storage-demo** | 21 | 3.29.4 | - | (Article, Repository) | ![timezone-storage-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/timezone-storage-demo.json) |
+| **url-shortener** | 21 | 3.23.3 | ✅ 3/3 | (Article, Repository) | ![url-shortener](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/url-shortener.json) |
+| **validator-demo** | 21 | 3.29.4 | ✅ 35/35 | (Article, Repository) | ![validator-demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/validator-demo.json) |
+| **zombie-registry** | 21 | 3.29.4 | - | (Article, Repository) | ![zombie-registry](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/myfear/ejq_substack_articles/badges/zombie-registry.json) |
 <!-- BUILD_BADGES_END -->
 
 ## 📚 Project Overview
