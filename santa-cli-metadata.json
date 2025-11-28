@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.1",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-java-holiday-cli-tutorial-santa-cli",
+  "projectPath": "santa-cli",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
