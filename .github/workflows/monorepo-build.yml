@@ -215,6 +215,7 @@ jobs:
             "quarkus": "$Q_VER",
             "java": "${{ matrix.project.java }}",
             "substackUrl": "$SUBSTACK_URL",
+            "projectPath": "${{ matrix.project.path }}",
             "tests": {
               "total": $TESTS_TOTAL,
               "passed": $TESTS_PASSED,
@@ -312,9 +313,9 @@ jobs:
         run: |
           cd main-repo
           
-          # 1. Create the 5-Column Header
-          echo "| Project | Java | Quarkus | Tests | Build Status |" > ../badge_table.md
-          echo "| :--- | :---: | :---: | :---: | :--- |" >> ../badge_table.md
+          # 1. Create the 6-Column Header
+          echo "| Project | Java | Quarkus | Tests | Links | Build Status |" > ../badge_table.md
+          echo "| :--- | :---: | :---: | :---: | :---: | :--- |" >> ../badge_table.md
           
           # Iterate over JSON files in the badges branch to build rows
           # We use the badges branch as the source of truth for what projects exist
@@ -328,7 +329,7 @@ jobs:
             # remove .json extension
             PROJECT_NAME="${file%.json}"
 
-            # Read Version, Java version, test results, and substack URL from sidecar JSON file
+            # Read Version, Java version, test results, substack URL, and project path from sidecar JSON file
             METADATA_FILE="${PROJECT_NAME}-metadata.json"
             if [ -f "$METADATA_FILE" ]; then
               # Use jq if available, otherwise use grep/sed fallback
@@ -336,6 +337,7 @@ jobs:
                 Q_VERSION=$(jq -r '.quarkus // "-"' "$METADATA_FILE")
                 JAVA_VERSION=$(jq -r '.java // "-"' "$METADATA_FILE")
                 SUBSTACK_URL=$(jq -r '.substackUrl // ""' "$METADATA_FILE")
+                PROJECT_PATH=$(jq -r '.projectPath // ""' "$METADATA_FILE")
                 TESTS_TOTAL=$(jq -r '.tests.total // 0' "$METADATA_FILE")
                 TESTS_PASSED=$(jq -r '.tests.passed // 0' "$METADATA_FILE")
                 TESTS_FAILED=$(jq -r '.tests.failed // 0' "$METADATA_FILE")
@@ -346,6 +348,7 @@ jobs:
                 Q_VERSION=$(grep -oP '(?<="quarkus":\s*")[^"]*' "$METADATA_FILE" || echo "-")
                 JAVA_VERSION=$(grep -oP '(?<="java":\s*")[^"]*' "$METADATA_FILE" || echo "-")
                 SUBSTACK_URL=$(grep -oP '(?<="substackUrl":\s*")[^"]*' "$METADATA_FILE" || echo "")
+                PROJECT_PATH=$(grep -oP '(?<="projectPath":\s*")[^"]*' "$METADATA_FILE" || echo "")
                 TESTS_TOTAL=$(grep -oP '(?<="total":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
                 TESTS_PASSED=$(grep -oP '(?<="passed":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
                 TESTS_FAILED=$(grep -oP '(?<="failed":\s*)[0-9]+' "$METADATA_FILE" | head -1 || echo "0")
@@ -354,11 +357,13 @@ jobs:
                 if [ -z "$Q_VERSION" ] || [ "$Q_VERSION" == "null" ]; then Q_VERSION="-"; fi
                 if [ -z "$JAVA_VERSION" ] || [ "$JAVA_VERSION" == "null" ]; then JAVA_VERSION="-"; fi
                 if [ -z "$SUBSTACK_URL" ] || [ "$SUBSTACK_URL" == "null" ]; then SUBSTACK_URL=""; fi
+                if [ -z "$PROJECT_PATH" ] || [ "$PROJECT_PATH" == "null" ]; then PROJECT_PATH=""; fi
               fi
             else
               Q_VERSION="-"
               JAVA_VERSION="-"
               SUBSTACK_URL=""
+              PROJECT_PATH=""
               TESTS_TOTAL=0
               TESTS_PASSED=0
               TESTS_FAILED=0
@@ -390,15 +395,29 @@ jobs:
             # Note: We must use the raw.githubusercontent URL for the JSON endpoint
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
-            # Format project name with link if substack URL exists
-            if [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ]; then
-              PROJECT_DISPLAY="**[$PROJECT_NAME]($SUBSTACK_URL)**"
+            # Format project name without link
+            PROJECT_DISPLAY="**$PROJECT_NAME**"
+            
+            # Format links column: (Article, Repository)
+            if [ -n "$PROJECT_PATH" ] && [ "$PROJECT_PATH" != "" ]; then
+              REPO_URL="https://github.com/${{ github.repository }}/tree/main/$PROJECT_PATH"
             else
-              PROJECT_DISPLAY="**$PROJECT_NAME**"
+              REPO_URL=""
+            fi
+            
+            # Build links string
+            if [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ] && [ -n "$REPO_URL" ] && [ "$REPO_URL" != "" ]; then
+              LINKS_DISPLAY="([Article]($SUBSTACK_URL), [Repository]($REPO_URL))"
+            elif [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ]; then
+              LINKS_DISPLAY="([Article]($SUBSTACK_URL), Repository)"
+            elif [ -n "$REPO_URL" ] && [ "$REPO_URL" != "" ]; then
+              LINKS_DISPLAY="(Article, [Repository]($REPO_URL))"
+            else
+              LINKS_DISPLAY="(Article, Repository)"
             fi
             
             # Append row to table
-            echo "| $PROJECT_DISPLAY | $JAVA_VERSION | $Q_VERSION | $TEST_DISPLAY | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
+            echo "| $PROJECT_DISPLAY | $JAVA_VERSION | $Q_VERSION | $TEST_DISPLAY | $LINKS_DISPLAY | ![$PROJECT_NAME]($SHIELD_URL) |" >> ../badge_table.md
           done
           
           cd ../main-repo
