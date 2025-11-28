@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santa's Wishlist Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 100%);
+            min-height: 100vh;
+            padding: 0;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1538 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            border-bottom: 2px solid #e8ecef;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .card-header h3 {
+            font-size: 1.3em;
+            color: #c41e3a;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        select {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c41e3a 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #a01a2e 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #2c3e50;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e0a800 0%, #e68900 100%);
+        }
+
+        .wishlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #28a745;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .wishlist-item strong {
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .wish-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-left: 4px solid #17a2b8;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .wish-item:hover {
+            background: #f8f9fa;
+            border-left-color: #c41e3a;
+        }
+
+        .wish-info {
+            flex-grow: 1;
+        }
+
+        .wish-info strong {
+            display: block;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+
+        .wish-info em {
+            color: #6c757d;
+            font-size: 0.9em;
+            font-style: normal;
+        }
+
+        .wish-info .wishlist-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-top: 6px;
+        }
+
+        .wish-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .wish-actions form {
+            display: inline;
+        }
+
+        .archived {
+            opacity: 0.6;
+            background: #f8f9fa !important;
+            border-left-color: #6c757d !important;
+        }
+
+        .archived .wish-info strong {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #c41e3a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .priority-high {
+            background: #fee;
+            color: #c41e3a;
+        }
+
+        .priority-medium {
+            background: #fff4e6;
+            color: #ff9800;
+        }
+
+        .priority-low {
+            background: #e8f5e9;
+            color: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wish-item,
+            .wishlist-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .wish-actions {
+                width: 100%;
+            }
+
+            .wish-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-content">
+            <h1>🎅 Santa's Wishlist Management System 🎄</h1>
+            <p class="subtitle">Professional Holiday Wish Management</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Create New Wishlist -->
+        <div class="card">
+            <div class="card-header">
+                <h3>📝 Create New Wishlist</h3>
+            </div>
+            <form method="POST" action="/ui/wishlist">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ownerName">Owner Name</label>
+                        <input type="text" id="ownerName" name="ownerName" 
+                               placeholder="Enter owner's name" required>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">✨ Create Wishlist</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add New Wish -->
+        <div class="card">
+            <div class="card-header">
+                <h3>🎁 Add New Wish</h3>
+            </div>
+            <form method="POST" action="/ui/wish">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="description">Wish Description</label>
+                        <input type="text" id="description" name="description" 
+                               placeholder="What do you wish for?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="priority">Priority Level</label>
+                        <select id="priority" name="priority">
+                            <option value="high">🔴 High Priority</option>
+                            <option value="medium" selected>🟡 Medium Priority</option>
+                            <option value="low">🟢 Low Priority</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wishlistId">Assign to Wishlist</label>
+                        <select id="wishlistId" name="wishlistId" required>
+                            {#if wishlists.size > 0}
+                                {#for wishlist in wishlists}
+                                <option value="{wishlist.id}">{wishlist.ownerName}</option>
+                                {/for}
+                            {#else}
+                                <option value="" disabled>No wishlists available</option>
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">➕ Add Wish</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Active Wishlists -->
+        <h2 class="section-title">
+            <span>📋</span>
+            <span>Active Wishlists</span>
+        </h2>
+        {#if wishlists.size > 0}
+            {#for wishlist in wishlists}
+            <div class="wishlist-item">
+                <strong>👤 {wishlist.ownerName}</strong>
+                <form method="POST" action="/ui/wishlist/{wishlist.id}/delete">
+                    <button type="submit" class="btn-danger">🗑️ Delete Wishlist</button>
+                </form>
+            </div>
+            {/for}
+        {#else}
+            <div class="card">
+                <div class="empty-state">No active wishlists yet. Create one above!</div>
+            </div>
+        {/if}
+
+        <!-- Active Wishes -->
+        <h2 class="section-title">
+            <span>⭐</span>
+            <span>Active Wishes</span>
+        </h2>
+        {#if active.size > 0}
+            {#for wish in active}
+            <div class="wish-item">
+                <div class="wish-info">
+                    <strong>{wish.description}</strong>
+                    <em>
+                        Priority: 
+                        <span class="priority-badge priority-{wish.priority}">
+                            {wish.priority}
+                        </span>
+                    </em>
+                    {#if wish.wishlist}
+                    <span class="wishlist-badge">📋 {wish.wishlist.ownerName}</span>
+                    {/if}
+                </div>
+                <div class="wish-actions">
+                    <form method="POST" action="/ui/wish/{wish.id}/delete">
+                        <button type="submit" class="btn-warning">📦 Archive Wish</button>
+                    </form>
+                </div>
+            </div>
+            {/for}
+        {#else}
+            <div class="card">
+                <div class="empty-state">No active wishes. Add one above!</div>
+            </div>
+        {/if}
+
+        <!-- Archived Wishes -->
+        <h2 class="section-title">
+            <span>🎅</span>
+            <span>Santa's Storage (Archived Wishes)</span>
+        </h2>
+        {#if archived.size > 0}
+            {#for wish in archived}
+            <div class="wish-item archived">
+                <div class="wish-info">
+                    <strong>{wish.description}</strong>
+                    <em>
+                        Priority: 
+                        <span class="priority-badge priority-{wish.priority}">
+                            {wish.priority}
+                        </span>
+                    </em>
+                    {#if wish.wishlist}
+                    <span class="wishlist-badge">📋 {wish.wishlist.ownerName}</span>
+                    {/if}
+                </div>
+                <div class="wish-actions">
+                    <form method="POST" action="/ui/wish/{wish.id}/purge">
+                        <button type="submit" class="btn-danger">🗑️ Hard Delete</button>
+                    </form>
+                </div>
+            </div>
+            {/for}
+        {#else}
+            <div class="card">
+                <div class="empty-state">Santa's storage is empty. No archived wishes.</div>
+            </div>
+        {/if}
+
+    </div>
+
+</body>
+
+</html>
