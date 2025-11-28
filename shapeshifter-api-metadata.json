@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.1",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-zero-dto-polymorphic-api-tutorial",
+  "projectPath": "shapeshifter-api",
+  "tests": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
