@@ -1,0 +1,71 @@
+<p>Hibernate Panache simplifies database persistence in Quarkus applications by providing an active record pattern and repository pattern in one unified API.</p>
+
+<p><strong>What is Panache?</strong></p>
+
+<p>Panache is Quarkus's approach to making Hibernate ORM more productive. It offers two programming models:</p>
+<ul>
+<li><p><strong>Active Record Pattern:</strong> Entities extend <code>PanacheEntity</code> and include query methods</p></li>
+<li><p><strong>Repository Pattern:</strong> Separate repository interfaces extend <code>PanacheRepository</code></p></li>
+</ul>
+
+<p><strong>Defining Entities</strong></p>
+
+<p>With Panache, entity definitions are concise and powerful:</p>
+
+<pre><code><code>@Entity
+public class Product extends PanacheEntity {
+    
+    public String name;
+    public BigDecimal price;
+    public String category;
+    
+    public static List&lt;Product&gt; findByCategory(String category) {
+        return find("category", category).list();
+    }
+    
+    public static Product findByName(String name) {
+        return find("name", name).firstResult();
+    }
+}</code></code></pre>
+
+<p><strong>Query Methods</strong></p>
+
+<p>Panache provides several ways to query data:</p>
+
+<pre><code><code>// Find all
+List&lt;Product&gt; all = Product.listAll();
+
+// Find by field
+Product product = Product.find("name", "Laptop").firstResult();
+
+// Find with conditions
+List&lt;Product&gt; expensive = Product.find("price > ?1", 1000).list();
+
+// Count
+long count = Product.count("category", "Electronics");
+</code></code></pre>
+
+<p><strong>Transactions</strong></p>
+
+<p>Panache methods are transactional by default. Use <code>@Transactional</code> for custom transaction boundaries:</p>
+
+<pre><code><code>@Transactional
+public void updateProductPrice(Long id, BigDecimal newPrice) {
+    Product product = Product.findById(id);
+    product.price = newPrice;
+    // No need to call persist() - Panache handles it
+}</code></code></pre>
+
+<p><strong>Benefits of Panache</strong></p>
+
+<p>Panache offers several advantages:</p>
+<ul>
+<li><p>Less boilerplate code</p></li>
+<li><p>Type-safe queries</p></li>
+<li><p>Automatic transaction management</p></li>
+<li><p>Built-in pagination support</p></li>
+<li><p>Simplified entity definitions</p></li>
+</ul>
+
+<p>With Panache, you can focus on your business logic rather than writing repetitive persistence code.</p>
+

@@ -1,0 +1,68 @@
+<p>Building REST APIs is a fundamental skill for modern Java developers. With Jakarta EE and Quarkus, creating robust RESTful services has never been easier.</p>
+
+<p><strong>Understanding REST Principles</strong></p>
+
+<p>REST (Representational State Transfer) is an architectural style for designing networked applications. Key principles include:</p>
+<ul>
+<li><p><strong>Stateless:</strong> Each request contains all information needed to process it</p></li>
+<li><p><strong>Resource-Based:</strong> URLs represent resources, not actions</p></li>
+<li><p><strong>HTTP Methods:</strong> Use GET, POST, PUT, DELETE to perform operations</p></li>
+<li><p><strong>JSON:</strong> Use JSON for data exchange</p></li>
+</ul>
+
+<p><strong>Creating Your First Endpoint</strong></p>
+
+<p>In Quarkus, creating a REST endpoint is straightforward. Here's a simple example:</p>
+
+<pre><code><code>@Path("/api/users")
+@Produces(MediaType.APPLICATION_JSON)
+public class UserResource {
+
+    @GET
+    public List&lt;User&gt; getAllUsers() {
+        return User.listAll();
+    }
+
+    @GET
+    @Path("/{id}")
+    public User getUser(@PathParam("id") Long id) {
+        return User.findById(id);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createUser(User user) {
+        user.persist();
+        return Response.status(201).entity(user).build();
+    }
+}</code></code></pre>
+
+<p><strong>Handling Errors</strong></p>
+
+<p>Proper error handling is crucial for production APIs. Use exception mappers to handle errors gracefully:</p>
+
+<pre><code><code>@Provider
+public class NotFoundExceptionMapper 
+    implements ExceptionMapper&lt;NotFoundException&gt; {
+    
+    @Override
+    public Response toResponse(NotFoundException e) {
+        return Response.status(404)
+            .entity(Map.of("error", e.getMessage()))
+            .build();
+    }
+}</code></code></pre>
+
+<p><strong>Best Practices</strong></p>
+
+<p>When building REST APIs, follow these best practices:</p>
+<ul>
+<li><p>Use appropriate HTTP status codes</p></li>
+<li><p>Validate input data</p></li>
+<li><p>Implement pagination for list endpoints</p></li>
+<li><p>Use DTOs to separate API contracts from entities</p></li>
+<li><p>Document your API with OpenAPI</p></li>
+</ul>
+
+<p>With these principles in mind, you can build robust and maintainable REST APIs that serve your application's needs effectively.</p>
+

@@ -1,0 +1,91 @@
+<p>Testing is crucial for maintaining code quality and ensuring your application works correctly. Quarkus provides excellent testing support with JUnit 5 and REST Assured.</p>
+
+<p><strong>Unit Testing</strong></p>
+
+<p>Quarkus makes unit testing straightforward. Here's an example of testing a service:</p>
+
+<pre><code><code>@QuarkusTest
+class UserServiceTest {
+
+    @Inject
+    UserService userService;
+
+    @Test
+    void testCreateUser() {
+        User user = new User();
+        user.name = "John Doe";
+        user.email = "john@example.com";
+        
+        userService.create(user);
+        
+        assertNotNull(user.id);
+        assertEquals("John Doe", user.name);
+    }
+}</code></code></pre>
+
+<p><strong>Integration Testing</strong></p>
+
+<p>For integration tests, use <code>@QuarkusIntegrationTest</code> to test the full application:</p>
+
+<pre><code><code>@QuarkusIntegrationTest
+class UserResourceIT {
+
+    @Test
+    void testGetUserEndpoint() {
+        given()
+          .when().get("/api/users/1")
+          .then()
+             .statusCode(200)
+             .body("name", is("John Doe"));
+    }
+}</code></code></pre>
+
+<p><strong>Testing with Testcontainers</strong></p>
+
+<p>Quarkus Dev Services automatically provides test databases, but you can also use Testcontainers for more control:</p>
+
+<pre><code><code>@QuarkusTest
+@Testcontainers
+class DatabaseTest {
+
+    @Container
+    static PostgreSQLContainer&lt;?&gt; postgres = 
+        new PostgreSQLContainer&lt;&gt;("postgres:15")
+            .withDatabaseName("testdb");
+
+    @Test
+    void testDatabaseConnection() {
+        // Your test code here
+    }
+}</code></code></pre>
+
+<p><strong>Mocking Dependencies</strong></p>
+
+<p>Use CDI alternatives to mock dependencies in tests:</p>
+
+<pre><code><code>@QuarkusTest
+class ServiceTest {
+
+    @InjectMock
+    ExternalService externalService;
+
+    @Test
+    void testWithMock() {
+        when(externalService.call()).thenReturn("mocked");
+        // Your test code
+    }
+}</code></code></pre>
+
+<p><strong>Best Practices</strong></p>
+
+<p>Follow these practices for effective testing:</p>
+<ul>
+<li><p>Write tests for all business logic</p></li>
+<li><p>Use meaningful test names that describe what is being tested</p></li>
+<li><p>Keep tests independent and isolated</p></li>
+<li><p>Test both success and failure scenarios</p></li>
+<li><p>Use test data builders for complex objects</p></li>
+</ul>
+
+<p>With Quarkus's testing support, you can write comprehensive tests that give you confidence in your application's correctness.</p>
+

@@ -1,0 +1,41 @@
+<p>Quarkus is a modern Java framework designed for cloud-native applications. It offers fast startup times, low memory footprint, and excellent developer experience.</p>
+
+<p><strong>Why Choose Quarkus?</strong></p>
+
+<p>Quarkus brings several advantages to Java development:</p>
+<ul>
+<li><p><strong>Fast Startup:</strong> Applications start in milliseconds, making them perfect for serverless and containerized environments.</p></li>
+<li><p><strong>Low Memory Usage:</strong> Optimized for minimal memory consumption, ideal for microservices.</p></li>
+<li><p><strong>Developer Joy:</strong> Hot reload, unified configuration, and excellent tooling make development a pleasure.</p></li>
+</ul>
+
+<p><strong>Getting Started</strong></p>
+
+<p>To create a new Quarkus project, use the Quarkus CLI:</p>
+
+<pre><code><code>quarkus create app com.example:my-app \
+    --extensions=rest-jackson,hibernate-orm-panache,jdbc-postgresql
+cd my-app</code></code></pre>
+
+<p>This creates a new project with REST API support, Hibernate ORM with Panache, and PostgreSQL database connectivity.</p>
+
+<p><strong>Running the Application</strong></p>
+
+<p>Start the application in development mode:</p>
+
+<pre><code><code>./mvnw quarkus:dev</code></code></pre>
+
+<p>The application will be available at <code>http://localhost:8080</code>. Any changes you make to the code will be automatically reloaded thanks to Quarkus's live coding feature.</p>
+
+<p><strong>Next Steps</strong></p>
+
+<p>Now that you have a basic Quarkus application running, you can:</p>
+<ul>
+<li><p>Add more extensions for your specific needs</p></li>
+<li><p>Create REST endpoints to expose your API</p></li>
+<li><p>Define entities and repositories using Panache</p></li>
+<li><p>Build and deploy your application</p></li>
+</ul>
+
+<p>Quarkus makes it easy to build modern, efficient Java applications that are ready for the cloud.</p>
+
