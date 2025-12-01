@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL - Upcoming Games | AI Predictions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #0e0e0e;
+            min-height: 100vh;
+            padding: 0;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #1a1a1a;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #E31837;
+        }
+
+        header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        .game-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            padding: 16px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .game-card:hover {
+            border-color: #E31837;
+            background: #222;
+        }
+
+        .game-date {
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .team {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .team-name {
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .team-abbr {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .vs {
+            font-size: 0.75rem;
+            color: #666;
+            margin: 0 12px;
+            text-transform: uppercase;
+        }
+
+        .prediction {
+            background: #0e0e0e;
+            border: 1px solid #2a2a2a;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+
+        .prediction-header {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .prediction-result {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .prediction-probability {
+            font-size: 0.8125rem;
+            color: #E31837;
+            font-weight: 600;
+        }
+
+        .probability-bar {
+            width: 100%;
+            height: 4px;
+            background: #2a2a2a;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: #E31837;
+            transition: width 0.5s ease;
+            border-radius: 2px;
+        }
+
+        .no-games {
+            text-align: center;
+            color: #999;
+            font-size: 1rem;
+            padding: 60px 40px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+        }
+
+        .no-prediction {
+            color: #666;
+            font-size: 0.8125rem;
+            text-align: center;
+            padding: 12px;
+            background: #0e0e0e;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .espn-link {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            padding: 10px;
+            color: #E31837;
+            text-decoration: none;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border-top: 1px solid #2a2a2a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s ease;
+        }
+
+        .espn-link:hover {
+            color: #ff3d5a;
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 20px 0;
+        }
+
+        .pagination-button {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pagination-button:hover:not(:disabled) {
+            background: #222;
+            border-color: #E31837;
+            color: #E31837;
+        }
+
+        .pagination-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: #999;
+            font-size: 0.875rem;
+            padding: 0 16px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .page-number {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            min-width: 40px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .page-number:hover {
+            background: #222;
+            border-color: #E31837;
+            color: #E31837;
+        }
+
+        .page-number.active {
+            background: #E31837;
+            border-color: #E31837;
+            color: #fff;
+        }
+
+        .page-number.active:hover {
+            background: #E31837;
+            color: #fff;
+        }
+
+        .pagination-button-link {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .pagination-button-link:hover:not(.disabled) {
+            background: #222;
+            border-color: #E31837;
+            color: #E31837;
+        }
+
+        .pagination-button-link.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .ellipsis {
+            color: #999;
+            padding: 0 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div>
+                <h1>NFL</h1>
+                <p class="subtitle">Upcoming Games - AI Predictions</p>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+
+        {#if games.isEmpty()}
+            <div class="no-games">
+                <p>No upcoming games found.</p>
+            </div>
+        {#else}
+            {#if totalPages > 1}
+            <div class="pagination">
+                {#if currentPage > 0}
+                    <a href="?page={prevPage}" class="pagination-button-link">Previous</a>
+                {#else}
+                    <span class="pagination-button-link disabled">Previous</span>
+                {/if}
+                <div class="page-numbers">
+                    {#if showFirstPage}
+                        <a href="?page=0" class="page-number">1</a>
+                        {#if showFirstEllipsis}
+                            <span class="ellipsis">...</span>
+                        {/if}
+                    {/if}
+                    {#for pageInfo in pageInfos}
+                        {#if pageInfo.pageIndex == currentPage}
+                            <span class="page-number active">{pageInfo.displayNumber}</span>
+                        {#else}
+                            <a href="?page={pageInfo.pageIndex}" class="page-number">{pageInfo.displayNumber}</a>
+                        {/if}
+                    {/for}
+                    {#if showLastPage}
+                        {#if showLastEllipsis}
+                            <span class="ellipsis">...</span>
+                        {/if}
+                        <a href="?page={lastPageIndex}" class="page-number">{totalPages}</a>
+                    {/if}
+                </div>
+                <div class="pagination-info">{paginationRange}</div>
+                {#if currentPage < lastPageIndex}
+                    <a href="?page={nextPage}" class="pagination-button-link">Next</a>
+                {#else}
+                    <span class="pagination-button-link disabled">Next</span>
+                {/if}
+            </div>
+            {/if}
+            <div class="games-grid" id="games-grid">
+                {#for game in games}
+                    <div class="game-card">
+                        <input type="hidden" class="hidden" name="espn-game-id" value="{game.espnId}">
+                        <div class="game-date">
+                            {game.formattedGameDate}
+                        </div>
+
+                        <div class="teams">
+                            <div class="team">
+                                <div class="team-abbr">{game.awayTeam.abbreviation}</div>
+                                <div class="team-name">{game.awayTeam.name}</div>
+                            </div>
+                            <div class="vs">@</div>
+                            <div class="team">
+                                <div class="team-abbr">{game.homeTeam.abbreviation}</div>
+                                <div class="team-name">{game.homeTeam.name}</div>
+                            </div>
+                        </div>
+
+                        {#if game.predictedHomeWinProbability != null}
+                            <div class="prediction">
+                                <div class="prediction-header">Prediction</div>
+                                <div class="prediction-result">
+                                    {#if game.predictedHomeWin}
+                                        {game.homeTeam.name} wins
+                                    {#else}
+                                        {game.awayTeam.name} wins
+                                    {/if}
+                                </div>
+                                <div class="prediction-probability">
+                                    {game.predictedWinnerProbabilityPercent}% confidence
+                                </div>
+                                <div class="probability-bar">
+                                    <div class="probability-fill" style="width: {game.predictedWinnerProbabilityPercentForWidth}%"></div>
+                                </div>
+                            </div>
+                        {#else}
+                            <div class="no-prediction">
+                                Prediction not available
+                            </div>
+                        {/if}
+                        <a href="https://www.espn.co.uk/nfl/game/_/gameId/{game.espnId}/" target="_blank" rel="noopener noreferrer" class="espn-link">
+                            Details on ESPN
+                        </a>
+                    </div>
+                {/for}
+            </div>
+        {/if}
+    </div>
+</body>
+</html>
+
