@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.1",
+  "java": "21",
+  "substackUrl": "",
+  "projectPath": "nfl-game-predictor",
+  "tests": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
