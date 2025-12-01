@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//OPENHTMLTOPDF//DOC XHTML Character Entities Only 1.0//EN" "">
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        @page {
+
+            margin: 0px;
+            padding: 0px;
+        }
+
+        @font-face {
+            font-family: 'Merry Christmas Flake';
+            font-style: normal;
+            font-weight: 400;
+            src: url('/fonts/MerryChristmasFlake.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Merry Christmas Star';
+            font-style: normal;
+            font-weight: 300;
+            src: url('/fonts/MerryChristmasStar.ttf') format('truetype');
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, "Segoe UI", sans-serif;
+            background-image: url("/snow.png");
+            color: red;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            padding: 20mm;
+            border-radius: 0;
+            background: rgba(255, 255, 255, 0.12);
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .title {
+            font-family: "Merry Christmas Flake", sans-serif;
+            font-size: 95px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            color: red;
+        }
+
+        .message {
+            font-size: 30px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            color: black;
+        }
+
+        .recipient {
+            font-size: 35px;
+            margin-bottom: 12px;
+            color: red;
+        }
+
+        .sender {
+            font-size: 44px;
+            margin-top: 20px;
+            color: red;
+        }
+
+        .year {
+            font-size: 50px;
+            color: red;
+            margin-top: 10px;
+
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="card">
+        <div class="title">Merry Christmas!</div>
+
+        <div class="recipient">Dear {card.recipient},</div>
+
+        <div class="message">{card.message}</div>
+
+        <div class="sender">Warm wishes,<br />{card.sender}<br /></div>
+        
+        <div class="year">{card.year}</div>
+    </div>
+
+</body>
+
+</html>
