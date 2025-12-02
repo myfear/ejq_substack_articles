@@ -90,9 +90,16 @@ jobs:
               
               # Normalize 1.8 -> 8
               if [ "$JAVA_VERSION" == "1.8" ]; then JAVA_VERSION="8"; fi
+              
+              # --- Check for protobuf-maven-plugin ---
+              if grep -q "<artifactId>protobuf-maven-plugin</artifactId>" "$dir/pom.xml"; then
+                NEEDS_PROTOC="true"
+              else
+                NEEDS_PROTOC="false"
+              fi
 
-              echo "Found: $dir (Java $JAVA_VERSION)" >&2
-              echo "{\"path\": \"$dir\", \"java\": \"$JAVA_VERSION\"}" >> matrix_data.json
+              echo "Found: $dir (Java $JAVA_VERSION, protoc: $NEEDS_PROTOC)" >&2
+              echo "{\"path\": \"$dir\", \"java\": \"$JAVA_VERSION\", \"protoc\": $NEEDS_PROTOC}" >> matrix_data.json
             fi
           done
 
@@ -129,6 +136,12 @@ jobs:
         with:
           java-version: ${{ matrix.project.java }}
           distribution: 'temurin'
+      
+      - name: Install Protoc
+        if: matrix.project.protoc == true
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Cache Maven dependencies
         uses: actions/cache@v4
