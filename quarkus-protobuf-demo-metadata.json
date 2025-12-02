@@ -1,11 +1,11 @@
 {
   "quarkus": "3.30.1",
   "java": "21",
-  "substackUrl": "https://www.the-main-thread.com/p/protobuf-quarkus-rest-api-tutorial-java",
+  "substackUrl": "",
   "projectPath": "quarkus-protobuf-demo",
   "tests": {
-    "total": 0,
-    "passed": 0,
+    "total": 3,
+    "passed": 3,
     "failed": 0,
     "errors": 0,
     "skipped": 0
