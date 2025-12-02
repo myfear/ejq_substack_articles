@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.example;
+
+option java_multiple_files = true;
+option java_package = "com.example.proto";
+option java_outer_classname = "UserProto";
+
+message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  bool is_active = 4;
+  int64 created_at = 5;
+}
+
+message UserList {
+  repeated User users = 1;
+  int32 total_count = 2;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
