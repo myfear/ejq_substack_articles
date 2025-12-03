@@ -6,7 +6,7 @@
     <title>Christmas Greeting Card</title>
     <style type="text/css">
         @page {
-            size: 1000px 600px;
+            size: 1200px 800px;
             margin: 0;
         }
 
@@ -25,8 +25,8 @@
         }
 
         .card {
-            width: 900px;
-            height: 600px;
+            width: 1000px;
+            height: 700px;
             background: #8B0000;
             border-radius: 20px;
             position: relative;
@@ -61,7 +61,7 @@
             top: 50%;
             left: 50%;
             margin-left: -405px;
-            margin-top: -120px;
+            margin-top: -270px;
             z-index: 10;
             text-align: center;
             padding: 40px;
@@ -152,7 +152,9 @@
                 <!-- Main content -->
                 <div class="content">
                     <h1><span class="sparkle">✨</span> Merry Christmas <span class="sparkle">✨</span></h1>
-                    <p>Wishing you joy, peace, and happiness<br/>this holiday season!</p>
+                    <p>{card.recipient}</p>
+                    <p>{card.message}</p>
+                    <p>— {card.sender}, {card.year}</p>
                 </div>
     </div>
 </body>
