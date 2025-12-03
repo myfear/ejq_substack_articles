@@ -1,7 +1,7 @@
 {
   "quarkus": "3.30.1",
   "java": "21",
-  "substackUrl": "",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-java-christmas-card-generator-renarde-tutorial",
   "projectPath": "christmas-card",
   "tests": {
     "total": 0,
