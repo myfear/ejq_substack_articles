@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tenant Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #333; 
+            margin-bottom: 0.5rem; 
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        .tenant-badge {
+            display: inline-block;
+            background: #e8e8e8;
+            color: #333;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        h2 {
+            color: #333;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .data-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .data-item {
+            background: #fafafa;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-left: 2px solid #d0d0d0;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d0d0d0;
+            font-size: 1rem;
+            background: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: #999;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #666;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        button:hover { background: #555; }
+        .info { 
+            color: #666; 
+            font-size: 0.9rem; 
+            margin-top: 1.5rem; 
+        }
+        .info strong {
+            color: #333;
+            font-weight: 600;
+        }
+        .urls {
+            background: #fafafa;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multi-Tenant Dashboard</h1>
+        <div class="tenant-badge" id="tenantBadge">Loading...</div>
+        
+        <h2>Tenant Data</h2>
+        <ul class="data-list" id="dataList"></ul>
+        
+        <div class="input-group">
+            <input type="text" id="newItem" placeholder="Add new item...">
+            <button onclick="addItem()">Add</button>
+        </div>
+        
+        <div class="info">
+            <strong>Try these tenants:</strong>
+            <div class="urls">
+                • http://acme.127-0-0-1.nip.io:8080<br>
+                • http://techstart.127-0-0-1.nip.io:8080<br>
+                • http://quantum.127-0-0-1.nip.io:8080<br>
+                • http://yourname.127-0-0-1.nip.io:8080 (creates new tenant!)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTenant = '';
+
+        async function loadData() {
+            try {
+                const res = await fetch('/api/data');
+                const data = await res.json();
+                currentTenant = data.tenant;
+                
+                document.getElementById('tenantBadge').textContent = `Tenant: ${currentTenant}`;
+                
+                const list = document.getElementById('dataList');
+                list.innerHTML = data.data.map(item => 
+                    `<li class="data-item">${item}</li>`
+                ).join('');
+            } catch (err) {
+                console.error('Error loading data:', err);
+            }
+        }
+
+        async function addItem() {
+            const input = document.getElementById('newItem');
+            const item = input.value.trim();
+            
+            if (!item) return;
+            
+            try {
+                await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item })
+                });
+                
+                input.value = '';
+                loadData();
+            } catch (err) {
+                console.error('Error adding item:', err);
+            }
+        }
+
+        document.getElementById('newItem').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addItem();
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
