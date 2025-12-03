@@ -1,0 +1,17 @@
+:root {
+    --app-max-width: 900px;
+}
+
+body {
+    margin: 0;
+}
+
+.tasks-view-root {
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    padding: var(--lumo-space-m);
+}
+
+.tasks-view-root vaadin-grid {
+    height: 400px;
+}
