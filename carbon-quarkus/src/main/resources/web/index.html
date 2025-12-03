@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Quarkus + Carbon Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {#bundle /}
+</head>
+
+<body class="cds-theme-zone-g10">
+    <cds-header aria-label="Quarkus Carbon Demo">
+        <cds-header-name href="#" prefix="Quarkus">
+            Carbon Demo
+        </cds-header-name>
+    </cds-header>    
+
+    <main class="app-shell">
+        <section>
+            <cds-heading>Projects</cds-heading>
+            <p>Sample projects served from the Quarkus backend.</p>
+        </section>
+
+        <section id="projects-section">
+            <cds-inline-loading id="projects-loading" description="Loading projects" status="active">
+            </cds-inline-loading>
+
+            <cds-table class="projects-table">
+                <cds-table-header-title slot="title">
+                    Project overview
+                </cds-table-header-title>
+                <cds-table-header-description slot="description">
+                    Data from /api/projects
+                </cds-table-header-description>
+
+                <cds-table-head>
+                    <cds-table-header-row>
+                        <cds-table-header-cell>ID</cds-table-header-cell>
+                        <cds-table-header-cell>Name</cds-table-header-cell>
+                        <cds-table-header-cell>Owner</cds-table-header-cell>
+                        <cds-table-header-cell>Status</cds-table-header-cell>
+                    </cds-table-header-row>
+                </cds-table-head>
+
+                <cds-table-body>
+                    <!-- Rows injected by JavaScript -->
+                </cds-table-body>
+            </cds-table>
+        </section>
+    </main>
+
+    <!-- Template for rows populated from /api/projects -->
+    <template id="template--project-row">
+        <cds-table-row>
+            <cds-table-cell key="id"></cds-table-cell>
+            <cds-table-cell key="name"></cds-table-cell>
+            <cds-table-cell key="owner"></cds-table-cell>
+            <cds-table-cell key="status"></cds-table-cell>
+        </cds-table-row>
+    </template>
+</body>
+
+</html>
