@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quarkus QR Code Designer</title>
+</head>
+
+<body>
+
+    <h1>QR Code Designer</h1>
+
+    <form action=”/designer” method=”post”>
+
+        <label>URL/Text:</label>
+        <input name=”text” value=”{text}”><br>
+
+        <label>Size:</label>
+        <input name=”size” type=”number” value=”{size ?: 400}”><br>
+
+        <label>Pattern:</label>
+        <select name=”patternType”>
+            <option>solid</option>
+            <option>gradient</option>
+            <option>radial</option>
+            <option>checker</option>
+            <option>wave</option>
+        </select><br>
+
+        <label>Shape:</label>
+        <select name=”shapeType”>
+            <option>square</option>
+            <option>dots</option>
+            <option>rounded</option>
+            <option>diamond</option>
+            <option>hex</option>
+            <option>heart</option>
+        </select><br>
+
+        <label>Finder Style:</label>
+        <select name=”finderType”>
+            <option>square</option>
+            <option>rounded</option>
+            <option>circle</option>
+        </select><br>
+
+        <label>Primary Color:</label>
+        <input name=”colorPrimary” value=”#000000”><br>
+
+        <label>Secondary Color:</label>
+        <input name=”colorSecondary” value=”#ffffff”><br>
+
+        <label>Transparent Background:</label>
+        <input type=”checkbox” name=”transparentBackground”><br>
+
+        <label>Logo Path:</label>
+        <input name=”logoPath”><br>
+
+        <label>Logo Size:</label>
+        <input type=”number” name=”logoSize” value=”80”><br>
+
+        <button type=”submit”>Generate QR Code</button>
+
+    </form>
+
+    {#if qrImage}
+    <h2>Preview</h2>
+    <img src=”data:image/png;base64,{qrImage}”>
+    {/if}
+
+</body>
+
+</html>
