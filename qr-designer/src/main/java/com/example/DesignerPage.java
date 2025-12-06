@@ -29,8 +29,8 @@ public class DesignerPage {
 
     @POST
     @Produces(MediaType.TEXT_HTML)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public TemplateInstance generate(@BeanParam QRCodeConfig cfg) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public TemplateInstance generate(QRCodeConfig cfg) {
 
         byte[] png = service.generate(cfg);
         String base64 = Base64.getEncoder().encodeToString(png);
