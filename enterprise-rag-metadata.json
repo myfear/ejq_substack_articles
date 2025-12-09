@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.2",
+  "java": "21",
+  "substackUrl": "",
+  "projectPath": "enterprise-rag",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
