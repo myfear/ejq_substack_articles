@@ -33,4 +33,3 @@ public class InputGuardrailExceptionMapper implements ExceptionMapper<InputGuard
                 .build();
     }
 }
-
