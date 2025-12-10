@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Global New Year Orchestrator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        #feedPanel {
+            width: 280px;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1000;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        #feedHeader {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #feedHeader h1 {
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 18px;
+        }
+
+        #feedHeader #status {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #feedList {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #feedList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #feedList::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #feedList::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        #feedList::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .feedItem {
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feedItem .recipientName {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .feedItem .timezone {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .feedItem .timestamp {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .feedItem .message {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        #globeViz {
+            flex: 1;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #globeViz canvas {
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.29.0/dist/globe.gl.min.js"></script>
+</head>
+
+<body>
+    <div id="feedPanel">
+        <div id="feedHeader">
+            <h1>Live New Year Feed</h1>
+            <div id="status">Waiting for midnight...</div>
+        </div>
+        <div id="feedList"></div>
+    </div>
+    <div id="globeViz"></div>
+
+    <script>
+        // Ensure Three.js is loaded before using Globe
+        if (typeof THREE === 'undefined') {
+            console.error('Three.js failed to load');
+        }
+        if (typeof Globe === 'undefined') {
+            console.error('globe.gl failed to load');
+        }
+
+        // --- 1. Setup Globe ---
+        const world = Globe()
+            (document.getElementById('globeViz'))
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+            .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+            .pointAltitude(0.2)
+            .pointColor('color')
+            .pointRadius(0.5);
+
+        world.controls().autoRotate = true;
+        world.controls().autoRotateSpeed = 0.6;
+
+        let activeFireworks = [];
+        let allFireworkSystems = [];
+
+        // --- Wait for globe to initialize, then get scene ---
+        setTimeout(() => {
+            try {
+                const scene = world.scene();
+                
+                // --- Firework Particle System ---
+                class Firework {
+                    constructor(lat, lng, color) {
+                        this.lat = lat;
+                        this.lng = lng;
+                        this.color = new THREE.Color(color);
+                        this.phase = 'launch';
+                        this.time = 0;
+                        this.maxTime = 2.5;
+                        
+                        // Use globe.gl's internal helper to get the exact vector
+                        // 0.2 matches your .pointAltitude(0.2) setting
+                        const { x, y, z } = world.getCoords(lat, lng, 0.2);
+                        this.position = new THREE.Vector3(x, y, z);
+                        
+                        this.createLaunchParticle();
+                    }
+
+                    createLaunchParticle() {
+                        const geometry = new THREE.BufferGeometry();
+                        const positions = new Float32Array(3);
+                        positions[0] = this.position.x;
+                        positions[1] = this.position.y;
+                        positions[2] = this.position.z;
+                        
+                        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                        
+                        const material = new THREE.PointsMaterial({
+                            color: this.color,
+                            size: 3,
+                            transparent: true,
+                            opacity: 1,
+                            blending: THREE.AdditiveBlending,
+                            sizeAttenuation: false
+                        });
+                        
+                        this.launchParticle = new THREE.Points(geometry, material);
+                        scene.add(this.launchParticle);
+                        
+                        // Launch direction (outward from globe)
+                        this.launchVelocity = this.position.clone().normalize().multiplyScalar(30);
+                    }
+
+                    explode() {
+                        this.phase = 'explode';
+                        scene.remove(this.launchParticle);
+                        
+                        const particleCount = 80;
+                        const geometry = new THREE.BufferGeometry();
+                        const positions = new Float32Array(particleCount * 3);
+                        
+                        for (let i = 0; i < particleCount; i++) {
+                            positions[i * 3] = this.position.x;
+                            positions[i * 3 + 1] = this.position.y;
+                            positions[i * 3 + 2] = this.position.z;
+                        }
+                        
+                        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                        
+                        const material = new THREE.PointsMaterial({
+                            color: this.color,
+                            size: 2,
+                            transparent: true,
+                            opacity: 1,
+                            blending: THREE.AdditiveBlending,
+                            sizeAttenuation: false
+                        });
+                        
+                        this.particleSystem = new THREE.Points(geometry, material);
+                        scene.add(this.particleSystem);
+                        
+                        // Create velocities for explosion
+                        this.velocities = [];
+                        for (let i = 0; i < particleCount; i++) {
+                            const theta = Math.random() * Math.PI * 2;
+                            const phi = Math.random() * Math.PI;
+                            const speed = 15 + Math.random() * 15;
+                            
+                            this.velocities.push(new THREE.Vector3(
+                                Math.sin(phi) * Math.cos(theta) * speed,
+                                Math.sin(phi) * Math.sin(theta) * speed,
+                                Math.cos(phi) * speed
+                            ));
+                        }
+                    }
+
+                    update(delta) {
+                        this.time += delta;
+                        
+                        if (this.phase === 'launch') {
+                            const positions = this.launchParticle.geometry.attributes.position.array;
+                            positions[0] += this.launchVelocity.x * delta;
+                            positions[1] += this.launchVelocity.y * delta;
+                            positions[2] += this.launchVelocity.z * delta;
+                            
+                            this.position.set(positions[0], positions[1], positions[2]);
+                            this.launchParticle.geometry.attributes.position.needsUpdate = true;
+                            
+                            if (this.time > 0.4) {
+                                this.explode();
+                            }
+                        } else if (this.phase === 'explode') {
+                            const positions = this.particleSystem.geometry.attributes.position.array;
+                            
+                            for (let i = 0; i < this.velocities.length; i++) {
+                                positions[i * 3] += this.velocities[i].x * delta;
+                                positions[i * 3 + 1] += this.velocities[i].y * delta;
+                                positions[i * 3 + 2] += this.velocities[i].z * delta;
+                                
+                                // Apply gravity toward globe center
+                                const particlePos = new THREE.Vector3(
+                                    positions[i * 3],
+                                    positions[i * 3 + 1],
+                                    positions[i * 3 + 2]
+                                );
+                                const gravity = particlePos.clone().normalize().multiplyScalar(-25 * delta);
+                                this.velocities[i].add(gravity);
+                            }
+                            
+                            this.particleSystem.geometry.attributes.position.needsUpdate = true;
+                            
+                            // Fade out
+                            const fadeProgress = (this.time - 0.4) / 2.1;
+                            this.particleSystem.material.opacity = Math.max(0, 1 - fadeProgress);
+                            
+                            if (this.time > this.maxTime) {
+                                this.phase = 'done';
+                            }
+                        }
+                        
+                        return this.phase !== 'done';
+                    }
+
+                    remove() {
+                        if (this.launchParticle) {
+                            scene.remove(this.launchParticle);
+                            this.launchParticle.geometry.dispose();
+                            this.launchParticle.material.dispose();
+                        }
+                        if (this.particleSystem) {
+                            scene.remove(this.particleSystem);
+                            this.particleSystem.geometry.dispose();
+                            this.particleSystem.material.dispose();
+                        }
+                    }
+                }
+
+                window.Firework = Firework;
+
+                // --- Animation Loop ---
+                const clock = new THREE.Clock();
+                
+                function animateFireworks() {
+                    requestAnimationFrame(animateFireworks);
+                    
+                    const delta = clock.getDelta();
+                    
+                    // Update all fireworks
+                    for (let i = allFireworkSystems.length - 1; i >= 0; i--) {
+                        const alive = allFireworkSystems[i].update(delta);
+                        if (!alive) {
+                            allFireworkSystems[i].remove();
+                            allFireworkSystems.splice(i, 1);
+                        }
+                    }
+                }
+                
+                animateFireworks();
+                console.log("Fireworks system initialized!");
+                
+            } catch (e) {
+                console.error("Could not initialize fireworks:", e);
+            }
+        }, 1000);
+
+        // --- 2. WebSocket Connection ---
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/globe");
+
+        socket.onopen = () => console.log("Connected to Globe Stream");
+
+        // Function to add a feed item
+        function addFeedItem(data) {
+            const feedList = document.getElementById("feedList");
+            const feedItem = document.createElement("div");
+            feedItem.className = "feedItem";
+            
+            // Format timestamp
+            const timestamp = new Date(data.timestamp);
+            const timeStr = timestamp.toLocaleTimeString();
+            
+            // Color based on timezone region
+            let borderColor = '#ffd700'; // default gold
+            if (data.timezone.includes('Asia')) borderColor = '#ff6b6b';
+            else if (data.timezone.includes('America')) borderColor = '#4ecdc4';
+            else if (data.timezone.includes('Europe')) borderColor = '#95e1d3';
+            else if (data.timezone.includes('Australia')) borderColor = '#f38181';
+            
+            feedItem.style.borderLeftColor = borderColor;
+            
+            feedItem.innerHTML = `
+                <div class="recipientName">🎉 ${data.recipientName}</div>
+                <div class="timezone">${data.timezone}</div>
+                <div class="timestamp">${timeStr}</div>
+                ${data.message ? `<div class="message">"${data.message}"</div>` : ''}
+            `;
+            
+            // Add to top of list
+            feedList.insertBefore(feedItem, feedList.firstChild);
+            
+            // Auto-scroll to top to show newest
+            feedList.scrollTop = 0;
+            
+            // Limit to 50 items to prevent memory issues
+            while (feedList.children.length > 50) {
+                feedList.removeChild(feedList.lastChild);
+            }
+        }
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            console.log("Received WebSocket data:", data);
+
+            if (data.type === "GREETING_DELIVERED") {
+                // Add to feed
+                addFeedItem(data);
+
+                triggerFirework(data.timezone);
+            }
+        };
+
+        socket.onclose = () => console.log("Globe WebSocket closed");
+
+        // --- 3. Visualization Logic ---
+        // Timezone to coordinates mapping
+        const timezoneMap = {
+            'Tokyo': { lat: 35.6, lng: 139.6 },
+            'Asia/Tokyo': { lat: 35.6, lng: 139.6 },
+            'New_York': { lat: 40.7, lng: -74.0 },
+            'America/New_York': { lat: 40.7, lng: -74.0 },
+            'London': { lat: 51.5, lng: -0.12 },
+            'Europe/London': { lat: 51.5, lng: -0.12 },
+            'Sydney': { lat: -33.8, lng: 151.2 },
+            'Australia/Sydney': { lat: -33.8, lng: 151.2 }
+        };
+
+        function triggerFirework(timezone) {
+            // Find matching coordinates
+            let coords = null;
+            for (const [key, value] of Object.entries(timezoneMap)) {
+                if (timezone.includes(key)) {
+                    coords = value;
+                    break;
+                }
+            }
+            
+            // Fallback to random location if no match
+            if (!coords) {
+                coords = {
+                    lat: (Math.random() * 160) - 80,
+                    lng: (Math.random() * 360) - 180
+                };
+            }
+
+            const colors = ['#ff0000', '#ffffff', '#ffd700', '#0088ff', '#ff00ff', '#00ff88'];
+            const colorName = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Create particle firework (only if Firework class is available)
+            if (window.Firework) {
+                try {
+                    const firework = new window.Firework(coords.lat, coords.lng, colorName);
+                    allFireworkSystems.push(firework);
+                } catch (e) {
+                    console.error("Error creating firework:", e);
+                }
+            }
+
+            // Also keep the point marker
+            const marker = {
+                lat: coords.lat,
+                lng: coords.lng,
+                size: 1.0,
+                color: colorName
+            };
+
+            activeFireworks.push(marker);
+            world.pointsData(activeFireworks);
+
+            // Remove marker after 2.5 seconds
+            setTimeout(() => {
+                const idx = activeFireworks.indexOf(marker);
+                if (idx > -1) {
+                    activeFireworks.splice(idx, 1);
+                    world.pointsData(activeFireworks);
+                }
+            }, 2500);
+        }
+    </script>
+</body>
+
+</html>
