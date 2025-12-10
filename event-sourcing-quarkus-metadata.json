@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.2",
+  "java": "21",
+  "substackUrl": "",
+  "projectPath": "event-sourcing-quarkus",
+  "tests": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
