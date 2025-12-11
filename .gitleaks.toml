@@ -6,7 +6,8 @@
     # Ignore all example certs
     '''(?:^|\/)jwt-case.*\.pem$''',
     '''(?:^|\/)stateless-api.*\.pem$''',
-    '''(?:^|\/)granular-rbac-tutorial.*\.pem$'''
-    '''(?:^|\/)bsky-javafeed-generator2.*\.crt$'''
-    '''(?:^|\/)bsky-javafeed-generator2.*\.key$'''
+    '''(?:^|\/)granular-rbac-tutorial.*\.pem$''',
+    '''(?:^|\/)bsky-javafeed-generator2.*\.crt$''',
+    '''(?:^|\/)bsky-javafeed-generator2.*\.key$''',
+    '''(?:^|\/)enterprise-rag-secure.*\.key$'''
     ]
