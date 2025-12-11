@@ -21,6 +21,7 @@ import io.quarkus.logging.Log;
  * - Customer success stories and ROI
  * - Technical architecture (multi-cloud, Kubernetes, supported languages)
  * - Migration and implementation strategies
+ * - CloudX customer order details (e.g., ORD-123, ORD-456)
  */
 @ApplicationScoped
 public class InputValidationGuardrail implements InputGuardrail {
@@ -122,6 +123,16 @@ public class InputValidationGuardrail implements InputGuardrail {
         "../../../", "etc/passwd", "cmd.exe"
     };
 
+    // Customer order ID pattern (ORD-XXX)
+    private static final java.util.regex.Pattern ORDER_ID_PATTERN = 
+        java.util.regex.Pattern.compile("ORD-\\d+", java.util.regex.Pattern.CASE_INSENSITIVE);
+
+    // Customer order question indicators
+    private static final String[] CUSTOMER_ORDER_KEYWORDS = {
+        "customer order", "my order", "order status", "order details",
+        "what is my order", "show me order", "tell me about order"
+    };
+
     @Override
     public InputGuardrailResult validate(UserMessage userMessage) {
         Log.info("InputValidationGuardrail: Validating user input");
@@ -142,6 +153,14 @@ public class InputValidationGuardrail implements InputGuardrail {
         if (maliciousPattern != null) {
             Log.warn("InputValidationGuardrail: BLOCKED - Malicious content detected: '" + maliciousPattern + "'");
             return failure(buildMaliciousContentResponse());
+        }
+
+        // 2.5. Check if this is a customer order question (allow these through)
+        boolean isCustomerOrderQuestion = isCustomerOrderQuestion(content, contentLower);
+        if (isCustomerOrderQuestion) {
+            Log.info("InputValidationGuardrail: Allowing customer order question");
+            // Skip off-topic checks for customer order questions, but still validate security
+            return success();
         }
 
         // 3. Check for off-topic action requests (e.g., "book me a flight")
@@ -274,6 +293,40 @@ public class InputValidationGuardrail implements InputGuardrail {
     }
 
     /**
+     * Detects if the question is about a CloudX customer order
+     * Examples: "What did my cloudx customer order with order ORD-123?"
+     *           "What is the status of ORD-456?"
+     *           "Tell me about my customer order ORD-123"
+     */
+    private boolean isCustomerOrderQuestion(String originalContent, String contentLower) {
+        // Check for order ID pattern (ORD-XXX)
+        boolean hasOrderId = ORDER_ID_PATTERN.matcher(originalContent).find();
+        
+        // Check for customer order keywords
+        boolean hasOrderKeywords = false;
+        for (String keyword : CUSTOMER_ORDER_KEYWORDS) {
+            if (contentLower.contains(keyword)) {
+                hasOrderKeywords = true;
+                break;
+            }
+        }
+        
+        // If it has an order ID, it's likely a customer order question
+        if (hasOrderId) {
+            Log.debug("InputValidationGuardrail: Detected order ID pattern in question");
+            return true;
+        }
+        
+        // If it has order keywords AND CloudX context, it's a customer order question
+        if (hasOrderKeywords && isValidCloudXContext(contentLower)) {
+            Log.debug("InputValidationGuardrail: Detected customer order question with CloudX context");
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
      * Builds response for prompt injection attempts
      */
     private String buildPromptInjectionResponse() {
@@ -303,7 +356,8 @@ public class InputValidationGuardrail implements InputGuardrail {
                "• Competitive analysis and positioning\n" +
                "• Sales methodology and processes\n" +
                "• Customer success stories and case studies\n" +
-               "• Migration and implementation strategies\n\n" +
+               "• Migration and implementation strategies\n" +
+               "• CloudX customer order details (e.g., ORD-123)\n\n" +
                "Please ask a question related to CloudX sales enablement.";
     }
 
@@ -318,7 +372,8 @@ public class InputValidationGuardrail implements InputGuardrail {
                "• Competitive analysis and positioning\n" +
                "• Sales methodology and processes\n" +
                "• Customer success stories and case studies\n" +
-               "• Migration and implementation strategies\n\n" +
+               "• Migration and implementation strategies\n" +
+               "• CloudX customer order details (e.g., ORD-123)\n\n" +
                "Please ask a question related to CloudX sales enablement.";
     }
 
