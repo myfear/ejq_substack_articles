@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.3",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/data-oriented-programming-java-quarkus",
+  "projectPath": "data-oriented-quarkus",
+  "tests": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
