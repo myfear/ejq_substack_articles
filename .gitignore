@@ -32,4 +32,4 @@ replay_pid*
 /.idea
 
 #Python
-.venv/
+venv/
