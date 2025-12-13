@@ -30,3 +30,6 @@ target/
 hs_err_pid*
 replay_pid*
 /.idea
+
+#Python
+.venv/
