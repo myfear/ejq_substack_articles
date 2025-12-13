@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.3",
+  "java": "21",
+  "substackUrl": "",
+  "projectPath": "request-filter-demo",
+  "tests": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
