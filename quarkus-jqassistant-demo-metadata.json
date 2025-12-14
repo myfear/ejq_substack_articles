@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.3",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-jqassistant-architecture-rules-java",
+  "projectPath": "quarkus-jqassistant-demo",
+  "tests": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
