@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jqassistant-rules
+  xmlns="http://schema.jqassistant.org/rule/v2.8"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.8 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.8.xsd">
+
+  <group id="default">
+    <includeConcept refId="layer-*"/>
+    <includeConstraint refId="*"/>
+  </group>
+
+  <!-- ========================================================= -->
+  <!-- Concepts                                                  -->
+  <!-- ========================================================= -->
+
+  <concept id="layer-resource">
+    <description>Marks REST resource classes</description>
+    <cypher><![CDATA[
+            MATCH (t:Type)
+            WHERE t.fqn =~ '.*\\.resource\\..*'
+            SET t:Resource
+            RETURN t.fqn
+        ]]></cypher>
+  </concept>
+
+  <concept id="layer-service">
+    <description>Marks service classes</description>
+    <cypher><![CDATA[
+            MATCH (t:Type)
+            WHERE t.fqn =~ '.*\\.service\\..*'
+            SET t:Service
+            RETURN t.fqn
+        ]]></cypher>
+  </concept>
+
+  <concept id="layer-repository">
+    <description>Marks repository classes</description>
+    <cypher><![CDATA[
+            MATCH (t:Type)
+            WHERE t.fqn =~ '.*\\.repository\\..*'
+            SET t:Repository
+            RETURN t.fqn
+        ]]></cypher>
+  </concept>
+
+  <concept id="layer-domain">
+    <description>Marks domain classes</description>
+    <cypher><![CDATA[
+            MATCH (t:Type)
+            WHERE t.fqn =~ '.*\\.domain\\..*'
+            SET t:Domain
+            RETURN t.fqn
+        ]]></cypher>
+  </concept>
+
+  <!-- ========================================================= -->
+  <!-- Architecture Constraints                                  -->
+  <!-- ========================================================= -->
+
+  <constraint id="resource-depends-on-service"
+    severity="major">
+    <requiresConcept refId="layer-resource"/>
+    <requiresConcept refId="layer-service"/>
+    <requiresConcept refId="layer-domain"/>
+    <description>
+            REST resources must only depend on services or domain classes
+        </description>
+    <cypher><![CDATA[
+            MATCH (r:Resource)-[:DEPENDS_ON]->(d:Type)
+            WHERE NOT d:Service
+              AND NOT d:Domain
+              AND NOT d.fqn STARTS WITH 'java.'
+              AND NOT d.fqn STARTS WITH 'jakarta.'
+            RETURN r.fqn AS Resource, d.fqn AS IllegalDependency
+        ]]></cypher>
+  </constraint>
+
+  <constraint id="service-depends-on-repository-or-domain"
+    severity="major">
+    <requiresConcept refId="layer-service"/>
+    <requiresConcept refId="layer-repository"/>
+    <requiresConcept refId="layer-domain"/>
+    <description>
+            Services must only depend on repositories or domain classes
+        </description>
+    <cypher><![CDATA[
+            MATCH (s:Service)-[:DEPENDS_ON]->(d:Type)
+            WHERE NOT d:Repository
+              AND NOT d:Domain
+              AND NOT d.fqn STARTS WITH 'java.'
+              AND NOT d.fqn STARTS WITH 'jakarta.'
+            RETURN s.fqn AS Service, d.fqn AS IllegalDependency
+        ]]></cypher>
+  </constraint>
+
+  <!-- ========================================================= -->
+  <!-- Naming Conventions                                        -->
+  <!-- ========================================================= -->
+
+  <constraint id="repository-naming"
+    severity="minor">
+    <requiresConcept refId="layer-repository"/>
+    <description>
+            Repository classes must end with 'Repository'
+        </description>
+    <cypher><![CDATA[
+            MATCH (r:Repository)
+            WHERE NOT r.name ENDS WITH 'Repository'
+            RETURN r.fqn
+        ]]></cypher>
+  </constraint>
+
+  <constraint id="service-naming"
+    severity="minor">
+    <requiresConcept refId="layer-service"/>
+    <description>
+            Service classes must end with 'Service'
+        </description>
+    <cypher><![CDATA[
+            MATCH (s:Service)
+            WHERE NOT s.name ENDS WITH 'Service'
+            RETURN s.fqn
+        ]]></cypher>
+  </constraint>
+
+  <!-- ========================================================= -->
+  <!-- CDI Rules                                                 -->
+  <!-- ========================================================= -->
+
+  <constraint id="service-must-be-applicationscoped"
+    severity="major">
+    <requiresConcept refId="layer-service"/>
+    <description>
+            Services must be annotated with @ApplicationScoped
+        </description>
+    <cypher><![CDATA[
+            MATCH (s:Service)
+            WHERE NOT EXISTS {
+                MATCH (s)-[:ANNOTATED_BY]->(ann:Type)
+                WHERE ann.fqn = 'jakarta.enterprise.context.ApplicationScoped'
+            }
+            RETURN s.fqn
+        ]]></cypher>
+  </constraint>
+
+  <!-- ========================================================= -->
+  <!-- Code Quality Rules                                        -->
+  <!-- ========================================================= -->
+
+  <constraint id="unused-private-methods"
+    severity="minor">
+    <description>
+            Private methods should be invoked at least once
+        </description>
+    <cypher><![CDATA[
+            MATCH (t:Type)-[:DECLARES]->(m:Method)
+            WHERE m.visibility = 'private'
+              AND NOT EXISTS {
+                MATCH (m)<-[:INVOKES]-()
+              }
+            RETURN t.fqn AS Type, m.name AS Method
+        ]]></cypher>
+  </constraint>
+
+  <constraint id="long-methods"
+    severity="minor">
+    <description>
+            Methods should not exceed 50 effective lines
+        </description>
+    <cypher><![CDATA[
+            MATCH (t:Type)-[:DECLARES]->(m:Method)
+            WHERE m.effectiveLineCount > 50
+            RETURN t.fqn AS Type, m.name AS Method, m.effectiveLineCount AS Lines
+        ]]></cypher>
+  </constraint>
+
+</jqassistant-rules>
