@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.3",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/java-out-of-office-generator-quarkus-langchain4j-ollama",
+  "projectPath": "ooo-generator",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
