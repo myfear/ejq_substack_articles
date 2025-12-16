@@ -9,5 +9,6 @@
     '''(?:^|\/)granular-rbac-tutorial.*\.pem$''',
     '''(?:^|\/)bsky-javafeed-generator2.*\.crt$''',
     '''(?:^|\/)bsky-javafeed-generator2.*\.key$''',
-    (?:^|\/)enterprise-rag-secure\/.*\.pem$
+    '''(?:^|\/)enterprise-rag-secure\/.*\.pem$''',
+    '''(?:^|\/)enterprise-rag-metadata\/.*\.pem$'''
     ]

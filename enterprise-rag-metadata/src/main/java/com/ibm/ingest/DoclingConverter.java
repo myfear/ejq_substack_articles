@@ -2,7 +2,6 @@ package com.ibm.ingest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +11,8 @@ import java.util.Map;
 import ai.docling.serve.api.chunk.response.Chunk;
 import ai.docling.serve.api.chunk.response.ChunkDocumentResponse;
 import ai.docling.serve.api.convert.request.options.OutputFormat;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.segment.TextSegment;
 import io.quarkiverse.docling.runtime.client.DoclingService;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -61,23 +62,17 @@ public class DoclingConverter {
     }
 
     /**
-     * Simple DTO to hold page-level content.
+     * Extracts content page by page and returns TextSegments with Docling metadata.
      */
-    public record PageContent(int pageNumber, String text) {}
-
-    /**
-     * Extracts content page by page to allow granular metadata.
-     */
-    public List<PageContent> extractPages(File sourceFile) throws IOException {
+    public List<TextSegment> extractPages(File sourceFile) throws IOException {
         Path filePath = sourceFile.toPath();
-        List<PageContent> resultPages = new ArrayList<>();
+        List<TextSegment> resultSegments = new ArrayList<>();
+        String fileName = sourceFile.getName();
 
         try {
             // Use hybridChunkFromUri to get ChunkDocumentResponse with chunks
-            // Convert Path to URI
-            URI fileUri = filePath.toUri();
-            ChunkDocumentResponse chunkResponse = doclingService.hybridChunkFromUri(fileUri, OutputFormat.MARKDOWN);
-            
+            ChunkDocumentResponse chunkResponse = doclingService.chunkFileHybrid(filePath, OutputFormat.MARKDOWN);
+
             List<Chunk> chunks = chunkResponse.getChunks();
 
             // Map to group chunks by page number
@@ -90,7 +85,7 @@ public class DoclingConverter {
 
                     // Get page numbers from chunk (returns List<Integer>)
                     List<Integer> pageNumbers = chunk.getPageNumbers();
-                    
+
                     if (chunkText != null && !chunkText.isBlank() && pageNumbers != null && !pageNumbers.isEmpty()) {
                         // A chunk can span multiple pages, so we add it to each page it belongs to
                         for (Integer pageNumber : pageNumbers) {
@@ -101,17 +96,27 @@ public class DoclingConverter {
                 }
             }
 
-            // Convert map to list of PageContent, sorted by page number
+            // Convert map to list of TextSegments with metadata, sorted by page number
             pageTextMap.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
                         String combinedText = entry.getValue().toString().trim();
                         if (!combinedText.isBlank()) {
-                            resultPages.add(new PageContent(entry.getKey(), combinedText));
+                            int pageNumber = entry.getKey();
+
+                            // Create TextSegment with Docling metadata
+                            Map<String, String> metaMap = new HashMap<>();
+                            metaMap.put("doc_id", fileName);
+                            metaMap.put("source", fileName);
+                            metaMap.put("page_number", String.valueOf(pageNumber));
+
+                            Metadata metadata = Metadata.from(metaMap);
+                            TextSegment segment = TextSegment.from(combinedText, metadata);
+                            resultSegments.add(segment);
                         }
                     });
 
-            return resultPages;
+            return resultSegments;
         } catch (ProcessingException e) {
             handleError(sourceFile, e);
             throw new IOException("Failed to convert file: " + sourceFile, e);
@@ -120,7 +125,6 @@ public class DoclingConverter {
             throw new IOException("Failed to convert file: " + sourceFile, e);
         }
     }
-
 
     private void handleError(File file, Exception e) {
         Log.warnf("Docling conversion failed for file %s: %s",

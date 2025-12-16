@@ -12,6 +12,28 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw quarkus:dev
 ```
 
+To test your endpoint, you need to:
+Get a dev token first:
+
+```shell script
+   TOKEN=$(curl -s "http://localhost:8080/dev/token?user=testuser")
+```
+Then use it in your request:
+
+```shell script
+   curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/bot?q=What+is+the+cancellation+policy%3F"
+```
+Or as a one-liner:
+
+```shell script
+curl -H "Authorization: Bearer $(curl -s 'http://localhost:8080/dev/token?user=testuser')" "http://localhost:8080/bot?q=What+is+the+cancellation+policy%3F"
+```
+
+
+
+
+
+
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
 ## Packaging and running the application

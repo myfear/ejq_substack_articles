@@ -1,14 +1,19 @@
 package com.ibm.retrieval;
 
+import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import com.ibm.structured.CustomerOrder;
 
+import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.rag.content.Content;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -24,6 +29,9 @@ public class DatabaseRetriever implements ContentRetriever {
     @Inject
     JsonWebToken idToken;
 
+    @ConfigProperty(name = "db.endpoint")
+    String dbEndpoint;
+
     private static final Pattern ORDER_PATTERN = Pattern.compile("ORD-\\d{3}");
 
     @Override
@@ -31,21 +39,10 @@ public class DatabaseRetriever implements ContentRetriever {
     public List<Content> retrieve(Query query) {
 
         try {
-            Log.infof("DatabaseRetriever: Processing query: %s", query.text());
-
-            // Check if token is available
-            if (idToken == null || idToken.getName() == null) {
-                Log.infof("DatabaseRetriever: No token or user name available, returning empty results");
-                return Collections.emptyList();
-            }
-
             // Get username from token - try getName() first, then fallback to upn claim
             String currentUser = idToken.getName();
             if (currentUser == null || currentUser.isEmpty()) {
                 currentUser = idToken.getClaim("upn");
-            }
-            if (currentUser == null || currentUser.isEmpty()) {
-                currentUser = idToken.getClaim("preferred_username");
             }
 
             if (currentUser == null || currentUser.isEmpty()) {
@@ -56,8 +53,8 @@ public class DatabaseRetriever implements ContentRetriever {
             Log.infof("DatabaseRetriever: Authenticated user: %s", currentUser);
 
             String text = query.text();
-            Log.infof("DatabaseRetriever: Searching for order pattern in text: %s", text);
 
+            // Search for order pattern in text
             Matcher matcher = ORDER_PATTERN.matcher(text);
             if (matcher.find()) {
                 String orderId = matcher.group();
@@ -68,9 +65,21 @@ public class DatabaseRetriever implements ContentRetriever {
                 if (order != null) {
                     Log.infof("DatabaseRetriever: Retrieved order %s (status: %s, total: $%.2f) for user %s",
                             order.orderNumber, order.status, order.totalAmount, currentUser);
-                    TextSegment segment = TextSegment.from(
-                            "DATABASE RECORD: Order %s is currently %s. Total: $%.2f."
-                                    .formatted(order.orderNumber, order.status, order.totalAmount));
+                    String segmentRecord = "DATABASE RECORD: Order %s is currently %s. Total: $%.2f."
+                            .formatted(order.orderNumber, order.status, order.totalAmount);
+
+                    // Create TextSegment with Metadata
+                    Map<String, String> metaMap = new HashMap<>();
+                    metaMap.put("source_url", dbEndpoint + "/" + order.orderNumber);
+                    metaMap.put("retrieval_method", "sql_database");
+                    metaMap.put("record_id", order.orderNumber);
+                    metaMap.put("retrieval_timestamp", Instant.now().toString());
+                    metaMap.put("similarity_score", "1");
+
+
+                    Metadata metadata = Metadata.from(metaMap);
+                    TextSegment segment = TextSegment.from(segmentRecord, metadata);
+
                     return List.of(Content.from(segment));
                 } else {
                     Log.infof("DatabaseRetriever: Order %s not found or not accessible for user %s", orderId,
