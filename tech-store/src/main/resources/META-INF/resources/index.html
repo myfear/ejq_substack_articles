@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tech Store</title>
+</head>
+
+<body>
+    <h1>Welcome to the Tech Store</h1>
+
+    <div id="search-section">
+        <input type="text" id="product-search" placeholder="Search products...">
+        <button id="search-btn">Find</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('search-btn').addEventListener('click', () => {
+            const query = document.getElementById('product-search').value;
+            const resultsDiv = document.getElementById('results');
+
+            if (query === 'Laptop') {
+                resultsDiv.innerHTML =
+                    '<div class="item">Gaming Laptop X1</div>';
+            } else {
+                resultsDiv.innerHTML =
+                    '<p>No products found.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>
