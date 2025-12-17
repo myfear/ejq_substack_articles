@@ -1,0 +1,31 @@
+title = "AI Assistant Configuration"
+version = "1.0.0"
+environment = "development"
+
+[model]
+provider = "ollama"
+name = "qwen3:1.7b"
+temperature = 0.0
+max_tokens = 800
+timeout_seconds = 60
+
+[prompts]
+system = """
+You are in development mode.
+Explain things step-by-step and include a quick verification command when possible.
+"""
+
+[[prompts.examples]]
+user = "What is Quarkus?"
+assistant = "Quarkus is a Java framework optimized for fast startup and low memory usage, designed for container and cloud-native runtimes."
+
+[features]
+enable_memory = false
+enable_tools = false
+enable_rag = false
+log_requests = true
+log_responses = true
+
+[features.limits]
+max_history_messages = 10
+max_context_length = 4096
