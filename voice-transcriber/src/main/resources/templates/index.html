@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Java Voice Transcriber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center font-sans">
+    <div class="max-w-md w-full p-6 bg-slate-800 rounded-xl shadow-2xl border border-slate-700">
+        <h1
+            class="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-emerald-400 text-transparent bg-clip-text">
+            <i class="fa-solid fa-wave-square mr-2"></i>Whisper Java
+        </h1> <textarea id="transcription" rows="6"
+            class="w-full bg-slate-900 text-slate-300 p-4 rounded-lg border border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition resize-none mb-6"
+            placeholder="Transcription will appear here..."></textarea>
+        <div class="flex justify-center gap-4"> <button id="recordBtn"
+                class="group relative flex items-center justify-center w-16 h-16 rounded-full bg-slate-700 hover:bg-red-500 transition-all duration-300 shadow-lg border border-slate-600">
+                <i class="fa-solid fa-microphone text-xl text-white group-hover:scale-110 transition-transform"></i>
+                <span id="pulse" class="absolute w-full h-full rounded-full bg-red-500 opacity-0"></span> </button>
+        </div>
+        <p id="status" class="text-center text-slate-500 text-sm mt-4">Hold to speak</p>
+    </div>
+    <script> let audioContext;
+        let mediaStream;
+        let processor;
+        let isRecording = false;
+        let inputBuffer = [];
+        const recordBtn = document.getElementById('recordBtn');
+        const status = document.getElementById('status');
+        const transcription = document.getElementById('transcription');
+        const pulse = document.getElementById('pulse');
+
+        // Initialize Audio Context on user interaction (required by browsers) 
+        async function initAudio() {
+            if (!audioContext) {
+                // Force 16kHz sample rate for Whisper 
+                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            }
+        } recordBtn.addEventListener('mousedown', async () => {
+            await initAudio();
+            isRecording = true; inputBuffer = [];
+            // Visuals 
+            recordBtn.classList.add('bg-red-500', 'scale-110'); pulse.classList.add('animate-ping', 'opacity-75'); status.textContent = "Listening..."; transcription.value = "";
+            // Get Mic Stream
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true }); const source = audioContext.createMediaStreamSource(mediaStream);
+            // Create a ScriptProcessor (deprecated but simplest for raw PCM access without Worklets) // Buffer size 4096, 1 input channel, 1 output channel 
+            processor = audioContext.createScriptProcessor(4096, 1, 1); processor.onaudioprocess = (e) => {
+                if (!isRecording) return; const inputData = e.inputBuffer.getChannelData(0);
+                // Push raw floats to our buffer 
+                inputBuffer.push(...inputData);
+            }; source.connect(processor); processor.connect(audioContext.destination);
+        }); const stopRecording = async () => {
+            if (!isRecording) return; isRecording = false;
+            // Visuals 
+            recordBtn.classList.remove('bg-red-500', 'scale-110'); pulse.classList.remove('animate-ping', 'opacity-75'); status.textContent = "Processing...";
+            // Cleanup 
+            mediaStream.getTracks().forEach(track => track.stop()); processor.disconnect();
+            // Send to Backend 
+            try {
+                const response = await fetch('/transcribe', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputBuffer)
+                    // Send raw float array 
+
+                }); const text = await response.text(); transcription.value = text; status.textContent = "Done";
+            } catch (err) { console.error(err); status.textContent = "Error processing audio"; }
+        }; recordBtn.addEventListener('mouseup', stopRecording); recordBtn.addEventListener('mouseleave', stopRecording); </script>
+</body>
+
+</html>
