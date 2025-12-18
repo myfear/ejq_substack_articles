@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.3",
+  "java": "25",
+  "substackUrl": "https://www.the-main-thread.com/p/java-speech-to-text-quarkus-whisper-ffm",
+  "projectPath": "voice-transcriber",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
