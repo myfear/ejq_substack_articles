@@ -8,7 +8,6 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
-
 public class RetrievalAugmentorExample {
 
     @Produces

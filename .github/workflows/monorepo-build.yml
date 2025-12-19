@@ -408,25 +408,25 @@ jobs:
             # Note: We must use the raw.githubusercontent URL for the JSON endpoint
             SHIELD_URL="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/$file"
             
-            # Format project name without link
-            PROJECT_DISPLAY="**$PROJECT_NAME**"
-            
-            # Format links column: (Article, Repository)
+            # Format links column: (Article)
             if [ -n "$PROJECT_PATH" ] && [ "$PROJECT_PATH" != "" ]; then
               REPO_URL="https://github.com/${{ github.repository }}/tree/main/$PROJECT_PATH"
             else
               REPO_URL=""
             fi
             
-            # Build links string
-            if [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ] && [ -n "$REPO_URL" ] && [ "$REPO_URL" != "" ]; then
-              LINKS_DISPLAY="([Article]($SUBSTACK_URL), [Repository]($REPO_URL))"
-            elif [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ]; then
-              LINKS_DISPLAY="([Article]($SUBSTACK_URL), Repository)"
-            elif [ -n "$REPO_URL" ] && [ "$REPO_URL" != "" ]; then
-              LINKS_DISPLAY="(Article, [Repository]($REPO_URL))"
+            # Format project name with repository link
+            if [ -n "$REPO_URL" ] && [ "$REPO_URL" != "" ]; then
+              PROJECT_DISPLAY="**[$PROJECT_NAME]($REPO_URL)**"
             else
-              LINKS_DISPLAY="(Article, Repository)"
+              PROJECT_DISPLAY="**$PROJECT_NAME**"
+            fi
+            
+            # Build links string (only Article, repository link is now in project name)
+            if [ -n "$SUBSTACK_URL" ] && [ "$SUBSTACK_URL" != "" ]; then
+              LINKS_DISPLAY="[Article]($SUBSTACK_URL)"
+            else
+              LINKS_DISPLAY="Article"
             fi
             
             # Append row to table
