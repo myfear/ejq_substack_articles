@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.29.4",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-langchain4j-ai-document-assistant",
+  "projectPath": "ai-document-assistant",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
