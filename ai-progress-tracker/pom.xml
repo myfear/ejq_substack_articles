@@ -15,6 +15,7 @@
         <quarkus.platform.version>3.28.2</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <substack-article.url>https://www.the-main-thread.com/p/quarkus-langchain4j-granite4-ai-progress-tracker</substack-article.url>
     </properties>
 
     <dependencyManagement>
