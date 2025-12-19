@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.28.2",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-langchain4j-granite4-ai-progress-tracker",
+  "projectPath": "ai-progress-tracker",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
