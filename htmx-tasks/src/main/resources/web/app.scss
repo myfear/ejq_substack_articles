@@ -1,0 +1,276 @@
+// This style will be bundled by the Web-Bundler and available using the {#bundle /} tag
+// for more information about how to use the {#bundle /} tag, see https://docs.quarkiverse.io/quarkus-web-bundler/dev/advanced-guides.html#bundle-tag
+
+// Professional Task Manager Styles
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --radius: 0.5rem;
+}
+
+body {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+}
+
+h1 {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  letter-spacing: -0.025em;
+}
+
+// Form Styles
+form {
+  background: var(--surface);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+input[type="text"],
+input[type="search"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  color: var(--text-primary);
+  background: var(--surface);
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+input[type="search"] {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Task List Styles
+#task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#task-list li {
+  background: var(--surface);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  span {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background);
+    }
+  }
+
+  button {
+    background-color: var(--danger-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+
+    &:hover {
+      background-color: var(--danger-hover);
+    }
+  }
+
+  form {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+    flex: 1;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    input[type="text"] {
+      flex: 1;
+      margin: 0;
+    }
+
+    button[type="submit"] {
+      background-color: var(--success-color);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+
+      &:hover {
+        background-color: #059669;
+      }
+    }
+
+    button[type="button"] {
+      background-color: var(--secondary-color);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+
+      &:hover {
+        background-color: #475569;
+      }
+    }
+  }
+}
+
+// Error Messages
+#form-errors {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  
+  // Hide when empty
+  &:empty {
+    display: none;
+  }
+  
+  .errors {
+    margin: 0;
+    
+    p {
+      margin: 0.25rem 0;
+      color: var(--danger-color);
+      
+      &:first-child {
+        margin-top: 0;
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Loading Indicator
+.htmx-indicator {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-left: 0.5rem;
+}
+
+.htmx-request .htmx-indicator {
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive Design
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  form {
+    flex-direction: column;
+  }
+
+  input[type="text"],
+  input[type="search"] {
+    width: 100%;
+  }
+
+  #task-list li {
+    flex-direction: column;
+    align-items: stretch;
+
+    span {
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{#include base title="Tasks"}
+<h1>Task Manager</h1>
+
+<form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend"
+    hx-on::after-request="if(event.detail.successful) { this.reset(); document.getElementById('form-errors').innerHTML = ''; }"
+    hx-on::response-error="if(event.detail.xhr.status === 422) { document.getElementById('form-errors').innerHTML = event.detail.xhr.responseText; }">
+
+    <div id="form-errors"></div>
+
+    <input type="text" name="title" placeholder="New task" required>
+    <button>Add Task</button>
+</form>
+
+<input type="search" name="q" placeholder="Search tasks" hx-get="/tasks/search" hx-trigger="keyup changed delay:300ms"
+    hx-target="#task-list">
+
+<ul id="task-list">
+    {#for task in tasks}
+    {#include taskItem task=task /}
+    {/for}
+</ul>
+{/include}

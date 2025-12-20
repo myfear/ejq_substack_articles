@@ -1,0 +1,9 @@
+<li id="task-{task.id}">
+    <span hx-get="/tasks/{task.id}/edit" hx-target="#task-{task.id}" hx-swap="outerHTML">
+        {task.title}
+    </span>
+
+    <button hx-delete="/tasks/{task.id}" hx-confirm="Are you sure?" hx-target="#task-{task.id}" hx-swap="outerHTML">
+        Delete
+    </button>
+</li>

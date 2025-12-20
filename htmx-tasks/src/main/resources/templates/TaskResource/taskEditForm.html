@@ -1,0 +1,9 @@
+<li id="task-{task.id}">
+    <form hx-put="/tasks/{task.id}" hx-target="#task-{task.id}" hx-swap="outerHTML">
+        <input type="text" name="title" value="{task.title}" required autofocus>
+        <button type="submit">Save</button>
+        <button type="button" hx-get="/tasks/{task.id}/view" hx-target="#task-{task.id}" hx-swap="outerHTML">
+            Cancel
+        </button>
+    </form>
+</li>
