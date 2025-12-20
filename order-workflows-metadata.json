@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.4",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-temporal-long-running-workflows-java",
+  "projectPath": "order-workflows",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
