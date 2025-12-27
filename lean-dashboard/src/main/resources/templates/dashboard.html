@@ -1,0 +1,64 @@
+{#include base.html}
+
+{#body}
+
+<h1>Customer Accounts</h1>
+
+<button onclick="document.getElementById('addCustomerModal').showModal()">
+    + Add Customer
+</button>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#for customer in customers}
+        <tr>
+            <td>{customer.id}</td>
+            <td>{customer.name}</td>
+            <td>
+                <a href="mailto:{customer.email}">
+                    {customer.email}
+                </a>
+            </td>
+            <td>{customer.status}</td>
+            <td>
+                <details>
+                    <summary>View Note</summary>
+                    <p>{customer.recentNote}</p>
+                </details>
+            </td>
+        </tr>
+        {/for}
+    </tbody>
+</table>
+
+<dialog id="addCustomerModal">
+    <form method="dialog">
+        <h2>New Customer</h2>
+
+        <label>
+            Company Name
+            <input type="text" required>
+        </label>
+
+        <label>
+            Email
+            <input type="email" required>
+        </label>
+
+        <button value="cancel">Cancel</button>
+        <button value="default">Save</button>
+    </form>
+</dialog>
+
+{/body}
+
+{/include}
