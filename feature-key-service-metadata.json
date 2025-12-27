@@ -1,0 +1,13 @@
+{
+  "quarkus": "3.30.5",
+  "java": "21",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-api-key-feature-level-access-control",
+  "projectPath": "feature-key-service",
+  "tests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}
