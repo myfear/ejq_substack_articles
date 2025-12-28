@@ -1,7 +1,7 @@
 {
   "quarkus": "3.30.5",
   "java": "21",
-  "substackUrl": "",
+  "substackUrl": "https://www.the-main-thread.com/p/quarkus-mtls-client-certificate-validation-java",
   "projectPath": "mtls-client-cert-guard",
   "tests": {
     "total": 0,
