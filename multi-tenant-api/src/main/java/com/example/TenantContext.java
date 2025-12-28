@@ -1,8 +1,5 @@
 package com.example;
 
-import jakarta.enterprise.context.RequestScoped;
-
-@RequestScoped
 public class TenantContext {
     private String tenantId;
 
