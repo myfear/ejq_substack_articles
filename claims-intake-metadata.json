@@ -1,7 +1,7 @@
 {
   "quarkus": "3.30.5",
   "java": "21",
-  "substackUrl": "",
+  "substackUrl": "https://www.the-main-thread.com/p/event-driven-claims-pipeline-java-quarkus-kafka",
   "projectPath": "claims-intake",
   "tests": {
     "total": 0,
