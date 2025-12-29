@@ -10,9 +10,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class NotificationService {
 
-    @Incoming("claims-accepted-in")
+    @Incoming("accepted")
     public void notify(ClaimAccepted claim) {
-        Log.infof(
-                "Claim accepted: " + claim.claimId());
+        Log.infof("📧 [NOTIFICATION] eventId=%s, claimId=%s, status=%s - Sending notification to customer",
+                claim.eventId(), claim.claimId(), claim.status());
     }
 }
