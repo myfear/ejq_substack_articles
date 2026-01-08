@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package com.example;
 
+import "buf/validate/validate.proto";
+
 option java_multiple_files = true;
 option java_package = "com.example.proto";
 option java_outer_classname = "UserProto";
@@ -20,6 +22,15 @@ message UserList {
 }
 
 message CreateUserRequest {
-  string name = 1;
-  string email = 2;
+  string name = 1 [
+    (buf.validate.field).string = {
+      min_len: 1,
+      max_len: 250,
+    }
+  ];
+  string email = 2 [
+    (buf.validate.field).string = {
+      email: true,
+    }
+  ];
 }
