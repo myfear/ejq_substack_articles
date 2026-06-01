@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "quarkus-agent": {
+      "command": "jbang",
+      "args": [
+        "quarkus-agent-mcp@quarkusio"
+      ],
+      "env": {
+        "JAVA_HOME": "/Users/<youruser>/.sdkman/candidates/java/current"
+      },
+      "disabled": false
+    }
+  }
+}

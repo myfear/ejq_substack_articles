@@ -5,8 +5,11 @@ import java.nio.file.Files;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import io.quarkiverse.docling.runtime.client.model.ConvertDocumentResponse;
-import io.quarkiverse.docling.runtime.client.model.OutputFormat;
+import ai.docling.core.DoclingDocument;
+import ai.docling.serve.api.convert.request.options.OutputFormat;
+import ai.docling.serve.api.convert.response.ConvertDocumentResponse;
+import ai.docling.serve.api.convert.response.InBodyConvertDocumentResponse;
+import io.quarkiverse.docling.runtime.client.DoclingService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -17,13 +20,11 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/convert")
 @Consumes(MediaType.MULTIPART_FORM_DATA)
-@Produces(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_JSON)
 public class ConverterResource {
 
     @Inject
-    Docling docling;
-
-    String textContent = "";
+    DoclingService doclingService;
 
     @POST
     public Response convert(@RestForm("file") FileUpload file) {
@@ -33,22 +34,25 @@ public class ConverterResource {
         }
 
         try {
+            byte[] fileBytes = Files.readAllBytes(file.uploadedFile());
 
-            byte[] imageBytes = Files.readAllBytes(file.uploadedFile());
-
-            ConvertDocumentResponse result = docling.convertFromBytes(
-                    imageBytes,
+            ConvertDocumentResponse result = doclingService.convertFromBytes(
+                    fileBytes,
                     file.fileName(),
-                    OutputFormat.TEXT);
+                    OutputFormat.JSON);
 
-            this.textContent = result.getDocument().getTextContent();
+            if (!(result instanceof InBodyConvertDocumentResponse inBody)) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Unexpected response type: " + result.getResponseType()).build();
+            }
+
+            DoclingDocument document = inBody.getDocument().getJsonContent();
+            return Response.ok(document).build();
 
         } catch (java.io.IOException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Failed to read uploaded file: " + e.getMessage())
                     .build();
         }
-
-        return Response.ok(textContent).build();
     }
 }

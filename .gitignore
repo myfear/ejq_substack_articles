@@ -5,6 +5,7 @@
 .vscode
 target/
 .gitignore
+article.md
 
 # Log file
 *.log
