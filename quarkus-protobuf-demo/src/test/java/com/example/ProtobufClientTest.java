@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import build.buf.validate.Violation;
+import build.buf.validate.Violations;
 import org.junit.jupiter.api.Test;
 
 import com.example.proto.CreateUserRequest;
@@ -11,6 +13,8 @@ import com.example.proto.User;
 import com.example.proto.UserList;
 
 import io.quarkus.test.junit.QuarkusTest;
+
+import java.util.Map;
 
 @QuarkusTest
 class ProtobufClientTest {
@@ -89,4 +93,49 @@ class ProtobufClientTest {
         assertEquals("charlie@example.com", newUser.getEmail());
         assertTrue(newUser.getId() > 0);
     }
+
+    @Test
+    void testInvalidUser() throws Exception {
+        // Send an invalid user with no name and a bad email address.
+        CreateUserRequest request = CreateUserRequest.newBuilder()
+                .setEmail("charlie_example.com")
+                .build();
+
+        byte[] requestBody = request.toByteArray();
+
+        byte[] responseBody = given()
+                .contentType("application/x-protobuf")
+                .accept("application/x-protobuf")
+                .body(requestBody)
+                .when()
+                .post("/api/users")
+                .then()
+                .statusCode(400)
+                .extract()
+                .body()
+                .asByteArray();
+
+        // Build map of expectations and our violations Protobuf message.
+        Map<String, String> expectedViolations = Map.of(
+                "name", "value length must be at least 1 characters",
+                "email", "value must be a valid email address"
+        );
+        Violations violations = Violations.parseFrom(responseBody);
+
+
+        // Make sure we have exactly the expected errors.
+        assertEquals(expectedViolations.size(), violations.getViolationsCount(),
+                "Expected " + expectedViolations.size() + " violations");
+        expectedViolations.forEach((fieldName, expectedMessage) -> {
+            Violation violation = violations.getViolationsList().stream()
+                    .filter(v -> v.getField().getElements(0).getFieldName().equals(fieldName))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("Expected violation for '" + fieldName + "' field"));
+
+            assertEquals(expectedMessage, violation.getMessage(),
+                    "Unexpected message for field '" + fieldName + "'");
+        });
+    }
+
 }
+
